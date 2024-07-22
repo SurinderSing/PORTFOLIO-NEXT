@@ -8,31 +8,35 @@
     "plugin:react/recommended",
     "plugin:react/jsx-runtime",
     "plugin:prettier/recommended",
+    "next",
     "prettier"
   ],
-  "overrides": [],
   "parserOptions": {
     "ecmaVersion": 2021,
     "sourceType": "module"
   },
-  "plugins": [
-    "react",
-    "prettier"
-  ],
+  "plugins": ["react", "prettier"],
   "rules": {
-    "react/prop-types": 0,
+    "react/prop-types": "off",
     "prettier/prettier": [
       "error",
       {
-        "endOfLine": "auto",
         "singleQuote": true,
+        "trailingComma": "es5",
         "tabWidth": 2,
+        "semi": true,
         "printWidth": 80,
-        "semi": true
+        "endOfLine": "auto"
       }
     ],
     "no-unused-vars": "warn",
     "no-console": "warn",
-    "prefer-const": "error"
+    "prefer-const": "error",
+    "@next/next/no-html-link-for-pages": "off"
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
   }
 }
