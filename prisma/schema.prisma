@@ -7,6 +7,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+// User Table::
+
+// Enums::
 enum Role {
   USER
   ADMIN
@@ -19,6 +23,7 @@ enum UserStatus {
   SUSPENDED
 }
 
+// Model::
 model User {
   id             Int       @id @default(autoincrement())
   username       String    @unique
