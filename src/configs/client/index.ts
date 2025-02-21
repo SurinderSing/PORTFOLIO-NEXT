@@ -1,5 +1,5 @@
-class Config {
+class Configs {
   static baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
 }
 
-export default Config;
+export default Configs;

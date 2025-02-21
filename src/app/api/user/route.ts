@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import Configs from '@/configs/server';
+import checkRequired from '@/utils/sever/check-required';
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -20,12 +21,18 @@ export async function POST(request: Request): Promise<NextResponse> {
     const { username, email, password, firstName, lastName } =
       await request.json();
 
-    // Input validation
-    if (!username || !email || !password || !firstName) {
-      return NextResponse.json(
-        { error: 'All fields are required' },
-        { status: 400 }
-      );
+    const requiredFields = checkRequired(
+      ['firstName', 'username', 'email', 'password'],
+      {
+        firstName,
+        username,
+        email,
+        password,
+      }
+    );
+
+    if (requiredFields) {
+      return NextResponse.json(requiredFields, { status: 400 });
     }
 
     if (password.length < 8) {
