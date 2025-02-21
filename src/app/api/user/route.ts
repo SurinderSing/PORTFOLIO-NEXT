@@ -36,7 +36,6 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
-
     // Create the user
     const newUser = await prisma.user.create({
       data: {
@@ -74,7 +73,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
 
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error', details: error },
       { status: 500 }
     );
   }
