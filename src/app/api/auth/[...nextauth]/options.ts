@@ -58,6 +58,11 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }: { token: any; user: any }) {
       if (user) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { verificationToken: token.jti },
+        });
+
         token.id = user.id;
         token.username = user.username;
         token.email = user.email;
@@ -71,6 +76,7 @@ export const authOptions: NextAuthOptions = {
         token.rememberToken = user.rememberToken;
         token.deletedAt = user.deletedAt;
         token.isVerified = user.isVerified;
+        token.verificationToken = token.jti;
       }
       return token;
     },
@@ -89,6 +95,7 @@ export const authOptions: NextAuthOptions = {
         session.user.rememberToken = token.rememberToken;
         session.user.deletedAt = token.deletedAt;
         session.user.isVerified = token.isVerified;
+        session.user.verificationToken = token.verificationToken;
       }
       return session;
     },

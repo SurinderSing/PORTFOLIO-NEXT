@@ -15,6 +15,8 @@ declare module 'next-auth' {
     lastLogin: string;
     rememberToken: string;
     deletedAt: string;
+    verificationToken: string;
+    isVerified: boolean;
   }
   export interface Session {
     user: User & DefaultSession['user'];
