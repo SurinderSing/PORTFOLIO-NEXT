@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import Configs from '@/configs/server';
 import checkRequired from '@/utils/sever/check-required';
+import crypto from 'crypto';
+import { sendEmail } from '@/utils/sever/node-mailer';
 
 export async function GET(): Promise<NextResponse> {
   try {
@@ -47,30 +49,41 @@ export async function POST(request: Request): Promise<NextResponse> {
       password,
       Configs?.bcryptSaltRounds
     );
+
+    // Generate a verification token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+
     // Create the user
-    const newUser = await prisma.user.create({
+    await prisma.user.create({
       data: {
         username,
         email,
         password: hashedPassword,
         firstName,
         lastName,
+        isVerified: false,
+        verificationToken,
       },
     });
 
+    // Send a verification email
+    const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL}/verify-email?token=${verificationToken}`;
+    try {
+      await sendEmail(email, 'Verify Your Email', verificationLink);
+    } catch (error) {
+      // if the email is not sent, delete the user
+      await prisma.user.delete({
+        where: { email },
+      });
+      return NextResponse.json(
+        { error: 'Failed to send verification email' },
+        { status: 500 }
+      );
+    }
+
     // Respond with the created user (omit sensitive data like password)
     return NextResponse.json(
-      {
-        message: 'User created successfully',
-        user: {
-          id: newUser.id,
-          username: newUser.username,
-          email: newUser.email,
-          firstName: newUser.firstName,
-          lastName: newUser.lastName,
-          createdAt: newUser.createdAt,
-        },
-      },
+      { message: 'User created. Check your email for verification.' },
       { status: 201 }
     );
   } catch (error: any) {

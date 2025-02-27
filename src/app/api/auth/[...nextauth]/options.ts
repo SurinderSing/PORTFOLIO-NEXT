@@ -31,6 +31,10 @@ export const authOptions: NextAuthOptions = {
             throw new Error('Invalid credentials');
           }
 
+          if (!user.isVerified) {
+            throw new Error('Please verify your email before logging in.');
+          }
+
           const passwordsMatch = await bcrypt.compare(
             credentials.password,
             user.password
@@ -66,6 +70,7 @@ export const authOptions: NextAuthOptions = {
         token.lastLogin = user.lastLogin;
         token.rememberToken = user.rememberToken;
         token.deletedAt = user.deletedAt;
+        token.isVerified = user.isVerified;
       }
       return token;
     },
@@ -83,6 +88,7 @@ export const authOptions: NextAuthOptions = {
         session.user.lastLogin = token.lastLogin;
         session.user.rememberToken = token.rememberToken;
         session.user.deletedAt = token.deletedAt;
+        session.user.isVerified = token.isVerified;
       }
       return session;
     },

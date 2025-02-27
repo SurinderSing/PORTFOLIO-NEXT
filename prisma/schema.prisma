@@ -7,7 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 // User Table::
 
 // Enums::
@@ -25,23 +24,23 @@ enum UserStatus {
 
 // Model::
 model User {
-  id             Int       @id @default(autoincrement())
-  username       String    @unique
-  password       String
-  email          String    @unique
-  firstName      String?
-  lastName       String?
-  role           Role       @default(USER)
-  status         UserStatus @default(ACTIVE)
+  id                Int        @id @default(autoincrement())
+  username          String     @unique
+  password          String
+  email             String     @unique
+  firstName         String?
+  lastName          String?
+  bio               String?
+  role              Role       @default(USER)
+  status            UserStatus @default(ACTIVE)
+  isVerified        Boolean    @default(false)
+  verificationToken String?    @unique
+  profilePicture String?
+  lastLogin      DateTime?
+  deletedAt      DateTime?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
-  lastLogin      DateTime?
-  rememberToken  String?
-  profilePicture String?
-  bio            String?
-  deletedAt      DateTime?
 
   @@index([email])
   @@index([username])
 }
-
