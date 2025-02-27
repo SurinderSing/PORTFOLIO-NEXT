@@ -23,6 +23,40 @@ export async function POST(request: Request): Promise<NextResponse> {
     const { username, email, password, firstName, lastName } =
       await request.json();
 
+    // Check if user exists but is not verified
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser && !existingUser.isVerified) {
+      // Generate a new verification token
+      const verificationToken = crypto.randomBytes(32).toString('hex');
+
+      // Update the user with new verification token
+      await prisma.user.update({
+        where: { email },
+        data: { verificationToken },
+      });
+
+      // Resend verification email
+      const verificationLink = `${Configs.baseUrl}/api/user/validate?token=${verificationToken}`;
+      try {
+        await sendEmail(email, 'Verify Your Email', verificationLink);
+        return NextResponse.json(
+          { message: 'Verification email resent. Please check your email.' },
+          { status: 200 }
+        );
+      } catch (error) {
+        return NextResponse.json(
+          {
+            error: 'Failed to send verification email',
+            details: error,
+          },
+          { status: 500 }
+        );
+      }
+    }
+
     const requiredFields = checkRequired(
       ['firstName', 'username', 'email', 'password'],
       {
@@ -67,7 +101,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     });
 
     // Send a verification email
-    const verificationLink = `${process.env.NEXT_PUBLIC_APP_URL}/verify-email?token=${verificationToken}`;
+    const verificationLink = `${Configs.baseUrl}/api/user/validate?token=${verificationToken}`;
     try {
       await sendEmail(email, 'Verify Your Email', verificationLink);
     } catch (error) {
@@ -76,7 +110,10 @@ export async function POST(request: Request): Promise<NextResponse> {
         where: { email },
       });
       return NextResponse.json(
-        { error: 'Failed to send verification email' },
+        {
+          error: 'Failed to send verification email',
+          details: error,
+        },
         { status: 500 }
       );
     }
