@@ -1,8 +1,9 @@
-import { Button } from '@/components/ui/button';
+import ToggleDarkModeBtn from '@/components/toggle-dark-mode-btn';
+
 export default function Home() {
   return (
     <main>
-      <Button>Inder</Button>
+      <ToggleDarkModeBtn />
     </main>
   );
 }

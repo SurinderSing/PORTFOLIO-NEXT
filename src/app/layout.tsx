@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google';
 import '../styles/globals.css';
 import AuthProvider from '@/context/AuthProvider';
 import { cn } from '@/lib/utils';
+import { ThemeProvider } from '@/components/theme-provider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -23,7 +24,16 @@ export default function RootLayout({
           'antialiased min-h-screen bg-background'
         )}
       >
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );
