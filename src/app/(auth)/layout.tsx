@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import '../styles/globals.css';
+import '../../styles/globals.css';
 import AuthProvider from '@/context/AuthProvider';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/client/theme-provider';
