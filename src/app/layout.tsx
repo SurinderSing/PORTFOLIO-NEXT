@@ -1,9 +1,9 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import './styles/globals.css';
-
-const inter = Inter({ subsets: ['latin'] });
+import '../styles/globals.css';
+import AuthProvider from '@/context/AuthProvider';
+import { cn } from '@/lib/utils';
+import { ThemeProvider } from '@/components/client/theme-provider';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -14,8 +14,19 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={cn('antialiased min-h-screen bg-background')}>
+        <AuthProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </AuthProvider>
+      </body>
     </html>
   );
 }
