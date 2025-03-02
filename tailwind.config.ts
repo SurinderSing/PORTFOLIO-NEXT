@@ -32,6 +32,9 @@ const config: Config = {
         Poppins: ['var(--font-Poppins)'],
         pacifico: ['var(--font-pacifico)'],
       },
+      boxShadow: {
+        'custom-1': 'var(--custom-box-shadow-1)',
+      },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
