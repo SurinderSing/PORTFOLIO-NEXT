@@ -1,0 +1,11 @@
+.logoHeading {
+  @apply font-pacifico text-2xl transition-all duration-150 ease-out;
+}
+
+.logoHeading span {
+  @apply text-secondary;
+}
+
+.logoHeading:hover {
+  @apply text-secondary;
+}

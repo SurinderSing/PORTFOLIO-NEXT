@@ -1,22 +1,13 @@
-import Link from 'next/link';
 import React from 'react';
-import Image from 'next/image';
 import ToggleDarkModeBtn from '@/components/client/toggle-dark-mode-btn';
+import LogoHeading from '@/components/client/logo-heading';
 
 const Header = () => {
   return (
     <header>
       <div className="section-container">
-        <div></div>
-        <Link href="/">
-          <Image
-            src="https://picsum.photos/42/42"
-            alt="logo"
-            width={42}
-            height={42}
-          />
-        </Link>
-        <div>
+        <div className="flex justify-between items-center max-w-[1200px] mx-auto py-10">
+          <LogoHeading title="Inder <span>Dev.</span>" href="/" />
           <ToggleDarkModeBtn />
         </div>
       </div>

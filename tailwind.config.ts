@@ -30,6 +30,7 @@ const config: Config = {
       fontFamily: {
         raleway: ['var(--font-raleway)'],
         Poppins: ['var(--font-Poppins)'],
+        pacifico: ['var(--font-pacifico)'],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
