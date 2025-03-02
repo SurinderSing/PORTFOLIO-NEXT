@@ -6,7 +6,8 @@ import ToggleDarkModeBtn from '@/components/client/toggle-dark-mode-btn';
 const Header = () => {
   return (
     <header>
-      <div>
+      <div className="section-container">
+        <div></div>
         <Link href="/">
           <Image
             src="https://picsum.photos/42/42"
@@ -15,9 +16,9 @@ const Header = () => {
             height={42}
           />
         </Link>
-      </div>
-      <div>
-        <ToggleDarkModeBtn />
+        <div>
+          <ToggleDarkModeBtn />
+        </div>
       </div>
     </header>
   );
