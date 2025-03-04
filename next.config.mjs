@@ -6,6 +6,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'instagram.fdel52-1.fna.fbcdn.net',
+      },
     ],
   },
 };
