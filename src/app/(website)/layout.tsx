@@ -4,7 +4,7 @@ import '@/styles/globals.css';
 import '@/styles/main.css';
 import AuthProvider from '@/context/AuthProvider';
 import { cn } from '@/lib/utils';
-import { ThemeProvider } from '@/components/client/theme-provider';
+import { ThemeProvider } from '@/components/utils/theme-provider';
 import Header from '@/features/website/header';
 import Navbar from '@/features/website/navbar';
 import ProfileSideSection from '@/features/website/profile-side-section';

@@ -1,4 +1,4 @@
-import { MenuItemInterface } from '@/components/client/menu-btn';
+import { MenuItemInterface } from '@/components/website/menu-btn';
 
 const useData = () => {
   const menuItems: MenuItemInterface[] = [

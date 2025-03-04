@@ -1,4 +1,4 @@
-import MenuBtn from '@/components/client/menu-btn';
+import MenuBtn from '@/components/website/menu-btn';
 import React from 'react';
 import useData from './useData';
 

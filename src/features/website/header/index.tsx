@@ -1,6 +1,6 @@
 import React from 'react';
-import ToggleDarkModeBtn from '@/components/client/toggle-dark-mode-btn';
-import LogoHeading from '@/components/server/logo-heading';
+import ToggleDarkModeBtn from '@/components/website/toggle-dark-mode-btn';
+import LogoHeading from '@/components/website/logo-heading';
 
 const Header = () => {
   return (
