@@ -1,11 +1,11 @@
 .logoHeading {
-  @apply font-pacifico text-2xl transition-all duration-150 ease-out;
+  @apply font-pacifico text-2xl transition-all duration-150 ease-in-out;
 }
 
 .logoHeading span {
-  @apply text-secondary;
+  @apply bg-gradient-to-b from-primary to-secondary text-transparent bg-clip-text;
 }
 
 .logoHeading:hover {
-  @apply text-secondary;
+  @apply bg-gradient-to-t from-primary to-secondary text-transparent bg-clip-text;
 }

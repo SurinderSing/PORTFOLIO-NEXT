@@ -15,14 +15,11 @@
 }
 
 /* gradient */
+
 .main-gradient-1 {
   @apply bg-gradient-to-r from-secondary to-primary text-white;
 }
 
-/* .main-gradient-2 {
-  @apply bg-gradient-to-r from-primary to-secondary;
+.main-text-gradient {
+  @apply bg-gradient-to-b from-primary to-secondary text-transparent bg-clip-text;
 }
-
-.main-gradient-3 {
-  @apply bg-gradient-to-r from-primary to-secondary;
-} */
