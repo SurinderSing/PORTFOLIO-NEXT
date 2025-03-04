@@ -68,6 +68,11 @@ const config: Config = {
           DEFAULT: 'hsl(var(--tertiary))',
           foreground: 'hsl(var(--tertiary-foreground))',
         },
+        'tertiary-2': {
+          DEFAULT: 'hsl(var(--tertiary-2))',
+          foreground: 'hsl(var(--tertiary-2-foreground))',
+          hover: 'hsl(var(--tertiary-2-hover))',
+        },
         muted: {
           DEFAULT: 'hsl(var(--muted))',
           foreground: 'hsl(var(--muted-foreground))',

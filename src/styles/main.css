@@ -13,3 +13,16 @@
 .para-3 {
   @apply text-xs leading-5 font-raleway;
 }
+
+/* gradient */
+.main-gradient-1 {
+  @apply bg-gradient-to-r from-secondary to-primary text-white;
+}
+
+/* .main-gradient-2 {
+  @apply bg-gradient-to-r from-primary to-secondary;
+}
+
+.main-gradient-3 {
+  @apply bg-gradient-to-r from-primary to-secondary;
+} */
