@@ -1,0 +1,39 @@
+/* container::  */
+.section-container {
+  @apply container px-1 max-w-[1200px] md:px-[.15rem];
+}
+
+/* paragraphs::  */
+.para-1 {
+  @apply text-sm leading-6 font-raleway;
+}
+.para-2 {
+  @apply text-xs leading-5 font-raleway;
+}
+.para-3 {
+  @apply text-[10px] leading-5 font-raleway font-semibold;
+}
+
+/* headings::  */
+h1 {
+  @apply text-[28px] font-medium font-Poppins;
+}
+h2 {
+  @apply text-[26px] font-medium font-Poppins;
+}
+h3 {
+  @apply text-[22px] font-semibold font-Poppins;
+}
+h4 {
+  @apply text-[18px] font-semibold font-Poppins;
+}
+
+/* gradient */
+
+.main-gradient-1 {
+  @apply bg-gradient-to-r from-secondary to-primary text-white;
+}
+
+.main-text-gradient {
+  @apply bg-gradient-to-b from-primary to-secondary text-transparent bg-clip-text;
+}
