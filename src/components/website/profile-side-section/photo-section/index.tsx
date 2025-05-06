@@ -3,7 +3,7 @@ import React from 'react';
 
 const PhotoSection: React.FC = () => {
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center w-full max-w-[70%]">
       <div className="relative w-[150px] h-[74px]">
         <Image
           // src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8cHJvZmlsZXxlbnwwfHwwfHx8MA%3D%3D"
@@ -14,7 +14,7 @@ const PhotoSection: React.FC = () => {
           className="object-cover aspect-square rounded-2xl absolute -top-[80px]"
         />
       </div>
-      <h3>Suridner Singh</h3>
+      <h3 className="mb-2">Surinder Singh</h3>
       <p className="para-2 font-semibold text-[#0b090976] dark:text-foreground">
         Frontend Developer
       </p>
