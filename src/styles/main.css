@@ -11,15 +11,15 @@
   @apply text-xs leading-5 font-raleway;
 }
 .para-3 {
-  @apply text-[10px] leading-5 font-raleway;
+  @apply text-[10px] leading-5 font-raleway font-semibold;
 }
 
 /* headings::  */
 h1 {
-  @apply text-[36px] font-medium font-Poppins;
+  @apply text-[28px] font-medium font-Poppins;
 }
 h2 {
-  @apply text-[28px] font-medium font-Poppins;
+  @apply text-[26px] font-medium font-Poppins;
 }
 h3 {
   @apply text-[22px] font-semibold font-Poppins;

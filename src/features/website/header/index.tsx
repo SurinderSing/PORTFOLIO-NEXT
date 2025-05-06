@@ -6,7 +6,7 @@ const Header = () => {
   return (
     <header>
       <div className="section-container">
-        <div className="flex justify-between items-center mx-auto py-10">
+        <div className="flex justify-between items-center mx-auto py-8">
           <LogoHeading title="Inder <span>Dev.</span>" href="/" />
           <ToggleDarkModeBtn />
         </div>

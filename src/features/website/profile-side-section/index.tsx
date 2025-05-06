@@ -5,7 +5,7 @@ import React from 'react';
 
 const ProfileSideSection: React.FC = () => {
   return (
-    <div className="flex flex-col items-center justify-center w-full bg-tertiary rounded-2xl max-w-[23rem] shadow-sm">
+    <div className="flex flex-col items-center justify-start w-full max-w-[23rem] bg-tertiary rounded-2xl shadow-sm">
       <PhotoSection />
       <SocialMediaLinks />
       <ContactsSection />

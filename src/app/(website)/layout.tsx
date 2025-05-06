@@ -29,7 +29,7 @@ export default function RootLayout({
             <Header />
             <div className="section-container">
               <Navbar />
-              <div className="flex gap-5">
+              <div className="flex gap-3">
                 <ProfileSideSection />
                 {children}
               </div>
