@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import '../../styles/globals.css';
 import AuthProvider from '@/context/AuthProvider';
 import { cn } from '@/lib/utils';
-import { ThemeProvider } from '@/components/client/theme-provider';
+import { ThemeProvider } from '@/components/utils/theme-provider';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
