@@ -35,13 +35,13 @@ const MenuBtn: React.FC<MenuBtnInterface> = ({ menuItem }) => {
   return (
     <Link href={menuItem.href}>
       <div
-        className={`inline-flex flex-col items-center justify-center rounded-2xl h-16 w-16 ${
+        className={`inline-flex flex-col items-center justify-center rounded-2xl h-14 w-14 ${
           isActive
             ? 'main-gradient-1'
             : 'bg-tertiary-2 hover:bg-tertiary-2-hover'
         }`}
       >
-        <Icon size={18} />
+        <Icon size={14} strokeWidth={2.5} />
         <p className="para-3">{menuItem.label}</p>
       </div>
     </Link>
