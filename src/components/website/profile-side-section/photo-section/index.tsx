@@ -14,8 +14,8 @@ const PhotoSection: React.FC = () => {
           className="object-cover aspect-square rounded-2xl absolute -top-[80px]"
         />
       </div>
-      <h3 className="mb-2">Surinder Singh</h3>
-      <p className="para-2 font-semibold text-[#0b090976] dark:text-foreground">
+      <h3 className="mb-1 text-[22px]">Surinder Singh</h3>
+      <p className="para-2 font-semibold text-muted dark:text-foreground">
         Frontend Developer
       </p>
     </div>
