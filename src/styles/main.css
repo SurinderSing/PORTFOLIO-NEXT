@@ -37,3 +37,21 @@ h4 {
 .main-text-gradient {
   @apply bg-gradient-to-b from-primary to-secondary text-transparent bg-clip-text;
 }
+
+/* form fields :: */
+
+/* Label styling */
+label {
+  @apply block text-sm font-medium text-foreground -mb-1 relative z-10;
+}
+
+/* Input and textarea styling */
+input,
+textarea {
+  @apply w-full h-[1rem] px-0.5 border-0 border-b border-tertiary-2 outline-none transition-colors duration-300 ease-in bg-background;
+
+  &:focus,
+  &:hover {
+    @apply border-b-2 border-b-primary;
+  }
+}
