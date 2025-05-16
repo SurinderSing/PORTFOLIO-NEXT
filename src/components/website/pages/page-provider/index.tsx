@@ -7,7 +7,7 @@ interface PageProviderProps {
 
 const PageProvider: React.FC<PageProviderProps> = ({ children, title }) => {
   return (
-    <div className="bg-tertiary rounded-2xl shadow-sm">
+    <div className="bg-tertiary rounded-2xl shadow-sm w-full">
       <div className="w-full max-w-[46rem] mx-auto py-4">
         <div className="flex items-center gap-6 mb-3">
           <h1 className="whitespace-nowrap">{title}</h1>

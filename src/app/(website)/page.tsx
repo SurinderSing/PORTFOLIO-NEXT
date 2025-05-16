@@ -1,6 +1,7 @@
 import React from 'react';
 import PageProvider from '@/components/website/pages/page-provider';
 import { BadgeHelp, CodeXml, LayoutGrid, Slack } from 'lucide-react';
+import DetailCard from '@/components/website/pages/home/detail-card';
 
 interface SkillDataInterface {
   id: number | string;
@@ -21,7 +22,7 @@ const skillsData: SkillDataInterface[] = [
           discover innovative ways to create fast, 
           scalable, and user-friendly applications.`,
     icon: <CodeXml size={24} className="text-primary" />,
-    bgColor: 'bg-[#FFEBD1] dark:bg-gradient-to-r from-secondary to-primary',
+    bgColor: 'bg-card dark:bg-gradient-to-r from-secondary to-primary',
   },
   {
     id: 2,
@@ -54,14 +55,14 @@ const skillsData: SkillDataInterface[] = [
                   community that has supported me 
                   throughout my career. `,
     icon: <BadgeHelp size={24} className="text-primary" />,
-    bgColor: 'bg-[#FFEBD1] dark:bg-gradient-to-r from-secondary to-primary',
+    bgColor: 'bg-card dark:bg-gradient-to-r from-secondary to-primary',
   },
 ];
 
 const Home = () => {
   return (
     <main className="w-full">
-      <PageProvider title="ABOUT ME">
+      <PageProvider title="About Me">
         {/* About Summary */}
         <div className="mb-3">
           <p className="para-2">
@@ -79,18 +80,7 @@ const Home = () => {
           <h2 className="mb-3">What I do!</h2>
           <div className="grid grid-cols-2 gap-4">
             {skillsData.map((skill) => (
-              <div
-                key={skill.id}
-                className={`p-4 rounded-3xl shadow-sm ${skill.bgColor}`}
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  {skill.icon}
-                  <h3 className="font-semibold text-lg">{skill.title}</h3>
-                </div>
-                <p className="para-2 font-medium">
-                  {skill.description || 'Coming soon'}
-                </p>
-              </div>
+              <DetailCard key={skill.id} skill={skill} />
             ))}
           </div>
         </div>
