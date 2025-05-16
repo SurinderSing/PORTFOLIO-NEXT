@@ -10,7 +10,7 @@ const ContactBox: React.FC<ContactBoxProps> = ({ contactData }) => {
     <div className="flex items-center gap-4 border-b-2 border-tertiary-2 max-w-[17rem] p-3 mx-auto">
       {contactData.icon}
       <div>
-        <p className="para-2 font-semibold text-muted dark:text-foreground !leading-[20px]">
+        <p className="para-2 font-semibold text-muted !leading-[20px]">
           {contactData.title}
         </p>
         <p className="para-1 font-bold !leading-[20px]">{contactData.detail}</p>
