@@ -32,7 +32,7 @@ const Contact: React.FC = () => {
         ))}
       </div>
       <div className="bg-background rounded-2xl p-6">
-        <p className="para-1 mb-4">
+        <p className="para-1 mb-6">
           I am always open to discussing{' '}
           <strong>
             new projects, opportunities in tech world, partnerships
@@ -41,17 +41,17 @@ const Contact: React.FC = () => {
         </p>
         <div>
           <form action="">
-            <div className="mb-4">
+            <div className="mb-6 flex gap-4 justify-between">
               <label htmlFor="name">Name:</label>
               <input type="text" id="name" name="name" />
             </div>
-            <div className="mb-4">
+            <div className="mb-6 flex gap-6 justify-between">
               <label htmlFor="email">Email:</label>
               <input type="email" id="email" name="email" />
             </div>
-            <div className="mb-4">
+            <div className="mb-6 flex gap-6 justify-between">
               <label htmlFor="message">Message:</label>
-              <textarea id="message" name="message" rows={4} />
+              <textarea id="message" name="message" rows={2} />
             </div>
 
             <button
