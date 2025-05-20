@@ -18,7 +18,11 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn('antialiased min-h-screen bg-background')}>
+      <body
+        className={cn(
+          'antialiased h-screen bg-background overflow-hidden sm:overflow-auto'
+        )}
+      >
         <AuthProvider>
           <ThemeProvider
             attribute="class"
@@ -29,7 +33,7 @@ export default function RootLayout({
             <Header />
             <div className="section-container">
               <Navbar />
-              <div className="flex gap-3">
+              <div className="flex gap-3 sm:flex-col sm:items-center">
                 <ProfileSideSection />
                 {children}
               </div>

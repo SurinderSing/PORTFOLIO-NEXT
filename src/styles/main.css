@@ -1,6 +1,6 @@
 /* container::  */
 .section-container {
-  @apply container px-1 max-w-[1200px] md:px-[.15rem];
+  @apply container px-4 max-w-[1200px] md:px-[.5rem];
 }
 
 /* paragraphs::  */

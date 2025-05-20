@@ -15,9 +15,7 @@ const PhotoSection: React.FC = () => {
         />
       </div>
       <h3 className="mb-1 text-[22px]">Surinder Singh</h3>
-      <p className="para-2 font-semibold text-muted dark:text-foreground">
-        Frontend Developer
-      </p>
+      <p className="para-2 font-semibold text-muted">Frontend Developer</p>
     </div>
   );
 };
