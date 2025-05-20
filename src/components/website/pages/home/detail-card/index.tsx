@@ -14,7 +14,7 @@ const DetailCard: React.FC<SkillDataProps> = ({ skill }) => {
   return (
     <div
       key={skill.id}
-      className={`flex-[48.5%] p-4 rounded-3xl shadow-sm ${skill.bgColor}`}
+      className={`flex-[48.5%] w-full p-4 rounded-3xl shadow-sm ${skill.bgColor}`}
     >
       <div className="flex items-center gap-2 mb-1">
         {skill.icon}
