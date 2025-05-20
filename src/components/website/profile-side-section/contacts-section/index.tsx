@@ -2,6 +2,7 @@ import React from 'react';
 import DownloadResumeBtn from './download-resume-btn';
 import { Mail, MapPin, Phone } from 'lucide-react';
 import ContactBox from './contact-box';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export interface ContactsSectionDataInterface {
   id: number | string;
@@ -33,7 +34,7 @@ const contactsSectionData: ContactsSectionDataInterface[] = [
 
 const ContactsSection: React.FC = () => {
   return (
-    <div className="w-full max-w-[85%] bg-background rounded-2xl my-5">
+    <ScrollArea className="w-full max-w-[85%] md:max-w-[95%] bg-background rounded-2xl my-5">
       <div>
         {contactsSectionData?.map((contactData) => (
           <ContactBox key={contactData.id} contactData={contactData} />
@@ -42,7 +43,7 @@ const ContactsSection: React.FC = () => {
       <div className="text-center p-4">
         <DownloadResumeBtn />
       </div>
-    </div>
+    </ScrollArea>
   );
 };
 

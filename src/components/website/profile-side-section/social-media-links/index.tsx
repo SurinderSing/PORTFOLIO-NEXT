@@ -33,7 +33,7 @@ const socialMediaLinks: socialMediaLinksInterface[] = [
 
 const SocialMediaLinks: React.FC = () => {
   return (
-    <div className="grid grid-cols-3 justify-between gap-2 w-full max-w-[70%] mt-3.5">
+    <div className="grid grid-cols-3 justify-between gap-2 w-full max-w-[70%] md:max-w-[93%] mt-3.5">
       {socialMediaLinks.map((linkData) => (
         <SocialMediaBtn key={linkData.id} linkData={linkData} />
       ))}

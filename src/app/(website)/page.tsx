@@ -78,7 +78,7 @@ const Home = () => {
         {/* What I do! */}
         <div>
           <h2 className="mb-3">What I do!</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="flex flex-wrap gap-4">
             {skillsData.map((skill) => (
               <DetailCard key={skill.id} skill={skill} />
             ))}

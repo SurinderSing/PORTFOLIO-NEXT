@@ -45,7 +45,10 @@ const projectsData = [
 const Work: React.FC = () => {
   return (
     <PageProvider title="Portfolio">
-      <div className="flex gap-4 justify-evenly items-start mb-6 flex-wrap">
+      <div
+        className="flex gap-4 justify-evenly items-start mb-6 flex-wrap overflow-auto
+      "
+      >
         {projectsData.map((project) => (
           <ProjectCard
             key={project.id}
