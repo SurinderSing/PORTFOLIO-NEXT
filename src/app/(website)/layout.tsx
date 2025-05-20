@@ -19,7 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={cn('antialiased h-screen bg-background overflow-hidden')}
+        className={cn(
+          'antialiased h-screen bg-background overflow-hidden sm:overflow-auto'
+        )}
       >
         <AuthProvider>
           <ThemeProvider
@@ -31,7 +33,7 @@ export default function RootLayout({
             <Header />
             <div className="section-container">
               <Navbar />
-              <div className="flex gap-3">
+              <div className="flex gap-3 sm:flex-col sm:items-center">
                 <ProfileSideSection />
                 {children}
               </div>
