@@ -17,7 +17,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
 }) => {
   const [imgSrc, setImgSrc] = useState<StaticImageData>(image);
   return (
-    <button className="flex-[48.55%] w-full bg-card p-2 rounded-xl shadow-sm text-left dark:bg-secondary">
+    <button className="flex-[48.48%] w-full bg-card p-2 rounded-xl shadow-sm text-left dark:bg-secondary">
       <Image
         src={imgSrc}
         alt={title}
