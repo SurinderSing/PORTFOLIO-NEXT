@@ -42,13 +42,13 @@ h4 {
 
 /* Label styling */
 label {
-  @apply block text-sm font-normal text-foreground font-raleway;
+  @apply block text-sm font-normal text-foreground font-raleway mb-1.5;
 }
 
 /* Input and textarea styling */
 input,
 textarea {
-  @apply w-full px-0.5 border-0 border-b border-tertiary-2 outline-none transition-colors duration-300 ease-in bg-background font-raleway text-xs;
+  @apply w-full px-0.5 border-0 border-b border-tertiary-2 outline-none transition-colors duration-300 ease-in bg-background font-raleway text-xs leading-8 rounded-sm;
 
   &:focus,
   &:hover {

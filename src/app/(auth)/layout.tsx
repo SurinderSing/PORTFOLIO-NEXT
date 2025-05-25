@@ -1,9 +1,11 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import '../../styles/globals.css';
+import '@/styles/globals.css';
+import '@/styles/main.css';
 import AuthProvider from '@/context/AuthProvider';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/utils/theme-provider';
+import Header from '@/features/website/header';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -15,7 +17,11 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn('antialiased min-h-screen bg-background')}>
+      <body
+        className={cn(
+          'relative antialiased min-h-screen bg-background pb-8 pt-28'
+        )}
+      >
         <AuthProvider>
           <ThemeProvider
             attribute="class"
@@ -23,7 +29,8 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <Header />
+            <div className="section-container">{children}</div>
           </ThemeProvider>
         </AuthProvider>
       </body>

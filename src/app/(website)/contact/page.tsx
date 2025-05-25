@@ -51,7 +51,7 @@ const Contact: React.FC = () => {
             </div>
             <div className="mb-6 flex gap-6 justify-between">
               <label htmlFor="message">Message:</label>
-              <textarea id="message" name="message" rows={2} />
+              <textarea id="message" name="message" rows={1} />
             </div>
 
             <button
