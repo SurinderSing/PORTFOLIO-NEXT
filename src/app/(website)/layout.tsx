@@ -31,7 +31,7 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <Header />
-            <div className="section-container">
+            <div className="section-container pt-[5.8rem] sm:pb-4">
               <Navbar />
               <div className="flex gap-3 sm:flex-col sm:items-center">
                 <ProfileSideSection />
