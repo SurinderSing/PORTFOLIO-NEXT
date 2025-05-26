@@ -19,7 +19,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          'relative antialiased min-h-screen bg-background pb-8 pt-28'
+          'relative antialiased min-h-screen bg-background pb-8 pt-[4.5rem]'
         )}
       >
         <AuthProvider>
