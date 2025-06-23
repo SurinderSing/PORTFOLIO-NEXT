@@ -6,6 +6,7 @@ import AuthProvider from '@/context/AuthProvider';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/utils/theme-provider';
 import Header from '@/features/website/header';
+import Providers from '../provider';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -22,17 +23,19 @@ export default function RootLayout({
           'relative antialiased min-h-screen bg-background pb-8 pt-[4.5rem]'
         )}
       >
-        <AuthProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <Header />
-            <div className="section-container">{children}</div>
-          </ThemeProvider>
-        </AuthProvider>
+        <Providers>
+          <AuthProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <Header />
+              <div className="section-container">{children}</div>
+            </ThemeProvider>
+          </AuthProvider>
+        </Providers>
       </body>
     </html>
   );
