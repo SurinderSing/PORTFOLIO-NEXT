@@ -48,7 +48,6 @@ const SignUpForm: React.FC = () => {
 
   const onSubmit = async (data: z.infer<typeof formSchema>, e?: any) => {
     e?.preventDefault();
-    console.log('clicked');
     // Handle form submission logic here
     const res = await signUp(data);
     console.log('Sign up response:', res);
