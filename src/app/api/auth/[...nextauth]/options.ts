@@ -58,10 +58,18 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }: { token: any; user: any }) {
       if (user) {
-        await prisma.user.update({
-          where: { id: user.id },
-          data: { verificationToken: token.jti },
-        });
+        // ✅ Only run this on runtime, NOT during build on Vercel
+        if (process.env.NEXT_RUNTIME === 'nodejs') {
+          try {
+            await prisma.user.update({
+              where: { id: user.id },
+              data: { verificationToken: token.jti },
+            });
+          } catch (error) {
+            console.error('DB update failed:', error);
+            // You can choose to silently fail or rethrow
+          }
+        }
 
         token.id = user.id;
         token.username = user.username;
