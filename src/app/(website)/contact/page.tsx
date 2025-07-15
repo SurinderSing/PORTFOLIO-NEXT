@@ -20,7 +20,7 @@ const contactData = [
 
 const Contact: React.FC = () => {
   return (
-    <PageProvider title="Resume">
+    <PageProvider title="Contact">
       <div className="flex flex-wrap gap-6 justify-between mb-6">
         {contactData.map((contact) => (
           <DetailCard
