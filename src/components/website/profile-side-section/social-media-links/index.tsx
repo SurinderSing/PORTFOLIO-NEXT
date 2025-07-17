@@ -14,19 +14,19 @@ const socialMediaLinks: socialMediaLinksInterface[] = [
   {
     id: 1,
     name: 'LinkedIn',
-    link: '',
+    link: 'https://linkedin.com/in/surinder-singh-ba466a1ab',
     icon: <Linkedin color="#0077B5" />,
   },
   {
     id: 2,
     name: 'Github',
-    link: '',
+    link: 'https://github.com/SurinderSing',
     icon: <Github />,
   },
   {
     id: 3,
     name: 'Instagram',
-    link: '',
+    link: 'https://www.instagram.com/inder.sgh_/',
     icon: <Instagram color="#d62976" />,
   },
 ];
