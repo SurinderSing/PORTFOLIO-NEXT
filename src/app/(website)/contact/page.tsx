@@ -14,7 +14,7 @@ const contactData = [
     id: 2,
     icon: <Mails size={18} className="min-w-[18px] text-secondary" />,
     title: 'Email',
-    details: ['ssurindersingh100@gmail.com', 'sshantysingh@gmail.com'],
+    details: ['ssurindersingh100@gmail.com'],
   },
 ];
 
@@ -37,7 +37,9 @@ const Contact: React.FC = () => {
           <strong>
             new projects, opportunities in tech world, partnerships
           </strong>{' '}
-          and more so <strong>mentorship</strong>.
+          and more so <strong>mentorship</strong>. With 4+ years of experience
+          in frontend development and AI tools, I am passionate about creating
+          innovative solutions and helping others grow in their careers.
         </p>
         <div>
           <form action="">

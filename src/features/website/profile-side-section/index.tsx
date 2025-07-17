@@ -1,3 +1,4 @@
+'use client';
 import ContactsSection from '@/components/website/profile-side-section/contacts-section';
 import PhotoSection from '@/components/website/profile-side-section/photo-section';
 import SocialMediaLinks from '@/components/website/profile-side-section/social-media-links';

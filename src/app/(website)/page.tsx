@@ -1,6 +1,13 @@
 import React from 'react';
 import PageProvider from '@/components/website/pages/page-provider';
-import { BadgeHelp, CodeXml, LayoutGrid, Slack } from 'lucide-react';
+import {
+  BadgeHelp,
+  CodeXml,
+  LayoutGrid,
+  Slack,
+  Brain,
+  Zap,
+} from 'lucide-react';
 import DetailCard from '@/components/website/pages/home/detail-card';
 
 interface SkillDataInterface {
@@ -14,48 +21,63 @@ interface SkillDataInterface {
 const skillsData: SkillDataInterface[] = [
   {
     id: 1,
-    title: 'Web Development',
-    description: `As a developer, I find myself most 
-          captivated by the power and flexibility of 
-          NEXT.js. I'm always eager to dive into new
-          projects that leverage NEXT.js and 
-          discover innovative ways to create fast, 
-          scalable, and user-friendly applications.`,
+    title: 'Frontend Development',
+    description: `Specialized in React, Next.js, and modern frontend technologies. 
+          Experienced with Redux Toolkit, TypeScript, and component libraries like 
+          Mantine, Ant Design, and Material-UI. Passionate about creating responsive, 
+          user-friendly applications with optimal performance.`,
     icon: <CodeXml size={24} className="text-primary" />,
     bgColor: 'bg-card dark:bg-gradient-to-r from-secondary to-primary',
   },
   {
     id: 2,
-    title: 'App Development',
-    description: `With a focus on user-centric design and
-                  cutting-edge technologies, I thrive on 
-                  building intuitive and efficient apps 
-                  that make a positive impact on people's 
-                  lives. Let's turn ideas into reality and 
-                  shape the future together.`,
+    title: 'AI & Marketing Tools',
+    description: `Currently working as AI Marketing Expert at Gimmefy AI, developing 
+                  AI-powered Image & Video Editors and Chat Studio. Skilled in AI tools, 
+                  prompting, and creating intelligent solutions that boost user engagement 
+                  and streamline marketing workflows.`,
+    icon: <Brain size={24} className="text-secondary" />,
+    bgColor: 'bg-tertiary-2',
+  },
+  {
+    id: 3,
+    title: 'Full-Stack Development',
+    description: `Proficient in both frontend and backend development with Node.js, 
+                  Express.js, MongoDB, and SQL. Experienced in building scalable 
+                  applications, REST APIs, and managing CI/CD pipelines for efficient 
+                  deployment and development workflows.`,
     icon: <LayoutGrid size={24} className="text-secondary" />,
     bgColor: 'bg-tertiary-2',
   },
   {
     id: 4,
-    title: 'UI/UX Designing',
-    description: `Crafting visually appealing and intuitive user
-                  interfaces that offer a delightful user 
-                  experience is something I'm truly fanatic 
-                  about.`,
-    icon: <Slack size={24} className="text-secondary" />,
-    bgColor: 'bg-tertiary-2',
-  },
-  {
-    id: 3,
-    title: 'Mentorship',
-    description: `I have also found great joy in sharing my 
-                  knowledge with others. Being a technical 
-                  mentor allows me to give back to the 
-                  community that has supported me 
-                  throughout my career. `,
+    title: 'Team Leadership & Mentoring',
+    description: `4+ years of industry experience with proven track record of mentoring 
+                  interns and managing team growth. Skilled in project management, 
+                  time management, and collaborating effectively with cross-functional 
+                  teams to deliver successful applications.`,
     icon: <BadgeHelp size={24} className="text-primary" />,
     bgColor: 'bg-card dark:bg-gradient-to-r from-secondary to-primary',
+  },
+  {
+    id: 5,
+    title: 'Performance Optimization',
+    description: `Expert in optimizing application performance, reducing load times, 
+                  and implementing best practices. Experience with Webpack, Vite.js, 
+                  ESLint, and modern build tools to ensure fast, efficient, and 
+                  maintainable codebases.`,
+    icon: <Zap size={24} className="text-primary" />,
+    bgColor: 'bg-card dark:bg-gradient-to-r from-secondary to-primary',
+  },
+  {
+    id: 6,
+    title: 'Communication & Problem Solving',
+    description: `Strong communication skills and excellent problem-solving abilities. 
+                  Experienced in managing work, time, and resources effectively. 
+                  Passionate about designing solid architecture and creating 
+                  innovative solutions for complex challenges.`,
+    icon: <Slack size={24} className="text-secondary" />,
+    bgColor: 'bg-tertiary-2',
   },
 ];
 
@@ -66,12 +88,14 @@ const Home = () => {
         {/* About Summary */}
         <div className="mb-3">
           <p className="para-2">
-            Hello there! I am thrilled to welcome you to my portfolio. I am a
-            passionate and versatile full-stack developer with a keen interest
-            in exploring the latest cutting-edge technologies. My journey in the
-            world of web development has been nothing short of exhilarating, and
-            I constantly strive to enhance my skills and embrace emerging trends
-            in the industry.
+            Hello there! I am Surinder Singh, a passionate and experienced
+            Frontend Developer with 4+ years in the industry. I specialize in
+            React, Next.js, and modern web technologies, currently working as an
+            AI Marketing Expert at Gimmefy AI. I have a proven track record of
+            developing successful applications, optimizing performance, and
+            mentoring team members. My expertise spans from frontend development
+            to AI tools integration, making me a versatile developer who can
+            tackle complex challenges and deliver innovative solutions.
           </p>
         </div>
 
