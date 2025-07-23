@@ -31,7 +31,7 @@ const workExperienceData = [
   {
     id: 1,
     date: '12/2023 - Present',
-    title: 'Front-End Developer (Product- AI Marketing Expert)',
+    title: 'Front-End Developer (Product- AI Marketing Tools)',
     place: 'Gimmefy AI - Remote',
   },
   {

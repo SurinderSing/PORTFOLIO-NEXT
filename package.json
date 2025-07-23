@@ -10,6 +10,7 @@
     "watch": "tsc --noEmit --watch"
   },
   "dependencies": {
+    "@formspree/react": "^3.0.0",
     "@hookform/resolvers": "^5.1.1",
     "@prisma/client": "^6.4.0",
     "@radix-ui/react-dropdown-menu": "^2.1.6",
