@@ -31,11 +31,11 @@ const skillsData: SkillDataInterface[] = [
   },
   {
     id: 2,
-    title: 'AI & Marketing Tools',
-    description: `Currently working as AI Marketing Expert at Gimmefy AI, developing 
-                  AI-powered Image & Video Editors and Chat Studio. Skilled in AI tools, 
+    title: 'AI Tools',
+    description: `Currently working as a Frontend Developer at Gimmefy AI, developing 
+                  AI-powered tools. Skilled in AI tools, 
                   prompting, and creating intelligent solutions that boost user engagement 
-                  and streamline marketing workflows.`,
+                  and streamline workflows.`,
     icon: <Brain size={24} className="text-secondary" />,
     bgColor: 'bg-tertiary-2',
   },
