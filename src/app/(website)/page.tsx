@@ -31,22 +31,22 @@ const skillsData: SkillDataInterface[] = [
   },
   {
     id: 2,
-    title: 'AI Tools',
-    description: `Currently working as a Frontend Developer at Gimmefy AI, developing 
-                  AI-powered tools. Skilled in AI tools, 
-                  prompting, and creating intelligent solutions that boost user engagement 
-                  and streamline workflows.`,
-    icon: <Brain size={24} className="text-secondary" />,
-    bgColor: 'bg-tertiary-2',
-  },
-  {
-    id: 3,
     title: 'Full-Stack Development',
     description: `Proficient in both frontend and backend development with Node.js, 
                   Express.js, MongoDB, and SQL. Experienced in building scalable 
                   applications, REST APIs, and managing CI/CD pipelines for efficient 
                   deployment and development workflows.`,
     icon: <LayoutGrid size={24} className="text-secondary" />,
+    bgColor: 'bg-tertiary-2',
+  },
+  {
+    id: 3,
+    title: 'AI Tools',
+    description: `Currently working as a Frontend Developer at Gimmefy AI, developing 
+                  AI-powered tools. Skilled in AI tools, 
+                  prompting, and creating intelligent solutions that boost user engagement 
+                  and streamline workflows.`,
+    icon: <Brain size={24} className="text-secondary" />,
     bgColor: 'bg-tertiary-2',
   },
   {
