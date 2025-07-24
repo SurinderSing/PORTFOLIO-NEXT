@@ -72,7 +72,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       <p className="para-2 text-muted mb-1">{technologies.join(', ')}</p>
       <h3 className="leading-5 mb-1">{title}</h3>
       {description && (
-        <p className="para-2 text-muted line-clamp-2">{description}</p>
+        <p className="para-2 text-muted line-clamp-3">{description}</p>
       )}
     </div>
   );
