@@ -3,11 +3,11 @@ import React from 'react';
 
 const DownloadResumeBtn: React.FC = () => {
   const handleDownload = () => {
-    // You can replace this with your actual resume file
-    const resumeUrl = '/resume.pdf'; // Add your resume file to public folder
+    // Direct path to the resume file in public folder
+    const resumeUrl = '/resume/Surinder_Singh_Resume_2025.pdf';
     const link = document.createElement('a');
     link.href = resumeUrl;
-    link.download = 'Surinder_Singh_Resume.pdf';
+    link.download = 'Surinder_Singh_Resume_2025.pdf';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
