@@ -1,12 +1,16 @@
 import PageProvider from '@/components/website/pages/page-provider';
 import ProjectCard from '@/components/website/pages/work/porject-card';
 import React from 'react';
-import FailedImage from '@/assets/images/failed-image.jpg';
+// import FailedImage from '@/assets/images/failed-image.jpg';
+import GimmefyImage from '@/assets/images/projects/gimmefy-ai.png';
+import DialmantraImage from '@/assets/images/projects/dialmantra.png';
+import AmotusImage from '@/assets/images/projects/amotus-online.png';
+import DrishtiImage from '@/assets/images/projects/drishti-ias.png';
 
 const projectsData = [
   {
     id: 1,
-    image: FailedImage,
+    image: GimmefyImage,
     title: 'Gimmefy AI',
     technologies: ['React', 'TypeScript', 'Mantine', 'Redux Toolkit'],
     description:
@@ -15,7 +19,7 @@ const projectsData = [
   },
   {
     id: 2,
-    image: FailedImage,
+    image: DialmantraImage,
     title: 'Dialmantra Dialer',
     technologies: [
       'React.js',
@@ -28,41 +32,25 @@ const projectsData = [
     ],
     description:
       'Fast, easy and low cost solution to run a world class contact center without huge investments on hardware and software.',
-    link: 'https://dialmantra.com',
+    link: 'https://www.dialmantra.in/',
   },
   {
     id: 3,
-    image: FailedImage,
+    image: AmotusImage,
     title: 'Amotus Online',
     technologies: ['React', 'Node.js', 'MongoDB', 'Express'],
-    description: 'Online platform for business management and operations.',
-    link: '#',
+    description:
+      'Amotus Online stands as an innovative remote screen sharing platform, offering a unique solution for enhanced collaboration and communication.',
+    link: 'https://amotus.online/',
   },
   {
     id: 4,
-    image: FailedImage,
-    title: 'Call Center CRM',
-    technologies: ['React', 'Redux', 'Node.js', 'SQL'],
-    description: 'Customer Relationship Management system for call centers.',
-    link: '#',
-  },
-  {
-    id: 5,
-    image: FailedImage,
+    image: DrishtiImage,
     title: 'Drishti IAS Website',
     technologies: ['JavaScript', 'HTML', 'CSS', 'API Integration'],
     description:
       'Improved institute website user interface and experience through collaborative efforts.',
     link: 'https://drishtiias.com',
-  },
-  {
-    id: 6,
-    image: FailedImage,
-    title: 'Portfolio Website',
-    technologies: ['Next.js', 'TypeScript', 'Tailwind CSS'],
-    description:
-      'Modern, responsive portfolio website built with Next.js and TypeScript.',
-    link: 'https://surindersingh.app',
   },
 ];
 
@@ -75,7 +63,7 @@ const Work: React.FC = () => {
           frontend development, AI tools, and modern web technologies.
         </p>
       </div>
-      <div className="flex flex-wrap gap-4 justify-evenly items-start mb-6 overflow-auto">
+      <div className="flex flex-wrap gap-4 justify-evenly mb-6 overflow-auto">
         {projectsData.map((project) => (
           <ProjectCard
             key={project.id}
