@@ -19,9 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={cn(
-          'relative antialiased min-h-screen bg-background pb-8 pt-[4.5rem]'
-        )}
+        className={cn('relative antialiased min-h-screen bg-background pb-8')}
       >
         <Providers>
           <AuthProvider>
@@ -32,7 +30,7 @@ export default function RootLayout({
               disableTransitionOnChange
             >
               <Header />
-              <div className="section-container">{children}</div>
+              <div className="section-container pt-[.5rem]">{children}</div>
             </ThemeProvider>
           </AuthProvider>
         </Providers>
