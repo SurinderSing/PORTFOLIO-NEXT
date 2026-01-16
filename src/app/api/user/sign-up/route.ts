@@ -3,9 +3,9 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import Configs from '@/configs/server';
-import checkRequired from '@/utils/sever/check-required';
+import checkRequired from '@/utils/server/check-required';
 import crypto from 'crypto';
-import { sendEmail } from '@/utils/sever/node-mailer';
+import { sendEmail } from '@/utils/server/node-mailer';
 
 export async function GET(): Promise<NextResponse> {
   try {
