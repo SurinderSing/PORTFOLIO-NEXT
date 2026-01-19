@@ -91,7 +91,7 @@ const Home = () => {
             Hello there! I am Surinder Singh, a passionate and experienced
             Frontend Developer with 4+ years in the industry. I specialize in
             React, Next.js, and modern web technologies, currently working as an
-            AI Marketing Expert at Gimmefy AI. I have a proven track record of
+            Frontend Developer at Gimmefy AI. I have a proven track record of
             developing successful applications, optimizing performance, and
             mentoring team members. My expertise spans from frontend development
             to AI tools integration, making me a versatile developer who can
