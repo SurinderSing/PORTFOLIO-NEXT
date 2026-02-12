@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
 import '@/styles/globals.css';
 import '@/styles/main.css';
@@ -8,6 +8,8 @@ import { ThemeProvider } from '@/components/utils/theme-provider';
 import Header from '@/features/website/header';
 import Navbar from '@/features/website/navbar';
 import ProfileSideSection from '@/features/website/profile-side-section';
+import GlobalLoader from '@/components/ui/global-loader';
+import RouteLoader from '@/components/ui/route-loader';
 import Providers from '../provider';
 
 export const metadata: Metadata = {
@@ -57,6 +59,10 @@ export default function RootLayout({
           'antialiased h-screen bg-background overflow-hidden sm:overflow-auto'
         )}
       >
+        <Suspense>
+          <RouteLoader />
+        </Suspense>
+        <GlobalLoader />
         <Providers>
           <AuthProvider>
             <ThemeProvider
