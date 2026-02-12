@@ -11,16 +11,16 @@ import ProfileSideSection from '@/features/website/profile-side-section';
 import Providers from '../provider';
 
 export const metadata: Metadata = {
-  title: 'Surinder Singh - Frontend Developer & AI Marketing Expert',
+  title: 'Surinder Singh - Frontend Developer',
   description:
-    'Frontend Developer with 4+ years experience specializing in React, Next.js, AI tools, and modern web technologies. Currently working as AI Marketing Expert at Gimmefy AI.',
+    'Frontend Developer with 4+ years experience specializing in React, Next.js, AI tools, and modern web technologies.',
   keywords: [
     'Frontend Developer',
     'React',
     'Next.js',
     'TypeScript',
-    'AI Marketing Expert',
-    'Gimmefy AI',
+    'frontend developer',
+    'gimmefy',
     'Web Development',
     'Portfolio',
   ],
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   authors: [{ name: 'Surinder Singh' }],
   creator: 'Surinder Singh',
   openGraph: {
-    title: 'Surinder Singh - Frontend Developer & AI Marketing Expert',
+    title: 'Surinder Singh - Frontend Developer',
     description:
       'Frontend Developer with 4+ years experience specializing in React, Next.js, AI tools, and modern web technologies.',
     type: 'website',
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Surinder Singh - Frontend Developer & AI Marketing Expert',
+    title: 'Surinder Singh - Frontend Developer',
     description:
       'Frontend Developer with 4+ years experience specializing in React, Next.js, AI tools, and modern web technologies.',
   },
