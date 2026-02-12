@@ -14,7 +14,7 @@ const socialMediaLinks: socialMediaLinksInterface[] = [
   {
     id: 1,
     name: 'LinkedIn',
-    link: 'https://linkedin.com/in/surinder-singh-ba466a1ab',
+    link: 'https://www.linkedin.com/in/surinder-singh-dev/',
     icon: <Linkedin color="#0077B5" />,
   },
   {
