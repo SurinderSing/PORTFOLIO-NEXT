@@ -24,6 +24,11 @@ export const metadata: Metadata = {
     'Web Development',
     'Portfolio',
   ],
+  icons: {
+    icon: '/favicon.png',
+    shortcut: '/favicon.png',
+    apple: '/favicon.png',
+  },
   authors: [{ name: 'Surinder Singh' }],
   creator: 'Surinder Singh',
   openGraph: {
