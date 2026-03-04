@@ -10,6 +10,9 @@ import {
 } from 'lucide-react';
 import DetailCard from '@/components/website/pages/home/detail-card';
 import Highlight from '@/components/ui/highlight';
+import { FadeIn, FadeInItem } from '@/components/animations/fade-in';
+import { ScrollReveal } from '@/components/animations/scroll-reveal';
+import { AnimatedDivider } from '@/components/animations/animated-divider';
 
 interface SkillDataInterface {
   id: number | string;
@@ -86,37 +89,43 @@ const Home = () => {
   return (
     <main className="w-full">
       <PageProvider title="About Me">
-        {/* About Summary */}
-        <div className="mb-3">
-          <p className="para-2 text-foreground/80 leading-relaxed">
-            I build modern web applications where{' '}
-            <Highlight>performance, scalability, and user experience</Highlight>{' '}
-            matter. My work focuses on developing{' '}
-            <Highlight>
-              SaaS platforms, AI-powered tools, and real-time systems
-            </Highlight>{' '}
-            using <Highlight>React, Next.js, and TypeScript</Highlight>. I enjoy
-            solving complex frontend problems such as managing large application
-            state, designing reusable component architectures, and building
-            interfaces that support high-interaction workflows. Over time, I’ve
-            worked on products ranging from AI-driven editing tools and
-            automation platforms to high-traffic educational websites and
-            real-time CRM systems. I’m particularly interested in{' '}
-            <Highlight>frontend architecture</Highlight> and{' '}
-            <Highlight>performance optimization</Highlight>, and building
-            systems that remain reliable as products scale.
-          </p>
-        </div>
+        <FadeIn staggerChildren={0.15}>
+          {/* About Summary */}
+          <FadeInItem className="mb-3">
+            <p className="para-2 text-foreground/80 leading-relaxed">
+              I build modern web applications where{' '}
+              <Highlight>
+                performance, scalability, and user experience
+              </Highlight>{' '}
+              matter. My work focuses on developing{' '}
+              <Highlight>
+                SaaS platforms, AI-powered tools, and real-time systems
+              </Highlight>{' '}
+              using <Highlight>React, Next.js, and TypeScript</Highlight>. I
+              enjoy solving complex frontend problems such as managing large
+              application state, designing reusable component architectures, and
+              building interfaces that support high-interaction workflows. Over
+              time, I’ve worked on products ranging from AI-driven editing tools
+              and automation platforms to high-traffic educational websites and
+              real-time CRM systems. I’m particularly interested in{' '}
+              <Highlight>frontend architecture</Highlight> and{' '}
+              <Highlight>performance optimization</Highlight>, and building
+              systems that remain reliable as products scale.
+            </p>
+          </FadeInItem>
 
-        {/* What I do! */}
-        <div>
-          <h2 className="mb-3">What I do!</h2>
-          <div className="flex flex-wrap gap-4">
-            {skillsData.map((skill) => (
-              <DetailCard key={skill.id} skill={skill} />
-            ))}
-          </div>
-        </div>
+          <AnimatedDivider className="my-6" delay={0.5} />
+
+          {/* What I do! */}
+          <ScrollReveal staggerChildren={0.15} yOffset={20} delay={0.7}>
+            <h2 className="mb-3">What I do!</h2>
+            <div className="flex flex-wrap gap-4">
+              {skillsData.map((skill) => (
+                <DetailCard key={skill.id} skill={skill} />
+              ))}
+            </div>
+          </ScrollReveal>
+        </FadeIn>
       </PageProvider>
     </main>
   );
