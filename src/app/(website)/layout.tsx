@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import type { Metadata, Viewport } from 'next';
 import '@/styles/globals.css';
 import '@/styles/main.css';
+import { raleway, poppins, pacifico } from '@/styles/fonts';
 import AuthProvider from '@/context/AuthProvider';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/utils/theme-provider';
@@ -60,10 +61,14 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={cn(raleway.variable, poppins.variable, pacifico.variable)}
+    >
       <body
         className={cn(
-          'antialiased h-screen bg-background overflow-hidden sm:overflow-auto'
+          'antialiased h-screen bg-background overflow-hidden sm:overflow-auto font-raleway'
         )}
       >
         <Suspense>

@@ -10,7 +10,7 @@ export default function GlobalLoader() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 800); // Slight buffer to ensure smooth exit
+    }, 10); // Instant reveal upon hydration
 
     return () => clearTimeout(timer);
   }, []);
