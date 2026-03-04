@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import '@/styles/globals.css';
 import '@/styles/main.css';
 import AuthProvider from '@/context/AuthProvider';
@@ -47,6 +47,13 @@ export const metadata: Metadata = {
     description:
       'Frontend Developer with 4+ years experience specializing in React, Next.js, AI tools, and modern web technologies.',
   },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({
