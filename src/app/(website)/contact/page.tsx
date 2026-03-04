@@ -4,6 +4,8 @@ import PageProvider from '@/components/website/pages/page-provider';
 import { Mails, PhoneCall } from 'lucide-react';
 import React from 'react';
 import { useForm, ValidationError } from '@formspree/react';
+import { FadeIn, FadeInItem } from '@/components/animations/fade-in';
+import { ScrollReveal } from '@/components/animations/scroll-reveal';
 
 const contactData = [
   {
@@ -154,17 +156,25 @@ const ContactForm: React.FC = () => {
 const Contact: React.FC = () => {
   return (
     <PageProvider title="Contact">
-      <div className="flex flex-wrap gap-6 justify-between mb-6">
-        {contactData.map((contact) => (
-          <DetailCard
-            key={contact.id}
-            icon={contact.icon}
-            title={contact.title}
-            details={contact.details}
-          />
-        ))}
-      </div>
-      <ContactForm />
+      <FadeIn staggerChildren={0.15}>
+        <ScrollReveal
+          yOffset={20}
+          delay={0.6}
+          className="flex flex-wrap gap-6 justify-between mb-6"
+        >
+          {contactData.map((contact) => (
+            <DetailCard
+              key={contact.id}
+              icon={contact.icon}
+              title={contact.title}
+              details={contact.details}
+            />
+          ))}
+        </ScrollReveal>
+        <FadeInItem>
+          <ContactForm />
+        </FadeInItem>
+      </FadeIn>
     </PageProvider>
   );
 };
