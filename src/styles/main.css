@@ -55,3 +55,10 @@ textarea {
     @apply border-b-primary;
   }
 }
+
+/* Navigation Button Hover Fix */
+@media (hover: hover) {
+  .nav-btn-hover:hover {
+    @apply bg-tertiary-2-hover;
+  }
+}
