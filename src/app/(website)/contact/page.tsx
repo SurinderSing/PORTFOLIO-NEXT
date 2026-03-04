@@ -155,27 +155,29 @@ const ContactForm: React.FC = () => {
 
 const Contact: React.FC = () => {
   return (
-    <PageProvider title="Contact">
-      <FadeIn staggerChildren={0.15}>
-        <ScrollReveal
-          yOffset={20}
-          delay={0.15}
-          className="flex flex-wrap gap-6 justify-between mb-6"
-        >
-          {contactData.map((contact) => (
-            <DetailCard
-              key={contact.id}
-              icon={contact.icon}
-              title={contact.title}
-              details={contact.details}
-            />
-          ))}
-        </ScrollReveal>
-        <FadeInItem>
-          <ContactForm />
-        </FadeInItem>
-      </FadeIn>
-    </PageProvider>
+    <main className="w-full">
+      <PageProvider title="Contact">
+        <FadeIn staggerChildren={0.15}>
+          <ScrollReveal
+            yOffset={20}
+            delay={0.15}
+            className="flex flex-wrap gap-6 justify-between mb-6"
+          >
+            {contactData.map((contact) => (
+              <DetailCard
+                key={contact.id}
+                icon={contact.icon}
+                title={contact.title}
+                details={contact.details}
+              />
+            ))}
+          </ScrollReveal>
+          <FadeInItem>
+            <ContactForm />
+          </FadeInItem>
+        </FadeIn>
+      </PageProvider>
+    </main>
   );
 };
 
