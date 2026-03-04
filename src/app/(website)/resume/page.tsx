@@ -1,6 +1,13 @@
+import React from 'react';
+import { Metadata } from 'next';
 import PageProvider from '@/components/website/pages/page-provider';
 import SubContainer from '@/components/website/pages/resume/sub-container';
-import React from 'react';
+
+export const metadata: Metadata = {
+  title: 'Resume | Frontend Developer Experience',
+  description:
+    'Download my resume and explore my 4+ years of experience in frontend development, working with React, Next.js, and AI tools.',
+};
 import { Brain, NotebookPen } from 'lucide-react';
 import DetailCard from '@/components/website/pages/resume/detail-card';
 import { Badge } from '@/components/ui/badge';

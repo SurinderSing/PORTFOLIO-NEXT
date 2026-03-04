@@ -16,10 +16,10 @@
 
 /* headings::  */
 h1 {
-  @apply text-[28px] font-medium font-poppins;
+  @apply text-[28px] font-medium font-poppins scroll-mt-48;
 }
 h2 {
-  @apply text-[26px] font-medium font-poppins;
+  @apply text-[26px] font-medium font-poppins scroll-mt-48;
 }
 h3 {
   @apply text-[20px] font-medium font-poppins;

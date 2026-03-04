@@ -111,7 +111,7 @@
     min-height: 100vh;
     text-rendering: optimizeSpeed;
     scroll-behavior: smooth;
-    scroll-padding-top: 130px;
+    scroll-padding-top: 180px;
   }
 
   /* Make images easier to work with */
