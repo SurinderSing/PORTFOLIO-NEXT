@@ -114,7 +114,7 @@ const Resume: React.FC = () => {
 
           <ScrollReveal
             yOffset={20}
-            delay={0.6}
+            delay={0.15}
             className="grid grid-cols-2 gap-4 mb-8"
           >
             <SubContainer

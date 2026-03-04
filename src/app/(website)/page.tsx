@@ -114,10 +114,10 @@ const Home = () => {
             </p>
           </FadeInItem>
 
-          <AnimatedDivider className="my-6" delay={0.5} />
+          <AnimatedDivider className="my-6" delay={0.15} />
 
           {/* What I do! */}
-          <ScrollReveal staggerChildren={0.15} yOffset={20} delay={0.7}>
+          <ScrollReveal staggerChildren={0.1} yOffset={20} delay={0.25}>
             <h2 className="mb-3">What I do!</h2>
             <div className="flex flex-wrap gap-4">
               {skillsData.map((skill) => (

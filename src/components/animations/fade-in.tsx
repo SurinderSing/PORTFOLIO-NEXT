@@ -15,7 +15,7 @@ interface FadeInProps {
 export const FadeIn: React.FC<FadeInProps> = ({
   children,
   delay = 0,
-  duration = 0.6,
+  duration = 0.4,
   className = '',
   staggerChildren = 0,
   yOffset = 30,
@@ -63,7 +63,7 @@ export const FadeInItem: React.FC<FadeInItemProps> = ({
   children,
   className = '',
   yOffset = 30,
-  duration = 0.6,
+  duration = 0.4,
 }) => {
   const shouldReduceMotion = useReducedMotion();
 

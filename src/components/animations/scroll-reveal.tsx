@@ -16,9 +16,9 @@ interface ScrollRevealProps {
 export const ScrollReveal: React.FC<ScrollRevealProps> = ({
   children,
   delay = 0,
-  duration = 0.6,
+  duration = 0.4,
   className = '',
-  yOffset = 40,
+  yOffset = 30,
   staggerChildren = 0,
   once = true,
 }) => {
@@ -46,7 +46,7 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
     <motion.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once, margin: '-50px' }}
+      viewport={{ once, margin: '-10px', amount: 0.1 }}
       variants={containerVariants}
       className={className}
     >
@@ -65,8 +65,8 @@ interface ScrollRevealItemProps {
 export const ScrollRevealItem: React.FC<ScrollRevealItemProps> = ({
   children,
   className = '',
-  yOffset = 40,
-  duration = 0.6,
+  yOffset = 30,
+  duration = 0.4,
 }) => {
   const shouldReduceMotion = useReducedMotion();
 
