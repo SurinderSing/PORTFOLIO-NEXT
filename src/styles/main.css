@@ -16,16 +16,16 @@
 
 /* headings::  */
 h1 {
-  @apply text-[28px] font-medium font-Poppins;
+  @apply text-[28px] font-medium font-poppins;
 }
 h2 {
-  @apply text-[26px] font-medium font-Poppins;
+  @apply text-[26px] font-medium font-poppins;
 }
 h3 {
-  @apply text-[20px] font-medium font-Poppins;
+  @apply text-[20px] font-medium font-poppins;
 }
 h4 {
-  @apply text-[18px] font-semibold font-Poppins;
+  @apply text-[18px] font-semibold font-poppins;
 }
 
 /* gradient */
