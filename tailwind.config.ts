@@ -30,7 +30,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         raleway: ['var(--font-raleway)'],
-        Poppins: ['var(--font-Poppins)'],
+        poppins: ['var(--font-poppins)'],
         pacifico: ['var(--font-pacifico)'],
       },
       boxShadow: {
