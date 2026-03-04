@@ -1,9 +1,18 @@
+import React from 'react';
+import { Metadata } from 'next';
 import PageProvider from '@/components/website/pages/page-provider';
 import SubContainer from '@/components/website/pages/resume/sub-container';
-import React from 'react';
+
+export const metadata: Metadata = {
+  title: 'Resume | Frontend Developer Experience',
+  description:
+    'Download my resume and explore my 4+ years of experience in frontend development, working with React, Next.js, and AI tools.',
+};
 import { Brain, NotebookPen } from 'lucide-react';
 import DetailCard from '@/components/website/pages/resume/detail-card';
 import { Badge } from '@/components/ui/badge';
+import { FadeIn, FadeInItem } from '@/components/animations/fade-in';
+import { ScrollReveal } from '@/components/animations/scroll-reveal';
 
 const educationData = [
   {
@@ -99,8 +108,8 @@ const Resume: React.FC = () => {
   return (
     <main className="w-full">
       <PageProvider title="Resume">
-        <div>
-          <div className="mb-6">
+        <FadeIn staggerChildren={0.15}>
+          <FadeInItem className="mb-6">
             <h3 className="mb-3">Professional Summary</h3>
             <p className="para-2 text-muted">
               4+ Years in Industry | Experienced Developer with Proficiency in
@@ -108,9 +117,13 @@ const Resume: React.FC = () => {
               Skilled in designing solid architecture | Skilled in managing
               work, time and resources.
             </p>
-          </div>
+          </FadeInItem>
 
-          <div className="grid grid-cols-2 gap-4 mb-8">
+          <ScrollReveal
+            yOffset={20}
+            delay={0.15}
+            className="grid grid-cols-2 gap-4 mb-8"
+          >
             <SubContainer
               title="Education"
               icon={<Brain size={20} className="text-secondary" />}
@@ -141,9 +154,9 @@ const Resume: React.FC = () => {
                 ))}
               </div>
             </SubContainer>
-          </div>
+          </ScrollReveal>
 
-          <div className="grid grid-cols-2 gap-4 mb-8">
+          <ScrollReveal yOffset={20} className="grid grid-cols-2 gap-4 mb-8">
             <SubContainer title="Frontend Skills">
               <div className="flex flex-wrap gap-2">
                 {frontendSkillsData.map((skill, index) => (
@@ -162,9 +175,9 @@ const Resume: React.FC = () => {
                 ))}
               </div>
             </SubContainer>
-          </div>
+          </ScrollReveal>
 
-          <div className="grid grid-cols-2 gap-4 mb-8">
+          <ScrollReveal yOffset={20} className="grid grid-cols-2 gap-4 mb-8">
             <SubContainer title="Additional Skills">
               <div className="flex flex-wrap gap-2">
                 {additionalSkillsData.map((skill, index) => (
@@ -183,9 +196,9 @@ const Resume: React.FC = () => {
                 ))}
               </div>
             </SubContainer>
-          </div>
+          </ScrollReveal>
 
-          <div className="grid grid-cols-1 gap-4 mb-8">
+          <ScrollReveal yOffset={20} className="grid grid-cols-1 gap-4 mb-8">
             <SubContainer title="Soft Skills">
               <div className="flex flex-wrap gap-2">
                 {softSkillsData.map((skill, index) => (
@@ -195,8 +208,8 @@ const Resume: React.FC = () => {
                 ))}
               </div>
             </SubContainer>
-          </div>
-        </div>
+          </ScrollReveal>
+        </FadeIn>
       </PageProvider>
     </main>
   );

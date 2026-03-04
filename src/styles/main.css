@@ -16,16 +16,16 @@
 
 /* headings::  */
 h1 {
-  @apply text-[28px] font-medium font-Poppins;
+  @apply text-[28px] font-medium font-poppins scroll-mt-48;
 }
 h2 {
-  @apply text-[26px] font-medium font-Poppins;
+  @apply text-[26px] font-medium font-poppins scroll-mt-48;
 }
 h3 {
-  @apply text-[20px] font-medium font-Poppins;
+  @apply text-[20px] font-medium font-poppins;
 }
 h4 {
-  @apply text-[18px] font-semibold font-Poppins;
+  @apply text-[18px] font-semibold font-poppins;
 }
 
 /* gradient */
@@ -48,10 +48,17 @@ label {
 /* Input and textarea styling */
 input,
 textarea {
-  @apply w-full px-0.5 border-0 border-b border-tertiary-2 outline-none transition-colors duration-300 ease-in bg-background font-raleway text-xs leading-8 rounded-sm;
+  @apply w-full px-0.5 border-0 border-b-2 border-b-tertiary-2 outline-none transition-colors duration-300 ease-in bg-background font-raleway text-[16px] leading-8 rounded-sm;
 
   &:focus,
   &:hover {
-    @apply border-b-2 border-b-primary;
+    @apply border-b-primary;
+  }
+}
+
+/* Navigation Button Hover Fix */
+@media (hover: hover) {
+  .nav-btn-hover:hover {
+    @apply bg-tertiary-2-hover;
   }
 }

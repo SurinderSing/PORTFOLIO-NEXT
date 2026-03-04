@@ -35,10 +35,8 @@ const MenuBtn: React.FC<MenuBtnInterface> = ({ menuItem }) => {
   return (
     <Link href={menuItem.href}>
       <div
-        className={`inline-flex flex-col items-center justify-center rounded-2xl h-14 w-14 ${
-          isActive
-            ? 'main-gradient-1'
-            : 'bg-tertiary-2 hover:bg-tertiary-2-hover'
+        className={`inline-flex flex-col items-center justify-center rounded-2xl h-14 w-14 transition-colors ${
+          isActive ? 'main-gradient-1' : 'bg-tertiary-2 nav-btn-hover'
         }`}
       >
         <Icon size={14} strokeWidth={2.5} />
