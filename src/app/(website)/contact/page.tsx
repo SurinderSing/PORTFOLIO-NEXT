@@ -159,7 +159,7 @@ const Contact: React.FC = () => {
       <FadeIn staggerChildren={0.15}>
         <ScrollReveal
           yOffset={20}
-          delay={0.6}
+          delay={0.15}
           className="flex flex-wrap gap-6 justify-between mb-6"
         >
           {contactData.map((contact) => (

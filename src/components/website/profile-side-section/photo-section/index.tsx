@@ -1,7 +1,7 @@
 'use client';
 import Image from 'next/image';
 import React, { useState } from 'react';
-import Photo from '@/assets/images/profile-photos/surinder_profile_photo.jpg';
+import Photo from '@/assets/images/profile-photos/surinder_profile_photo.png';
 
 const PhotoSection: React.FC = () => {
   const [imageError, setImageError] = useState(false);

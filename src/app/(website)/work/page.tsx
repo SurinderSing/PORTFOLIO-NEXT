@@ -67,9 +67,9 @@ const Work: React.FC = () => {
           </p>
         </FadeInItem>
         <ScrollReveal
-          staggerChildren={0.15}
+          staggerChildren={0.1}
           yOffset={20}
-          delay={0.6}
+          delay={0.15}
           className="flex flex-wrap gap-4 justify-evenly mb-6"
         >
           {projectsData.map((project) => (
