@@ -92,26 +92,34 @@ const Home = () => {
         <FadeIn staggerChildren={0.15}>
           {/* About Summary */}
           <FadeInItem className="mb-3">
-            <p className="para-2 text-foreground/80 leading-relaxed">
-              I build modern web applications where{' '}
-              <Highlight>
-                performance, scalability, and user experience
-              </Highlight>{' '}
-              matter. My work focuses on developing{' '}
-              <Highlight>
-                SaaS platforms, AI-powered tools, and real-time systems
-              </Highlight>{' '}
-              using <Highlight>React, Next.js, and TypeScript</Highlight>. I
-              enjoy solving complex frontend problems such as managing large
-              application state, designing reusable component architectures, and
-              building interfaces that support high-interaction workflows. Over
-              time, I’ve worked on products ranging from AI-driven editing tools
-              and automation platforms to high-traffic educational websites and
-              real-time CRM systems. I’m particularly interested in{' '}
-              <Highlight>frontend architecture</Highlight> and{' '}
-              <Highlight>performance optimization</Highlight>, and building
-              systems that remain reliable as products scale.
-            </p>
+            <div className="space-y-4">
+              <h3>
+                Hi, I’m Surinder.
+                <br />A Frontend Engineer focused on building scalable web
+                applications.
+              </h3>
+
+              <p className="para-2 text-foreground/80 leading-relaxed">
+                I build modern web applications where{' '}
+                <Highlight>
+                  performance, scalability, and user experience
+                </Highlight>{' '}
+                matter. My work focuses on developing{' '}
+                <Highlight>
+                  SaaS platforms, AI-powered tools, and real-time systems
+                </Highlight>{' '}
+                using <Highlight>React, Next.js, and TypeScript</Highlight>. I
+                enjoy solving complex frontend problems such as managing large
+                application state, designing reusable component architectures,
+                and building interfaces that support high-interaction workflows.
+                Over time, I’ve worked on products ranging from AI-driven
+                editing tools and automation platforms to high-traffic
+                educational websites and real-time CRM systems. I’m particularly
+                interested in <Highlight>frontend architecture</Highlight> and{' '}
+                <Highlight>performance optimization</Highlight>, and building
+                systems that remain reliable as products scale.
+              </p>
+            </div>
           </FadeInItem>
 
           <AnimatedDivider className="my-2" delay={0.15} />
