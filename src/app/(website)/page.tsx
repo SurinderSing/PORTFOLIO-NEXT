@@ -114,7 +114,7 @@ const Home = () => {
             </p>
           </FadeInItem>
 
-          <AnimatedDivider className="my-6" delay={0.15} />
+          <AnimatedDivider className="my-2" delay={0.15} />
 
           {/* What I do! */}
           <ScrollReveal staggerChildren={0.1} yOffset={20} delay={0.25}>
