@@ -14,7 +14,7 @@ const PageProvider: React.FC<PageProviderProps> = ({ children, title }) => {
           <h1 className="whitespace-nowrap">{title}</h1>
           <span className="w-[30%] main-gradient-1 h-[3px] rounded-full"></span>
         </div>
-        <ScrollArea className="w-full h-[calc(100vh-15.5pc)] max-h-[565px] sm:h-auto sm:max-h-none sm:overflow-visible px-3">
+        <ScrollArea className="w-full h-[calc(100vh-15.5pc)] max-h-[565px] sm:h-full sm:max-h-full sm:overflow-visible px-3">
           {children}
         </ScrollArea>
       </div>
