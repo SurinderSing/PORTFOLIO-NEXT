@@ -29,10 +29,10 @@ const Navbar: React.FC = () => {
   return (
     <div
       className={cn(
-        'z-30 flex gap-6 items-center justify-center transition-all duration-300 rounded-2xl ml-auto mr-0 mb-2 sm:mb-[6rem] w-fit',
-        isMobile ? 'sticky top-[68px] mx-auto' : 'relative',
+        'z-40 flex gap-6 items-center justify-center transition-all duration-300 rounded-2xl ml-auto mr-0 mb-2 sm:mb-[6rem] w-fit',
+        isMobile ? 'sticky top-[18px] mx-auto' : 'relative',
         isMobile && isScrolled
-          ? 'py-1 px-8 bg-tertiary/70 backdrop-blur-md shadow-md'
+          ? 'py-1 px-8 bg-tertiary/70 backdrop-blur-md shadow-md mt-2'
           : 'py-2 px-10 bg-tertiary shadow-sm'
       )}
     >
