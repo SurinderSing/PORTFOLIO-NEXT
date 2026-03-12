@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: 'Contact | Hire Surinder Singh',
   description:
     'Get in touch with Surinder Singh for frontend development opportunities, project collaborations, or tech consultation.',
+  alternates: {
+    canonical: '/contact',
+  },
 };
 
 export default function ContactLayout({

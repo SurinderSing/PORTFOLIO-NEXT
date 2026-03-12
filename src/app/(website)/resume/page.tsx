@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   title: 'Resume | Frontend Developer Experience',
   description:
     'Download my resume and explore my 4+ years of experience in frontend development, working with React, Next.js, and AI tools.',
+  alternates: {
+    canonical: '/resume',
+  },
 };
 import { Brain, NotebookPen } from 'lucide-react';
 import DetailCard from '@/components/website/pages/resume/detail-card';
