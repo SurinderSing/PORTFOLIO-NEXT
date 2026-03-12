@@ -94,7 +94,7 @@ const Home = () => {
           <FadeInItem className="mb-3">
             <div className="space-y-4">
               <h3>
-                Hi, I’m Surinder.
+                Hi, I’m Surinder
                 <br />A Frontend Engineer focused on building scalable web
                 applications.
               </h3>
