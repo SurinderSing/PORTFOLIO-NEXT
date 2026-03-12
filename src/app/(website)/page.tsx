@@ -1,4 +1,5 @@
 import React from 'react';
+import { Metadata } from 'next';
 import PageProvider from '@/components/website/pages/page-provider';
 import {
   BadgeHelp,
@@ -84,6 +85,15 @@ const skillsData: SkillDataInterface[] = [
     bgColor: 'bg-tertiary-2',
   },
 ];
+
+export const metadata: Metadata = {
+  title: 'Surinder Singh | React & Next.js Frontend Developer',
+  description:
+    'Portfolio of Surinder Singh, a Frontend Engineer building high-performance SaaS platforms, AI-powered tools, and real-time systems using React, Next.js, and TypeScript.',
+  alternates: {
+    canonical: '/',
+  },
+};
 
 const Home = () => {
   return (

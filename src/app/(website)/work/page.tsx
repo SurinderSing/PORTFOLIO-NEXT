@@ -4,9 +4,12 @@ import PageProvider from '@/components/website/pages/page-provider';
 import ProjectCard from '@/components/website/pages/work/porject-card';
 
 export const metadata: Metadata = {
-  title: 'Portfolio | Frontend Development Projects',
+  title: 'Projects | React & Next.js Development Work | Surinder Singh',
   description:
     'Explore a collection of my recent projects, including AI-enhanced marketing platforms, remote screen sharing tools, and more.',
+  alternates: {
+    canonical: '/work',
+  },
 };
 // import FailedImage from '@/assets/images/failed-image.jpg';
 import GimmefyImage from '@/assets/images/projects/gimmefy-ai.png';
@@ -127,6 +130,31 @@ const Work: React.FC = () => {
             </div>
           </ScrollReveal>
         </FadeIn>
+
+        {/* CreativeWork Structured Data for Projects */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'ItemList',
+              itemListElement: projectsData.map((project, index) => ({
+                '@type': 'ListItem',
+                position: index + 1,
+                item: {
+                  '@type': 'CreativeWork',
+                  name: project.title,
+                  description: project.description,
+                  url: project.link,
+                  creator: {
+                    '@type': 'Person',
+                    name: 'Surinder Singh',
+                  },
+                },
+              })),
+            }),
+          }}
+        />
       </PageProvider>
     </main>
   );
