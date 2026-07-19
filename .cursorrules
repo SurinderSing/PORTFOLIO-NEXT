@@ -22,6 +22,7 @@ These rules guide the Cursor AI agent when editing files in this codebase.
 
 ## Workflow Constraints
 
+- **Ask First & Plan:** Always stay in Ask Mode first to research the problem, find out the conclusion, create an implementation plan, and obtain user approval before starting to edit the codebase.
 - **No Unit Tests:** Do not write unit tests or setup test suites.
 - **No CI/CD:** Do not write or configure Github Actions workflows.
 - **Supabase Plan:** Keep in mind that we plan to migrate portfolio data source dynamically to Supabase in the future. Design abstractions (like service APIs or hook definitions) with modularity so databases can be easily switched later.

@@ -29,6 +29,7 @@ To maintain project integrity, follow this three-tier ruleset:
 - Update the `/memory-bank/` files (`activeContext.md` and `progress.md`) at the end of each session or major task.
 
 ### 🟨 Ask First
+- Always stay in Ask Mode first to research, find out the conclusion, create an implementation plan, and obtain user approval before starting to edit the codebase.
 - Before adding new NPM dependencies or component libraries.
 - Before running database migrations (`npx prisma migrate dev`).
 - Before modifying database schemas in `prisma/schema.prisma`.

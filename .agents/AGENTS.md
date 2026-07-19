@@ -9,6 +9,7 @@ This file configures Antigravity/Gemini workspace behaviors for this project.
 - **Path Aliases:** Always write imports using absolute aliases (`@/components/...`, `@/lib/...`, `@/services/...`, `@/styles/...`, `@/types/...`, `@/utils/...`). Never use relative imports like `../../components`.
 
 ## Constraints & Requirements
+- **Stay in Ask Mode first:** Always stay in Ask Mode first to research the problem, find out the conclusion, create an implementation plan, and obtain user approval before starting to edit the codebase.
 - **No Tests:** Do NOT create unit test suites or testing scripts.
 - **No Pipelines:** Do NOT set up Github workflows or deployment configurations.
 - **Prisma Schema Updates:** If schema changes are needed, always ask the user for confirmation.

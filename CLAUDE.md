@@ -15,6 +15,7 @@ This guide configures Claude Code behavior in the `PORTFOLIO-NEXT` project.
 - **Prisma Client Gen:** `npx prisma generate`
 
 ## Strict Guidelines
+- **Stay in Ask Mode first:** Always start in Ask Mode first to research the problem, find out the conclusion, create an implementation plan, and obtain user approval before starting to edit the codebase.
 - **Always use TypeScript:** Write components with explicit props type interface.
 - **Do not write Unit Tests:** No tests are used or needed in this codebase.
 - **No CI/CD:** Do not create pipeline/actions configurations.
