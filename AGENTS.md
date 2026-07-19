@@ -22,6 +22,7 @@ Always run these commands to set up, build, or verify the application:
 To maintain project integrity, follow this three-tier ruleset:
 
 ### 🟩 Always Do
+- **Keep Documentation Updated (Highest Priority):** Always update the repository documentation (`/docs/` specifications, instruction rules, memory bank files, and any related contexts) in the same PR or task session as the code changes. Never let documentation get out of sync with code modifications.
 - Use Next.js App Router conventions.
 - Build clean, responsive UI components using Tailwind CSS and components from shadcn/ui.
 - Use TypeScript with strict type checking. Ensure type annotations are accurate and complete.

@@ -13,6 +13,7 @@ The current focus is **Making the PORTFOLIO-NEXT repository 100% AI Agent Ready*
 4. **Supabase Transition Plan:** Acknowledged the owner's plan to replace local MySQL and Prisma servers with Supabase client bindings for dynamic resume data and portfolio information details in the future.
 5. **Multi-Agent Compatibility:** Written customized instructions for Claude Code (`CLAUDE.md`), Cursor (`.cursorrules`), Copilot (`.github/copilot-instructions.md`), and Gemini/Antigravity (`.agents/AGENTS.md`) mapping the identical technical boundaries.
 6. **Ask First Workflow Rule:** Added a strict rule across all agent instruction sets stating that agents must always start in Ask Mode, research/discuss to find the conclusion, create an implementation plan, and obtain user approval before starting to edit the codebase.
+7. **Keep Documentation Updated (Highest Priority):** Added a highest priority rule ensuring that all documentation (docs, rules, configurations, memory bank files) are always updated in tandem with code changes.
 
 ---
 

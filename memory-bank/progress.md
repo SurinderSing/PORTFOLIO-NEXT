@@ -19,6 +19,7 @@
 - [x] Create `.github/copilot-instructions.md` for Copilot.
 - [x] Create workspace rulebook `.agents/AGENTS.md` for Antigravity.
 - [x] Integrate Ask First & Plan workflow rule into all configuration files.
+- [x] Integrate Highest Priority rule for keeping documentation synced with codebase changes.
 
 ### Phase 2: Technical Specifications (100% Completed)
 - [x] Write `docs/PRD.md` capturing feature matrices.
