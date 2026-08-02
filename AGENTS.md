@@ -23,11 +23,13 @@ To maintain project integrity, follow this three-tier ruleset:
 
 ### 🟩 Always Do
 - **Keep Documentation Updated (Highest Priority):** Always update the repository documentation (`/docs/` specifications, instruction rules, memory bank files, and any related contexts) in the same PR or task session as the code changes. Never let documentation get out of sync with code modifications.
+- **Check for and Fix Errors/Warnings (High Priority):** Always run checks for build errors, TypeScript compiler warnings, eslint warnings, and formatting/style warnings after completing the work, and fix all of them before concluding the task.
 - Use Next.js App Router conventions.
 - Build clean, responsive UI components using Tailwind CSS and components from shadcn/ui.
 - Use TypeScript with strict type checking. Ensure type annotations are accurate and complete.
 - Keep components focused and reusable. Place page-specific layout wrappers inside `src/components/website/pages/`.
 - Update the `/memory-bank/` files (`activeContext.md` and `progress.md`) at the end of each session or major task.
+
 
 ### 🟨 Ask First
 - Always stay in Ask Mode first to research, find out the conclusion, create an implementation plan, and obtain user approval before starting to edit the codebase.

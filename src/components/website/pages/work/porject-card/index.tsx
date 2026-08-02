@@ -4,7 +4,7 @@ import FailedImage from '@/assets/images/failed-image.jpg';
 import { ScrollRevealItem } from '@/components/animations/scroll-reveal';
 
 interface ProjectCardProps {
-  image?: StaticImageData;
+  image?: StaticImageData | string;
   title: string;
   technologies: string[];
   link?: string;

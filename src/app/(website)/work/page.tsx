@@ -2,6 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 import PageProvider from '@/components/website/pages/page-provider';
 import ProjectCard from '@/components/website/pages/work/porject-card';
+import { createClient } from '@/utils/supabase/server';
 
 export const metadata: Metadata = {
   title: 'Projects | React & Next.js Development Work | Surinder Singh',
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
     canonical: '/work',
   },
 };
-// import FailedImage from '@/assets/images/failed-image.jpg';
+
 import GimmefyImage from '@/assets/images/projects/gimmefy-ai.png';
 import DialmantraImage from '@/assets/images/projects/dialmantra.png';
 import AmotusImage from '@/assets/images/projects/amotus-online.png';
@@ -19,7 +20,7 @@ import DrishtiImage from '@/assets/images/projects/drishti-ias.png';
 import { FadeIn, FadeInItem } from '@/components/animations/fade-in';
 import { ScrollReveal } from '@/components/animations/scroll-reveal';
 
-const projectsData = [
+const staticProjectsData = [
   {
     id: 1,
     image: GimmefyImage,
@@ -66,7 +67,41 @@ const projectsData = [
   },
 ];
 
-const Work: React.FC = () => {
+// Revalidate cache every hour
+export const revalidate = 3600;
+
+export default async function Work() {
+  let projectsData = staticProjectsData;
+
+  try {
+    const supabase = createClient();
+    const { data: dbProjects, error } = await supabase
+      .from('projects')
+      .select('*')
+      .order('id', { ascending: true });
+
+    if (!error && dbProjects && dbProjects.length > 0) {
+      // Map DB fields to Project Card fields
+      projectsData = dbProjects.map((proj: any) => ({
+        id: proj.id,
+        title: proj.title,
+        description: proj.description,
+        technologies: proj.technologies,
+        link: proj.link,
+        image:
+          proj.image_url ||
+          staticProjectsData.find((p) => p.title === proj.title)?.image ||
+          null,
+      }));
+    }
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(
+      'Supabase query failed, falling back to static projects list:',
+      err
+    );
+  }
+
   return (
     <main className="w-full">
       <PageProvider title="Portfolio">
@@ -88,7 +123,7 @@ const Work: React.FC = () => {
                 key={project.id}
                 title={project.title}
                 technologies={project.technologies}
-                image={project.image}
+                image={project.image || undefined}
                 link={project.link}
                 description={project.description}
               />
@@ -158,6 +193,4 @@ const Work: React.FC = () => {
       </PageProvider>
     </main>
   );
-};
-
-export default Work;
+}

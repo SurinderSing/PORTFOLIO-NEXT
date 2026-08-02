@@ -6,14 +6,13 @@ This application is constructed as a React application using the Next.js 14 App 
 ```mermaid
 graph TD
   User((Client Browser)) --> NextJS[Next.js App Router]
-  NextJS --> Middleware[Auth Middleware]
-  NextJS --> RSC[React Server Components]
-  NextJS --> CC[Client Components & Redux]
+  NextJS --> Middleware[Supabase Auth Middleware]
+  NextJS --> RSC[React Server Components - Supabase Server Client]
+  NextJS --> CC[Client Components - Supabase Browser Client]
   NextJS --> API[Next.js API Routes]
-  API --> Prisma[Prisma Client ORM]
-  Prisma --> DB[(MySQL Database)]
-  CC --> RTK[RTK Query]
-  RTK --> API
+  RSC --> Supabase[(Supabase PostgreSQL)]
+  CC --> Supabase
+  API --> Supabase
 ```
 
 ## Technology Stack
@@ -26,25 +25,21 @@ graph TD
 | **Tailwind CSS** | Styling System | `^3.4.1` |
 | **shadcn/ui** | Component Library | New-York Style |
 | **Framer Motion** | Micro-Animations | `^12.35.0` |
-| **Redux Toolkit** | State & RTK Query | `^2.8.2` |
-| **Prisma** | Database ORM | `^6.4.0` |
-| **Next-Auth** | Authentication | `^4.24.11` |
-| **Nodemailer** | Verification Mailer | `^6.10.0` |
-| **Bcryptjs** | Password Hashing | `^3.0.2` |
+| **Redux Toolkit** | Client State & Store | `^2.8.2` |
+| **Supabase Client**| Database & Auth Client | `^2.x` |
+| **Supabase SSR** | Server-Side Auth Cookies | `^0.x` |
 | **Formspree React**| Contact Form Processing | `^3.0.0` |
 | **Zod** | Validation Schemas | `^3.25.67` |
 
 ## Infrastructure & Environment Requirements
 The project is optimized for deployment on the **Vercel Platform**. It requires the following environment variables:
 
-- `DATABASE_URL`: Connection string for the MySQL database.
+- `NEXT_PUBLIC_SUPABASE_URL`: Root Endpoint of the Supabase project.
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Public anonymous api key for client requests.
 - `NEXT_PUBLIC_BASE_URL`: Root path of the application (e.g. for canonical links and auth callbacks).
-- `NEXTAUTH_SECRET`: Hash seed for Next-Auth JWT encryption.
-- `EMAIL_USER`: NodeMailer SMTP sender email.
-- `EMAIL_PASS`: NodeMailer SMTP auth password.
 
 ## Security Controls
-- **Authentication:** Credentials provider authentication using Next-Auth. Double hashing passwords via bcrypt salt rounds of 13.
-- **Session Strategy:** Secure HTTP-only JSON Web Token (JWT) session storage.
-- **Middleware Guard:** Path protection configurations matching dashboard routes and redirecting non-authenticated users.
-- **Email Validation:** Account verification tokens created via unique JTI hooks.
+- **Authentication:** Managed by Supabase Auth with secure OTP code confirmations.
+- **Session Strategy:** Persistent cookie-based authentication handled via `@supabase/ssr` (syncs server actions, middleware, client router, and components).
+- **Row Level Security (RLS):** Enabled on all public PostgreSQL tables (`profiles`, `projects`, `experiences`). Direct select queries are publicly open, while mutations (insert, update, delete) are locked to accounts with the `ADMIN` role.
+- **Middleware Guard:** Intercepts requests to refresh expired session cookies and redirect unauthorized callers away from dashboard/admin routes.

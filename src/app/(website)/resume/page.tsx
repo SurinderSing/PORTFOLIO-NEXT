@@ -2,6 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 import PageProvider from '@/components/website/pages/page-provider';
 import SubContainer from '@/components/website/pages/resume/sub-container';
+import { createClient } from '@/utils/supabase/server';
 
 export const metadata: Metadata = {
   title: 'Resume | Frontend Developer Experience',
@@ -11,13 +12,14 @@ export const metadata: Metadata = {
     canonical: '/resume',
   },
 };
+
 import { Brain, NotebookPen } from 'lucide-react';
 import DetailCard from '@/components/website/pages/resume/detail-card';
 import { Badge } from '@/components/ui/badge';
 import { FadeIn, FadeInItem } from '@/components/animations/fade-in';
 import { ScrollReveal } from '@/components/animations/scroll-reveal';
 
-const educationData = [
+const staticEducationData = [
   {
     id: 1,
     date: '2022 - 2023',
@@ -39,7 +41,7 @@ const educationData = [
   },
 ];
 
-const workExperienceData = [
+const staticWorkExperienceData = [
   {
     id: 1,
     date: '12/2023 - Present',
@@ -107,7 +109,49 @@ const softSkillsData = [
   'Project Management',
 ];
 
-const Resume: React.FC = () => {
+export const revalidate = 3600;
+
+export default async function Resume() {
+  let educationData = staticEducationData;
+  let workExperienceData = staticWorkExperienceData;
+
+  try {
+    const supabase = createClient();
+    const { data: dbExperiences, error } = await supabase
+      .from('experiences')
+      .select('*')
+      .order('sort_order', { ascending: true });
+
+    if (!error && dbExperiences && dbExperiences.length > 0) {
+      const ed = dbExperiences
+        .filter((item: any) => item.type === 'EDUCATION')
+        .map((item: any) => ({
+          id: item.id,
+          date: item.date_range,
+          title: item.title,
+          place: item.place,
+        }));
+
+      const wk = dbExperiences
+        .filter((item: any) => item.type === 'WORK')
+        .map((item: any) => ({
+          id: item.id,
+          date: item.date_range,
+          title: item.title,
+          place: item.place,
+        }));
+
+      if (ed.length > 0) educationData = ed;
+      if (wk.length > 0) workExperienceData = wk;
+    }
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(
+      'Supabase query failed, falling back to static experiences:',
+      err
+    );
+  }
+
   return (
     <main className="w-full">
       <PageProvider title="Resume">
@@ -125,7 +169,7 @@ const Resume: React.FC = () => {
           <ScrollReveal
             yOffset={20}
             delay={0.15}
-            className="grid grid-cols-2 gap-4 mb-8"
+            className="grid grid-cols-2 gap-4 sm:grid-cols-1 mb-8"
           >
             <SubContainer
               title="Education"
@@ -159,7 +203,10 @@ const Resume: React.FC = () => {
             </SubContainer>
           </ScrollReveal>
 
-          <ScrollReveal yOffset={20} className="grid grid-cols-2 gap-4 mb-8">
+          <ScrollReveal
+            yOffset={20}
+            className="grid grid-cols-2 gap-4 sm:grid-cols-1 mb-8"
+          >
             <SubContainer title="Frontend Skills">
               <div className="flex flex-wrap gap-2">
                 {frontendSkillsData.map((skill, index) => (
@@ -180,7 +227,10 @@ const Resume: React.FC = () => {
             </SubContainer>
           </ScrollReveal>
 
-          <ScrollReveal yOffset={20} className="grid grid-cols-2 gap-4 mb-8">
+          <ScrollReveal
+            yOffset={20}
+            className="grid grid-cols-2 gap-4 sm:grid-cols-1 mb-8"
+          >
             <SubContainer title="Additional Skills">
               <div className="flex flex-wrap gap-2">
                 {additionalSkillsData.map((skill, index) => (
@@ -216,6 +266,4 @@ const Resume: React.FC = () => {
       </PageProvider>
     </main>
   );
-};
-
-export default Resume;
+}

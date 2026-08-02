@@ -16,7 +16,9 @@ This guide configures Claude Code behavior in the `PORTFOLIO-NEXT` project.
 
 ## Strict Guidelines
 - **Keep Documentation Updated (Highest Priority):** Always keep all project documentation (`/docs/`), workspace configuration rules, and memory bank files up to date concurrently with any code changes.
+- **Check for and Fix Errors/Warnings (High Priority):** Always run checks for build errors, TypeScript compiler warnings, eslint warnings, and formatting/style warnings after completing the work, and fix all of them before concluding the task.
 - **Stay in Ask Mode first:** Always start in Ask Mode first to research the problem, find out the conclusion, create an implementation plan, and obtain user approval before starting to edit the codebase.
+
 - **Always use TypeScript:** Write components with explicit props type interface.
 - **Do not write Unit Tests:** No tests are used or needed in this codebase.
 - **No CI/CD:** Do not create pipeline/actions configurations.

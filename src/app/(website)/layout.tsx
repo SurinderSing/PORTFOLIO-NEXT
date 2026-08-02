@@ -3,7 +3,6 @@ import type { Metadata, Viewport } from 'next';
 import '@/styles/globals.css';
 import '@/styles/main.css';
 import { raleway, poppins, pacifico } from '@/styles/fonts';
-import AuthProvider from '@/context/AuthProvider';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/utils/theme-provider';
 import Header from '@/features/website/header';
@@ -13,8 +12,9 @@ import GlobalLoader from '@/components/ui/global-loader';
 import RouteLoader from '@/components/ui/route-loader';
 import Providers from '../provider';
 
+// WARNING: Update all occurrences of the base URL in layout.tsx, sitemap.ts, and robots.ts whenever the production deployment domain changes!
 export const metadata: Metadata = {
-  metadataBase: new URL('https://surindersingh.app'),
+  metadataBase: new URL('https://surinder-singh-portfolio.vercel.app'),
   title: {
     default: 'Surinder Singh | Frontend Developer',
     template: '%s | Surinder Singh',
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
       'Frontend Developer specializing in React, Next.js, and modern web technologies. Explore my projects and experience.',
     type: 'website',
     locale: 'en_US',
-    url: 'https://surindersingh.app',
+    url: 'https://surinder-singh-portfolio.vercel.app',
     siteName: 'Surinder Singh Portfolio',
   },
   twitter: {
@@ -92,7 +92,7 @@ export default function RootLayout({
               '@context': 'https://schema.org',
               '@type': 'Person',
               name: 'Surinder Singh',
-              url: 'https://surindersingh.app',
+              url: 'https://surinder-singh-portfolio.vercel.app',
               jobTitle: 'Frontend Developer',
               sameAs: [
                 'https://github.com/SurinderSing',
@@ -109,23 +109,21 @@ export default function RootLayout({
           }}
         />
         <Providers>
-          <AuthProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <Header />
-              <div className="section-container pt-[.5rem] sm:pb-4">
-                <Navbar />
-                <div className="flex gap-3 sm:flex-col sm:items-center sm:mt-20">
-                  <ProfileSideSection />
-                  {children}
-                </div>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Header />
+            <div className="section-container pt-[.5rem] sm:pb-4">
+              <Navbar />
+              <div className="flex gap-3 sm:flex-col sm:items-center sm:mt-20">
+                <ProfileSideSection />
+                {children}
               </div>
-            </ThemeProvider>
-          </AuthProvider>
+            </div>
+          </ThemeProvider>
         </Providers>
       </body>
     </html>
