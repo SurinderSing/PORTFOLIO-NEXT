@@ -2,7 +2,6 @@ import React from 'react';
 import type { Metadata } from 'next';
 import '@/styles/globals.css';
 import '@/styles/main.css';
-import AuthProvider from '@/context/AuthProvider';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/utils/theme-provider';
 import Header from '@/features/website/header';
@@ -22,17 +21,15 @@ export default function RootLayout({
         className={cn('relative antialiased min-h-screen bg-background pb-8')}
       >
         <Providers>
-          <AuthProvider>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <Header />
-              <div className="section-container pt-[.5rem]">{children}</div>
-            </ThemeProvider>
-          </AuthProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Header />
+            <div className="section-container pt-[.5rem]">{children}</div>
+          </ThemeProvider>
         </Providers>
       </body>
     </html>

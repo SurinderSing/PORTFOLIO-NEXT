@@ -7,6 +7,7 @@
 - [x] Technical & Product Documentation (PRD, TRD, APP_FLOW, Design Brief, Schema)
 - [x] Context Preservation Setup (Memory Bank initialization)
 - [x] Verification & Formatting Validations
+- [x] Supabase Option A Auth & Database Integration
 
 ---
 
@@ -20,6 +21,8 @@
 - [x] Create workspace rulebook `.agents/AGENTS.md` for Antigravity.
 - [x] Integrate Ask First & Plan workflow rule into all configuration files.
 - [x] Integrate Highest Priority rule for keeping documentation synced with codebase changes.
+- [x] Integrate high-priority rule to check and fix errors, warnings, and formatting/style issues across all configurations.
+
 
 ### Phase 2: Technical Specifications (100% Completed)
 - [x] Write `docs/PRD.md` capturing feature matrices.
@@ -36,7 +39,15 @@
 - [x] Write `memory-bank/activeContext.md` active tasks list.
 - [x] Write `memory-bank/progress.md` status checklist.
 
-### Phase 4: Final Verification (100% Completed)
-- [x] Review all files for markdown formatting issues.
-- [x] Check internal markdown file links.
-- [x] Verify markdown rendering and files existence.
+### Phase 4: Supabase Option A Integration (100% Completed)
+- [x] Install `@supabase/supabase-js` and `@supabase/ssr` packages.
+- [x] Create client, server, and middleware Supabase wrappers.
+- [x] Re-route `middleware.ts` to execute session updates.
+- [x] Overwrite credentials-auth templates with Supabase auth pages (sign-in, sign-up).
+- [x] Create email verification exchange route `/api/auth/confirm`.
+- [x] Formulate `supabase/schema.sql` database trigger and seed scripts.
+- [x] Query Supabase database dynamically in Work page.
+- [x] Query Supabase database dynamically in Resume page.
+- [x] Remove NextAuth dependencies, layout tags, and obsolete files.
+- [x] Synchronize specs and rules document arrays.
+- [x] Configure base URL to https://surinder-singh-portfolio.vercel.app/ in sitemap, robots, and layouts with warning comments.

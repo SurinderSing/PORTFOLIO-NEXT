@@ -10,7 +10,9 @@ This file configures Antigravity/Gemini workspace behaviors for this project.
 
 ## Constraints & Requirements
 - **Keep Documentation Updated (Highest Priority):** Always keep all project documentation, specifications in `/docs/`, editor rules, and memory bank files up to date alongside any codebase modifications. Documentation updates must happen concurrently with related code changes.
+- **Check for and Fix Errors/Warnings (High Priority):** Always run checks for build errors, TypeScript compiler warnings, eslint warnings, and formatting/style warnings after completing the work, and fix all of them before concluding the task.
 - **Stay in Ask Mode first:** Always stay in Ask Mode first to research the problem, find out the conclusion, create an implementation plan, and obtain user approval before starting to edit the codebase.
+
 - **No Tests:** Do NOT create unit test suites or testing scripts.
 - **No Pipelines:** Do NOT set up Github workflows or deployment configurations.
 - **Prisma Schema Updates:** If schema changes are needed, always ask the user for confirmation.
