@@ -7,6 +7,7 @@ export default function robots(): MetadataRoute.Robots {
       allow: '/',
       disallow: ['/admin/', '/api/'],
     },
-    sitemap: 'https://surindersingh.app/sitemap.xml',
+    // WARNING: Update this URL whenever the production deployment domain changes!
+    sitemap: 'https://surinder-singh-portfolio.vercel.app/sitemap.xml',
   };
 }

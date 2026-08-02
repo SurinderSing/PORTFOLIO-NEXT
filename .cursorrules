@@ -1,0 +1,43 @@
+# Cursor Rules for PORTFOLIO-NEXT
+
+These rules guide the Cursor AI agent when editing files in this codebase.
+
+---
+
+## Workspace Rules
+
+- **Highest Priority - Keep Docs Updated:** Always keep all project documentation, specifications in `/docs/`, editor rules, and memory bank files up to date alongside any codebase modifications. Documentation updates must happen concurrently with related code changes.
+- **Framework:** Next.js 14.2.3 (App Router, RSC by default).
+- **TypeScript:** Strict type checks. Do not use `any` unless absolutely unavoidable. Prefer interface declarations for component props.
+- **Styling:** Tailwind CSS + CSS Variables in `src/styles/globals.css` and `src/styles/main.css`. Always match the existing custom typography and spacing scales:
+  - Custom font families: Raleway (`font-raleway`), Poppins (`font-poppins`), Pacifico (`font-pacifico`).
+  - Text utility classes: `.para-1` (body-large), `.para-2` (body-small), `.para-3` (tiny-semibold).
+  - Headings: `h1` (28px font-medium poppins), `h2` (26px), `h3` (20px), `h4` (18px font-semibold).
+  - Theme colors: `hsl(var(--primary))`, `hsl(var(--secondary))`, `hsl(var(--background))`, `hsl(var(--foreground))`, `hsl(var(--card))`, `hsl(var(--tertiary-2))`.
+- **Imports:** Absolute imports with `@/*` prefix configured in `tsconfig.json`.
+- **Database:** Prisma ORM with MySQL provider. Schema defined in `prisma/schema.prisma`.
+- **Auth:** NextAuth.js (v4) with credentials provider. Check session availability using client-side hook `useSession` or server-side utility `getServerSession`.
+- **Animations:** Framer Motion for micro-interactions and route animations. Wrap animated components with `FadeIn` or `ScrollReveal` from `src/components/animations/`.
+
+---
+
+## Workflow Constraints
+- **Ask First & Plan:** Always stay in Ask Mode first to research the problem, find out the conclusion, create an implementation plan, and obtain user approval before starting to edit the codebase.
+- **Check for and Fix Errors/Warnings (High Priority):** Always run checks for build errors, TypeScript compiler warnings, eslint warnings, and formatting/style warnings after completing the work, and fix all of them before concluding the task.
+
+- **No Unit Tests:** Do not write unit tests or setup test suites.
+- **No CI/CD:** Do not write or configure Github Actions workflows.
+- **Supabase Plan:** Keep in mind that we plan to migrate portfolio data source dynamically to Supabase in the future. Design abstractions (like service APIs or hook definitions) with modularity so databases can be easily switched later.
+- **Strict Linting & Formats:** Always run `npm run lint` and verify files fit Prettier guidelines before concluding work. Prettier configuration:
+  - Single quotes: `true`
+  - Trailing comma: `es5`
+  - Tab width: `2`
+  - Print width: `80`
+  - Semicolons: `true`
+
+---
+
+## Memory Bank Integration
+
+- Always read `memory-bank/activeContext.md` to see what is currently in progress.
+- At the end of every coding step, write status updates to `memory-bank/progress.md`.

@@ -1,26 +1,19 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { getToken } from 'next-auth/jwt';
+import { type NextRequest } from 'next/server';
+import { updateSession } from '@/utils/supabase/middleware';
 
-export { default } from 'next-auth/middleware';
-
-// This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
-  const token = await getToken({ req: request });
-  const url = request.nextUrl;
-  if (
-    token &&
-    (url.pathname.startsWith('/sign-in') || url.pathname.startsWith('/sign-up'))
-  ) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
-  }
-  if (!token && url.pathname.startsWith('/dashboard')) {
-    return NextResponse.redirect(new URL('/sign-in', request.url));
-  }
-  return NextResponse.next();
+  return await updateSession(request);
 }
 
-// See "Matching Paths" below to learn more
 export const config = {
-  matcher: ['/sign-in', '/sign-up', '/', '/dashboard/:path*', '/admin/:path*'],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * Feel free to modify this pattern to include more paths.
+     */
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+  ],
 };

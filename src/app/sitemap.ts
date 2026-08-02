@@ -1,7 +1,8 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://surindersingh.app';
+  // WARNING: Update this URL whenever the production deployment domain changes!
+  const baseUrl = 'https://surinder-singh-portfolio.vercel.app';
 
   // These should ideally be dynamic if you add a blog later
   const routes = ['', '/work', '/resume', '/contact'].map((route) => ({
