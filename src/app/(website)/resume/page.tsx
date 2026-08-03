@@ -120,7 +120,7 @@ export default async function Resume() {
     const { data: dbExperiences, error } = await supabase
       .from('experiences')
       .select('*')
-      .order('sort_order', { ascending: true });
+      .order('sort_order', { ascending: false });
 
     if (!error && dbExperiences && dbExperiences.length > 0) {
       const ed = dbExperiences

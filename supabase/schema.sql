@@ -108,12 +108,12 @@ insert into public.projects (title, description, technologies, link, image_url) 
 
 -- Seed initial experiences data (WORK)
 insert into public.experiences (date_range, title, place, type, sort_order) values
-('12/2023 - Present', 'Front-End Developer (Product- AI Marketing Tools)', 'Gimmefy AI - Remote', 'WORK', 1),
-('06/2022 - 10/2023', 'Front-End Developer (Products- Amotus online, Diamantra dialer, Call Center CRM)', 'Collaberus technologies pvt. ltd. - Delhi', 'WORK', 2),
-('10/2021 - 06/2022', 'Front-End & Technical Associate', 'Drishti IAS - Delhi', 'WORK', 3);
+('12/2023 - Present', 'Front-End Developer (Product- AI Marketing Tools)', 'Gimmefy AI - Remote', 'WORK', 2),
+('06/2022 - 10/2023', 'Front-End Developer (Products- Amotus online, Diamantra dialer, Call Center CRM)', 'Collaberus technologies pvt. ltd. - Delhi', 'WORK', 1),
+('10/2021 - 06/2022', 'Front-End & Technical Associate', 'Drishti IAS - Delhi', 'WORK', 0);
 
 -- Seed initial experiences data (EDUCATION)
 insert into public.experiences (date_range, title, place, type, sort_order) values
-('2022 - 2023', 'Bachelor of Computer Applications', 'Capital University, Jharkhand (First Division)', 'EDUCATION', 1),
-('2018 - 2021', 'CSE Diploma', 'B.B.S.B.P. College, Sirhind, PSBTE & IT, Chandigarh (First Division)', 'EDUCATION', 2),
-('2018', 'High School', 'Guru Nanak Public Sr. Sec School, CBSE, Kanpur (First Division)', 'EDUCATION', 3);
+('2022 - 2023', 'Bachelor of Computer Applications', 'Capital University, Jharkhand (First Division)', 'EDUCATION', 2),
+('2018 - 2021', 'CSE Diploma', 'B.B.S.B.P. College, Sirhind, PSBTE & IT, Chandigarh (First Division)', 'EDUCATION', 1),
+('2018', 'High School', 'Guru Nanak Public Sr. Sec School, CBSE, Kanpur (First Division)', 'EDUCATION', 0);
