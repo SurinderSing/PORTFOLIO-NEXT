@@ -51,3 +51,4 @@
 - [x] Remove NextAuth dependencies, layout tags, and obsolete files.
 - [x] Synchronize specs and rules document arrays.
 - [x] Configure base URL to https://surinder-singh-portfolio.vercel.app/ in sitemap, robots, and layouts with warning comments.
+- [x] Verify Supabase environment variables and schema execution.

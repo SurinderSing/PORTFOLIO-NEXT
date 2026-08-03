@@ -44,7 +44,7 @@ create table public.projects (
 ```
 
 ### 3. `public.experiences`
-Stores education and job history timelines.
+Stores education and job history timelines. Items are queried ordered by `sort_order` descending (`ascending: false`), so higher values appear first (latest experience/education first).
 
 ```sql
 create table public.experiences (
