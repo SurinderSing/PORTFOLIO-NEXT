@@ -1,15 +1,28 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-export async function updateSession(request: NextRequest) {
+export async function updateSession(
+  request: NextRequest
+): Promise<NextResponse> {
   let supabaseResponse = NextResponse.next({
     request,
   });
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
+  const supabaseUrl =
+    process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+  const supabaseAnonKey =
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key';
+
+  // If Supabase is not configured, skip session handling entirely
+  if (
+    supabaseUrl === 'https://placeholder.supabase.co' ||
+    supabaseAnonKey === 'placeholder-key'
+  ) {
+    return supabaseResponse;
+  }
+
+  try {
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
       cookies: {
         getAll() {
           return request.cookies.getAll();
@@ -26,34 +39,38 @@ export async function updateSession(request: NextRequest) {
           );
         },
       },
+    });
+
+    // This will refresh the session if it's expired
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const url = request.nextUrl.clone();
+
+    // Route protection
+    if (
+      url.pathname.startsWith('/dashboard') ||
+      url.pathname.startsWith('/admin')
+    ) {
+      if (!user) {
+        url.pathname = '/sign-in';
+        return NextResponse.redirect(url);
+      }
     }
-  );
 
-  // This will refresh the session if it's expired
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const url = request.nextUrl.clone();
-
-  // Route protection
-  if (
-    url.pathname.startsWith('/dashboard') ||
-    url.pathname.startsWith('/admin')
-  ) {
-    if (!user) {
-      url.pathname = '/sign-in';
+    // Redirect signed-in users away from auth pages
+    if (
+      user &&
+      (url.pathname.startsWith('/sign-in') ||
+        url.pathname.startsWith('/sign-up'))
+    ) {
+      url.pathname = '/dashboard';
       return NextResponse.redirect(url);
     }
-  }
-
-  // Redirect signed-in users away from auth pages
-  if (
-    user &&
-    (url.pathname.startsWith('/sign-in') || url.pathname.startsWith('/sign-up'))
-  ) {
-    url.pathname = '/dashboard';
-    return NextResponse.redirect(url);
+  } catch {
+    // If Supabase client fails (e.g. network error, invalid config),
+    // allow the request to pass through gracefully.
   }
 
   return supabaseResponse;
