@@ -19,6 +19,8 @@ import {
   ExternalLink,
   ShieldCheck,
   LogOut,
+  Lock,
+  ArrowLeft,
 } from 'lucide-react';
 import Providers from '../provider';
 import { createClient } from '@/utils/supabase/server';
@@ -61,15 +63,50 @@ export default async function AdminLayout({
     .eq('id', user.id)
     .single();
 
+  // Secure 403 Forbidden Screen for unauthorized non-admin users
   if (!profile || profile.role !== 'ADMIN') {
-    redirect('/');
-  }
+    return (
+      <html
+        lang="en"
+        suppressHydrationWarning
+        className={cn(raleway.variable, poppins.variable, pacifico.variable)}
+      >
+        <body className="antialiased min-h-screen bg-background text-foreground font-raleway flex items-center justify-center p-6">
+          <div className="max-w-md w-full p-8 rounded-3xl bg-card border border-border shadow-xl space-y-6 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-destructive/10 text-destructive flex items-center justify-center mx-auto shadow-inner">
+              <Lock size={30} />
+            </div>
 
-  async function handleSignOut() {
-    'use server';
-    const client = createClient();
-    await client.auth.signOut();
-    redirect('/sign-in');
+            <div className="space-y-2">
+              <h2 className="text-2xl font-bold font-poppins">Access Denied</h2>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                You do not have administrative privileges to access this area.
+                If you believe this is an error, please contact the site
+                administrator.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-center gap-3 pt-2">
+              <a
+                href="/"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-border text-xs font-semibold hover:bg-tertiary transition-colors"
+              >
+                <ArrowLeft size={14} />
+                <span>Return to Website</span>
+              </a>
+
+              <a
+                href="/api/auth/sign-out"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full main-gradient-1 text-white text-xs font-semibold shadow-md hover:opacity-90 transition-opacity"
+              >
+                <LogOut size={14} />
+                <span>Sign Out</span>
+              </a>
+            </div>
+          </div>
+        </body>
+      </html>
+    );
   }
 
   return (
@@ -119,16 +156,14 @@ export default async function AdminLayout({
 
                   <ToggleDarkModeBtn />
 
-                  <form action={handleSignOut}>
-                    <button
-                      type="submit"
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
-                      title="Sign Out"
-                    >
-                      <LogOut size={13} />
-                      <span className="sm:hidden">Sign Out</span>
-                    </button>
-                  </form>
+                  <a
+                    href="/api/auth/sign-out"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors"
+                    title="Sign Out"
+                  >
+                    <LogOut size={13} />
+                    <span className="sm:hidden">Sign Out</span>
+                  </a>
                 </div>
               </header>
 

@@ -6,10 +6,14 @@ All database initialization, RLS policies, triggers, and seed scripts are mainta
 
 ---
 
-## Supabase PostgreSQL Table Schemas
+## Supabase PostgreSQL Table Schemas & Two-Way Cascades
 
-### 1. `public.profiles`
+### 1. `public.profiles` & Auth Triggers
 Stores user profile information synced with `auth.users`.
+- **Insert Trigger (`on_auth_user_created`):** When a user registers in `auth.users`, a corresponding `public.profiles` record is automatically created.
+- **Delete Cascade (`on delete cascade`):** When a user is deleted from `auth.users`, their `public.profiles` record and associated posts/comments are automatically deleted.
+- **Reverse Delete Trigger (`on_profile_deleted`):** When a profile is deleted from `public.profiles`, the corresponding user in `auth.users` is automatically deleted via a `security definer` function.
+
 ```sql
 create table public.profiles (
   id uuid references auth.users on delete cascade not null primary key,
@@ -24,6 +28,19 @@ create table public.profiles (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
+
+-- Trigger to delete auth.users when public.profiles is deleted
+create or replace function public.handle_profile_deleted()
+returns trigger as $$
+begin
+  delete from auth.users where id = old.id;
+  return old;
+end;
+$$ language plpgsql security definer;
+
+create trigger on_profile_deleted
+  after delete on public.profiles
+  for each row execute procedure public.handle_profile_deleted();
 ```
 
 ### 2. `public.site_settings`
@@ -60,7 +77,7 @@ create table public.contacts (
   icon_color text default '#EC1C09',
   sort_order integer default 0,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+  updated_at timestamp with time zone default timezone('utc'::text, now()) null
 );
 ```
 
@@ -75,7 +92,7 @@ create table public.social_links (
   icon_color text,
   sort_order integer default 0,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+  updated_at timestamp with time zone default timezone('utc'::text, now()) null
 );
 ```
 
@@ -90,7 +107,7 @@ create table public.about_cards (
   bg_color_class text default 'bg-card dark:bg-gradient-to-r from-secondary to-primary',
   sort_order integer default 0,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+  updated_at timestamp with time zone default timezone('utc'::text, now()) null
 );
 ```
 
@@ -102,7 +119,7 @@ create table public.skill_categories (
   name text not null,
   sort_order integer default 0,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+  updated_at timestamp with time zone default timezone('utc'::text, now()) null
 );
 
 create table public.skills (
@@ -111,7 +128,7 @@ create table public.skills (
   name text not null,
   sort_order integer default 0,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+  updated_at timestamp with time zone default timezone('utc'::text, now()) null
 );
 ```
 
@@ -126,7 +143,7 @@ create table public.experiences (
   type text check (type in ('EDUCATION', 'WORK')) not null,
   sort_order integer default 0,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+  updated_at timestamp with time zone default timezone('utc'::text, now()) null
 );
 ```
 
@@ -142,7 +159,7 @@ create table public.projects (
   image_url text,
   sort_order integer default 0,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+  updated_at timestamp with time zone default timezone('utc'::text, now()) null
 );
 ```
 
@@ -160,7 +177,7 @@ create table public.blog_posts (
   status text default 'DRAFT' check (status in ('DRAFT', 'PUBLISHED', 'ARCHIVED')),
   published_at timestamp with time zone,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+  updated_at timestamp with time zone default timezone('utc'::text, now()) null
 );
 
 create table public.stories (
@@ -172,7 +189,7 @@ create table public.stories (
   status text default 'PUBLISHED' check (status in ('DRAFT', 'PUBLISHED', 'ARCHIVED')),
   published_at timestamp with time zone default timezone('utc'::text, now()),
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+  updated_at timestamp with time zone default timezone('utc'::text, now()) null
 );
 
 create table public.comments (
@@ -182,7 +199,7 @@ create table public.comments (
   story_id uuid references public.stories(id) on delete cascade,
   content text not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) null,
   constraint comment_target_check check (
     (post_id is not null and story_id is null) or
     (post_id is null and story_id is not null)

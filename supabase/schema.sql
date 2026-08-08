@@ -53,11 +53,25 @@ begin
 end;
 $$ language plpgsql security definer;
 
--- Trigger execution
+-- Trigger execution for new user
 drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
+
+-- Trigger execution to delete auth user when profile is deleted
+create or replace function public.handle_profile_deleted()
+returns trigger as $$
+begin
+  delete from auth.users where id = old.id;
+  return old;
+end;
+$$ language plpgsql security definer;
+
+drop trigger if exists on_profile_deleted on public.profiles;
+create trigger on_profile_deleted
+  after delete on public.profiles
+  for each row execute procedure public.handle_profile_deleted();
 
 -- ==============================================================================
 -- 2. Site Settings Table (Single-row global configuration)

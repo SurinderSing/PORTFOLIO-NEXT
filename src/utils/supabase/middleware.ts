@@ -36,22 +36,11 @@ export async function updateSession(request: NextRequest) {
 
   const url = request.nextUrl.clone();
 
-  // Admin route protection: Must be logged in AND have ADMIN role
+  // Admin route protection: Must be logged in
   if (url.pathname.startsWith('/admin')) {
     if (!user) {
       url.pathname = '/sign-in';
       url.searchParams.set('redirect', request.nextUrl.pathname);
-      return NextResponse.redirect(url);
-    }
-
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single();
-
-    if (!profile || profile.role !== 'ADMIN') {
-      url.pathname = '/';
       return NextResponse.redirect(url);
     }
   }
@@ -63,15 +52,6 @@ export async function updateSession(request: NextRequest) {
       url.searchParams.set('redirect', request.nextUrl.pathname);
       return NextResponse.redirect(url);
     }
-  }
-
-  // Redirect signed-in users away from auth pages
-  if (
-    user &&
-    (url.pathname.startsWith('/sign-in') || url.pathname.startsWith('/sign-up'))
-  ) {
-    url.pathname = '/';
-    return NextResponse.redirect(url);
   }
 
   return supabaseResponse;
