@@ -1,17 +1,19 @@
 # Technical Requirements Document (TRD) - PORTFOLIO-NEXT
 
 ## Technical Architecture Overview
-This application is constructed as a React application using the Next.js 14 App Router framework. It leverages Server Components (RSC) by default for optimal page indexing and bundle size, combined with hydrated Client Components for interactive UI fragments.
+This application is constructed as a React application using the Next.js 14 App Router framework. It leverages Server Components (RSC) by default for optimal page indexing and bundle size, combined with hydrated Client Components for interactive UI fragments and an Administrative Control Center.
 
 ```mermaid
 graph TD
   User((Client Browser)) --> NextJS[Next.js App Router]
-  NextJS --> Middleware[Supabase Auth Middleware]
+  NextJS --> Middleware[Supabase Auth & Role Middleware]
   NextJS --> RSC[React Server Components - Supabase Server Client]
   NextJS --> CC[Client Components - Supabase Browser Client]
+  NextJS --> Admin[Admin Control Center - Server Actions]
   NextJS --> API[Next.js API Routes]
   RSC --> Supabase[(Supabase PostgreSQL)]
   CC --> Supabase
+  Admin --> Supabase
   API --> Supabase
 ```
 
@@ -26,20 +28,22 @@ graph TD
 | **shadcn/ui** | Component Library | New-York Style |
 | **Framer Motion** | Micro-Animations | `^12.35.0` |
 | **Redux Toolkit** | Client State & Store | `^2.8.2` |
-| **Supabase Client**| Database & Auth Client | `^2.x` |
-| **Supabase SSR** | Server-Side Auth Cookies | `^0.x` |
+| **Supabase Client**| Database & Auth Client | `^2.111.0` |
+| **Supabase SSR** | Server-Side Auth Cookies | `^0.12.4` |
 | **Formspree React**| Contact Form Processing | `^3.0.0` |
 | **Zod** | Validation Schemas | `^3.25.67` |
 
 ## Infrastructure & Environment Requirements
-The project is optimized for deployment on the **Vercel Platform**. It requires the following environment variables:
+The project is optimized for deployment on the **Vercel Platform** connected to **Supabase Database**. It requires the following environment variables:
 
 - `NEXT_PUBLIC_SUPABASE_URL`: Root Endpoint of the Supabase project.
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Public anonymous api key for client requests.
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Public anonymous API key for client requests.
+- `SUPABASE_SERVICE_ROLE_KEY`: (Optional) Service role key for administrative tasks.
 - `NEXT_PUBLIC_BASE_URL`: Root path of the application (e.g. for canonical links and auth callbacks).
+- `NEXT_PUBLIC_FORMSPREE_FORM_ID`: Formspree form ID for contact submissions.
 
 ## Security Controls
-- **Authentication:** Managed by Supabase Auth with secure OTP code confirmations.
-- **Session Strategy:** Persistent cookie-based authentication handled via `@supabase/ssr` (syncs server actions, middleware, client router, and components).
-- **Row Level Security (RLS):** Enabled on all public PostgreSQL tables (`profiles`, `projects`, `experiences`). Direct select queries are publicly open, while mutations (insert, update, delete) are locked to accounts with the `ADMIN` role.
-- **Middleware Guard:** Intercepts requests to refresh expired session cookies and redirect unauthorized callers away from dashboard/admin routes.
+- **Authentication:** Managed by Supabase Auth with secure email verification callbacks.
+- **Session Strategy:** Persistent cookie-based authentication handled via `@supabase/ssr`.
+- **Role-Based Access Control (RBAC):** Access to `/admin/*` is restricted by middleware and Server Actions verifying `profiles.role = 'ADMIN'`.
+- **Row Level Security (RLS):** Enabled on all 11 PostgreSQL tables (`profiles`, `site_settings`, `contacts`, `social_links`, `about_cards`, `skill_categories`, `skills`, `experiences`, `projects`, `blog_posts`, `stories`, `comments`).

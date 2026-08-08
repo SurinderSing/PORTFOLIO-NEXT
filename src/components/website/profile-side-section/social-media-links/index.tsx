@@ -1,6 +1,7 @@
-import { Github, Instagram, Linkedin } from 'lucide-react';
 import React from 'react';
 import SocialMediaBtn from './social-media-btn';
+import { getSocialLinks } from '@/lib/supabase-queries';
+import { resolveIcon } from '@/utils/icon-resolver';
 
 export interface socialMediaLinksInterface {
   id: number | string;
@@ -10,31 +11,22 @@ export interface socialMediaLinksInterface {
   iconColor?: string;
 }
 
-const socialMediaLinks: socialMediaLinksInterface[] = [
-  {
-    id: 1,
-    name: 'LinkedIn',
-    link: 'https://www.linkedin.com/in/surinder-singh-dev/',
-    icon: <Linkedin color="#0077B5" />,
-  },
-  {
-    id: 2,
-    name: 'Github',
-    link: 'https://github.com/SurinderSing',
-    icon: <Github />,
-  },
-  {
-    id: 3,
-    name: 'Instagram',
-    link: 'https://www.instagram.com/inder.sgh_/',
-    icon: <Instagram color="#d62976" />,
-  },
-];
+const SocialMediaLinks: React.FC = async () => {
+  const dbLinks = await getSocialLinks();
 
-const SocialMediaLinks: React.FC = () => {
+  const links: socialMediaLinksInterface[] = dbLinks.map((item) => ({
+    id: item.id,
+    name: item.name,
+    link: item.url,
+    icon: resolveIcon(item.icon_name, {
+      color: item.icon_color || undefined,
+    }),
+    iconColor: item.icon_color || undefined,
+  }));
+
   return (
     <div className="grid grid-cols-3 justify-between gap-2 w-full max-w-[70%] md:max-w-[93%] mt-3.5">
-      {socialMediaLinks.map((linkData) => (
+      {links.map((linkData) => (
         <SocialMediaBtn key={linkData.id} linkData={linkData} />
       ))}
     </div>

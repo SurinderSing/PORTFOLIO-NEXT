@@ -1,31 +1,29 @@
 # Memory Bank - Active Context
 
 ## Active Focus
-The current focus is **Integrating Supabase (Option A)**. This involves replacing NextAuth with native Supabase Auth (`@supabase/ssr`) and refactoring static arrays to fetch experiences and projects dynamically from Supabase database tables, with safe static fallbacks.
+The current focus is **Dynamic Portfolio Data & Admin Dashboard Integration**. All portfolio data is now fully dynamic via Supabase with robust static fallbacks, an administrative control center exists under `/admin` with role-based access control, and the schema is future-ready for multi-user blog posts, stories, and comments.
 
 ---
 
 ## Decisions Made & Alignment
 
-1. **Option A Selected:** Decided to replace NextAuth with native Supabase Auth (`@supabase/ssr`) and use the Supabase JS client for server-side and browser-side queries.
-2. **Obsoleted Prisma & Credentials auth:** Deleted obsolete NextAuth routes, dependencies, and `AuthProvider` components.
-3. **Trigger-Based Profiling:** Designed a trigger-based user sync mechanism that automatically duplicates Supabase auth sign-ups into a public `profiles` table to maintain administrative user roles.
-4. **Dynamic Timelines with Fallbacks:** Work and Resume timeline arrays query the Supabase Server Client dynamically, but default gracefully to local static variables if the database is unconfigured.
+1. **Full Database Dynamism:** All portfolio data (contacts, experiences, education, work, about cards, summary, social links, headings, descriptions, resume PDF) is dynamically queryable via `src/lib/supabase-queries.ts` and managed via `/admin`.
+2. **Prisma Deprecation Complete:** Removed `@prisma/client`, `prisma`, `mysql2`, `next-auth`, `bcryptjs`, and `nodemailer`. Updated build script to `next build`.
+3. **Role-Based Admin Access:** Implemented middleware and Server Action guards requiring `profiles.role = 'ADMIN'`.
+4. **Icon Resolver Ecosystem:** Created `src/utils/icon-resolver.tsx` to map database string identifiers to Lucide React icons cleanly.
+5. **Future-Ready Multi-User Schema:** Prepared `blog_posts`, `stories`, and `comments` tables with RLS policies in `supabase/schema.sql`.
 
 ---
 
 ## Current Status & Next Actions
 
-- [x] **Install packages:** Installed `@supabase/supabase-js` and `@supabase/ssr`.
-- [x] **Implement client configurations:** Created browser, server, and middleware clients.
-- [x] **Rewrite middleware:** Integrated Supabase session handling and route guards.
-- [x] **Auth views:** Built beautiful, premium Sign-In, Sign-Up, and Verification Success panels.
-- [x] **OTP Confirm Link exchange:** Implemented `/api/auth/confirm` route handler.
-- [x] **Schema SQL script:** Created `supabase/schema.sql` including triggers and initial project/experience seeds.
-- [x] **RSC Database Queries:** Refactored Work and Resume pages to dynamically pull database items.
-- [x] **Clean NextAuth:** Deassigned NextAuth layouts wrappers and deleted AuthProvider/endpoints files.
-- [x] **Documentation Sync:** Updated PRD, TRD, APP_FLOW, BACKEND_SCHEMA, and memory bank details.
-- [x] **Update Agent Rules:** Added high-priority rule to check and fix errors, warnings, and formatting/style issues across configuration files.
-- [x] **Configure Deployment URL:** Configured sitemap, robots, and layouts with `https://surinder-singh-portfolio.vercel.app/` base URL and added warning comments.
-- [ ] **Verification:** Ask the user to configure `.env` variables and import `supabase/schema.sql` to execute schema setup on Supabase.
-
+- [x] **Schema Expansion:** Updated `supabase/schema.sql` with 11 tables, triggers, and full seed data.
+- [x] **Types & Query Layer:** Created `src/types/database.ts` and `src/lib/supabase-queries.ts`.
+- [x] **Icon Resolver:** Created `src/utils/icon-resolver.tsx`.
+- [x] **Public Page Refactors:** Updated Home, Resume, Work, Contact, and Layout with dynamic queries.
+- [x] **Admin Dashboard:** Built `/admin`, `/admin/site-settings`, `/admin/contacts`, `/admin/social-links`, `/admin/about-cards`, `/admin/skills`, `/admin/experiences`, `/admin/projects`.
+- [x] **Server Actions:** Implemented `src/lib/admin-actions.ts` with admin validation and ISR cache revalidation.
+- [x] **Dependency Cleanup:** Removed Prisma/NextAuth/nodemailer packages and updated `package.json`.
+- [x] **TypeScript & Lint Verification:** Verified with `npx tsc --noEmit` (0 errors) and `npm run lint` (0 errors/warnings).
+- [x] **Production Build Verification:** Ran `npm run build` with all 22 routes compiling and optimizing cleanly.
+- [x] **Documentation Sync:** Updated PRD, TRD, BACKEND_SCHEMA, APP_FLOW, and UI_UX_DESIGN_BRIEF.

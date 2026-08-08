@@ -2,7 +2,13 @@ import React from 'react';
 import { Metadata } from 'next';
 import PageProvider from '@/components/website/pages/page-provider';
 import ProjectCard from '@/components/website/pages/work/porject-card';
-import { createClient } from '@/utils/supabase/server';
+import { FadeIn, FadeInItem } from '@/components/animations/fade-in';
+import { ScrollReveal } from '@/components/animations/scroll-reveal';
+import { getSiteSettings, getProjects } from '@/lib/supabase-queries';
+import GimmefyImage from '@/assets/images/projects/gimmefy-ai.png';
+import DialmantraImage from '@/assets/images/projects/dialmantra.png';
+import AmotusImage from '@/assets/images/projects/amotus-online.png';
+import DrishtiImage from '@/assets/images/projects/drishti-ias.png';
 
 export const metadata: Metadata = {
   title: 'Projects | React & Next.js Development Work | Surinder Singh',
@@ -13,103 +19,37 @@ export const metadata: Metadata = {
   },
 };
 
-import GimmefyImage from '@/assets/images/projects/gimmefy-ai.png';
-import DialmantraImage from '@/assets/images/projects/dialmantra.png';
-import AmotusImage from '@/assets/images/projects/amotus-online.png';
-import DrishtiImage from '@/assets/images/projects/drishti-ias.png';
-import { FadeIn, FadeInItem } from '@/components/animations/fade-in';
-import { ScrollReveal } from '@/components/animations/scroll-reveal';
+const staticImageMap: Record<string, any> = {
+  'Gimmefy AI': GimmefyImage,
+  'Dialmantra Dialer': DialmantraImage,
+  'Amotus Online': AmotusImage,
+  'Drishti IAS Website': DrishtiImage,
+};
 
-const staticProjectsData = [
-  {
-    id: 1,
-    image: GimmefyImage,
-    title: 'Gimmefy AI',
-    technologies: ['React', 'TypeScript', 'Mantine', 'Redux Toolkit'],
-    description:
-      'AI-Enhanced Marketing Platform with 150+ automated tasks and personalized AI assistants designed for marketers, by marketers.',
-    link: 'https://gimmefy.ai',
-  },
-  {
-    id: 2,
-    image: DialmantraImage,
-    title: 'Dialmantra Dialer',
-    technologies: [
-      'React.js',
-      'Redux.js',
-      'JavaScript',
-      'JSSIP',
-      'HTML',
-      'Ant Design',
-      'LESS',
-    ],
-    description:
-      'Fast, easy and low cost solution to run a world class contact center without huge investments on hardware and software.',
-    link: 'https://www.dialmantra.in/',
-  },
-  {
-    id: 3,
-    image: AmotusImage,
-    title: 'Amotus Online',
-    technologies: ['React', 'Node.js', 'MongoDB', 'Express'],
-    description:
-      'Amotus Online stands as an innovative remote screen sharing platform, offering a unique solution for enhanced collaboration and communication.',
-    link: 'https://amotus.online/',
-  },
-  {
-    id: 4,
-    image: DrishtiImage,
-    title: 'Drishti IAS Website',
-    technologies: ['JavaScript', 'HTML', 'CSS', 'API Integration'],
-    description:
-      'Improved institute website user interface and experience through collaborative efforts.',
-    link: 'https://drishtiias.com',
-  },
-];
-
-// Revalidate cache every hour
 export const revalidate = 3600;
 
 export default async function Work() {
-  let projectsData = staticProjectsData;
+  const [settings, dbProjects] = await Promise.all([
+    getSiteSettings(),
+    getProjects(),
+  ]);
 
-  try {
-    const supabase = createClient();
-    const { data: dbProjects, error } = await supabase
-      .from('projects')
-      .select('*')
-      .order('id', { ascending: true });
-
-    if (!error && dbProjects && dbProjects.length > 0) {
-      // Map DB fields to Project Card fields
-      projectsData = dbProjects.map((proj: any) => ({
-        id: proj.id,
-        title: proj.title,
-        description: proj.description,
-        technologies: proj.technologies,
-        link: proj.link,
-        image:
-          proj.image_url ||
-          staticProjectsData.find((p) => p.title === proj.title)?.image ||
-          null,
-      }));
-    }
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error(
-      'Supabase query failed, falling back to static projects list:',
-      err
-    );
-  }
+  const projectsData = dbProjects.map((proj) => ({
+    id: proj.id,
+    title: proj.title,
+    description: proj.description,
+    technologies: proj.technologies,
+    link: proj.link,
+    image: proj.image_url || staticImageMap[proj.title] || undefined,
+  }));
 
   return (
     <main className="w-full">
       <PageProvider title="Portfolio">
         <FadeIn>
           <FadeInItem className="mb-4">
-            <p className="para-2 text-muted">
-              Here are some of my recent projects showcasing my expertise in
-              frontend development, AI tools, and modern web technologies.
+            <p className="para-2 text-muted whitespace-pre-line">
+              {settings.work_description}
             </p>
           </FadeInItem>
           <ScrollReveal
@@ -123,8 +63,8 @@ export default async function Work() {
                 key={project.id}
                 title={project.title}
                 technologies={project.technologies}
-                image={project.image || undefined}
-                link={project.link}
+                image={project.image}
+                link={project.link || undefined}
                 description={project.description}
               />
             ))}
@@ -183,7 +123,7 @@ export default async function Work() {
                   url: project.link,
                   creator: {
                     '@type': 'Person',
-                    name: 'Surinder Singh',
+                    name: settings.owner_name,
                   },
                 },
               })),

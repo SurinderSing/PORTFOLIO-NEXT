@@ -11,6 +11,7 @@ import ProfileSideSection from '@/features/website/profile-side-section';
 import GlobalLoader from '@/components/ui/global-loader';
 import RouteLoader from '@/components/ui/route-loader';
 import Providers from '../provider';
+import { getSiteSettings, getSocialLinks } from '@/lib/supabase-queries';
 
 // WARNING: Update all occurrences of the base URL in layout.tsx, sitemap.ts, and robots.ts whenever the production deployment domain changes!
 export const metadata: Metadata = {
@@ -56,20 +57,27 @@ export const metadata: Metadata = {
     title: 'Surinder Singh | Frontend Developer',
     description:
       'Frontend Developer specializing in React, Next.js, and modern web technologies. Explore my projects and experience.',
-    creator: '@SurinderDev', // Assuming a handle or similar
+    creator: '@SurinderDev',
   },
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 5, // Allow zooming for accessibility
+  maximumScale: 5,
   userScalable: true,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const [settings, socialLinks] = await Promise.all([
+    getSiteSettings(),
+    getSocialLinks(),
+  ]);
+
+  const sameAsUrls = socialLinks.map((link) => link.url);
+
   return (
     <html
       lang="en"
@@ -91,16 +99,11 @@ export default function RootLayout({
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'Person',
-              name: 'Surinder Singh',
+              name: settings.owner_name,
               url: 'https://surinder-singh-portfolio.vercel.app',
-              jobTitle: 'Frontend Developer',
-              sameAs: [
-                'https://github.com/SurinderSing',
-                'https://www.linkedin.com/in/surinder-singh-dev/',
-                'https://www.instagram.com/inder.sgh_/',
-              ],
-              description:
-                'Frontend Developer with 4+ years of experience specializing in React, Next.js, and AI tools.',
+              jobTitle: settings.owner_title,
+              sameAs: sameAsUrls,
+              description: settings.owner_summary,
               worksFor: {
                 '@type': 'Organization',
                 name: 'Gimmefy AI',

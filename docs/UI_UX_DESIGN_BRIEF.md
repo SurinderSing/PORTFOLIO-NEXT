@@ -1,7 +1,7 @@
 # UI/UX Design Brief - PORTFOLIO-NEXT
 
 ## Design Aesthetic
-A sleek, modern developer portfolio featuring curated gradients, dark mode support, fluid responsiveness, and premium micro-animations that engage visitors.
+A sleek, modern developer portfolio featuring curated gradients, dark mode support, fluid responsiveness, and premium micro-animations that engage visitors, paired with a clean, functional administrative control center.
 
 ## Design Tokens & Typography
 
@@ -10,16 +10,6 @@ The site uses custom Google fonts configured via `next/font` (mapped to CSS vari
 - **Raleway (`--font-raleway`):** Principal body typeface. Clean, geometric, and highly readable.
 - **Poppins (`--font-poppins`):** Headings typeface. Offers modern and structured hierarchy.
 - **Pacifico (`--font-pacifico`):** Highlight/Accent brand font. Used for cursive signatures or logo branding.
-
-### Spacing & Layout Constraints
-- **Main Container:** Wrapped in `.section-container` (defined in `src/styles/main.css`). Max-width is `1200px` with horizontal padding (`px-4`).
-- **Responsive Breaks:** Desktop-first configuration using Tailwind max-width media rules:
-  - `2xl`: `max-width: 1536px`
-  - `xl`: `max-width: 1280px`
-  - `lg`: `max-width: 1024px`
-  - `md`: `max-width: 768px` (Header collapses, layouts stack vertically)
-  - `sm`: `max-width: 640px`
-  - `xs`: `max-width: 480px`
 
 ### Typography Hierarchy
 
@@ -55,13 +45,12 @@ The application leverages HSL variables mapped dynamically for light/dark themes
 
 ---
 
-## Animation Ecosystem
+## Dynamic Icon Resolution Ecosystem
+All icon strings stored in the database (e.g. `code-xml`, `brain`, `phone`, `mail`, `github`, `linkedin`) are dynamically resolved into Lucide React components using `src/utils/icon-resolver.tsx`. This avoids storing raw JSX or HTML in database tables while maintaining full type safety and styling customizability.
 
-Page entries and interactions use Framer Motion components (`src/components/animations/`):
-1. **FadeIn (`fade-in.tsx`):** Container animation supporting staggered children entry delays.
-2. **ScrollReveal (`scroll-reveal.tsx`):** Triggered when components intersect viewport boundaries. Animates opacity and vertical translation.
-3. **AnimatedDivider (`animated-divider.tsx`):** Scale-in border animation.
-4. **Keyframe Animations (Tailwind):**
-   - `fade-in-up`: Opacity + translation upward offset.
-   - `progress`: Infinite loader bar translation.
-   - `pulse-slow`: Subtle scale pulsing.
+---
+
+## Admin Dashboard Interface Design
+- **Layout:** Sticky header with website link & sign-out + collapsible sidebar navigation.
+- **Card-Based Form Blocks:** Grouped inputs with validation feedback and toast alerts.
+- **Data Tables:** Interactive rows with hover highlights, badge previews, and edit/delete action triggers.
