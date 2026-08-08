@@ -12,6 +12,9 @@
 - [x] Future-Ready Multi-User Blog & Stories Schema Stubs with Comments
 - [x] Deprecation & Removal of Prisma, MySQL, and NextAuth packages
 - [x] Production Build & Linter Verification (Zero errors)
+- [x] Security Hardening (Zero schema exposure, secure 403 screen, sign-out API route, two-way cascade triggers)
+- [ ] File Upload System (Profile photo, resume PDF, about card images via Supabase Storage)
+- [ ] Live Project Previews (iframe / embed replacing static screenshot uploads)
 
 ---
 
@@ -62,3 +65,27 @@
 - [x] Build Server Actions `src/lib/admin-actions.ts` with role validation and ISR revalidation.
 - [x] Remove Prisma and legacy packages from `package.json`.
 - [x] Verify `npm run lint` (0 errors) and `npm run build` (22 pages compiled).
+
+### Phase 5: Security Hardening (100% Completed)
+- [x] Remove all internal schema exposure (table names, UUIDs, SQL) from user-facing UI.
+- [x] Implement secure 403 Access Denied screen for non-admin users.
+- [x] Create dedicated `/api/auth/sign-out` route for reliable session termination.
+- [x] Add two-way cascading deletion triggers (`auth.users` ↔ `public.profiles`).
+- [x] Fix middleware redirect loops for authenticated non-admin users.
+
+### Phase 6: File Uploads & Media Management (Pending)
+- [ ] Set up Supabase Storage bucket(s) for media assets.
+- [ ] Build profile photo uploader in Admin Site Settings (upload, preview, crop).
+- [ ] Build resume PDF uploader in Admin Site Settings (upload, replace, download link).
+- [ ] Build about card icon/image uploader (if custom images are needed beyond Lucide icons).
+- [ ] Build blog post cover image uploader (for future blog feature).
+- [ ] Wire uploaded URLs to database fields (`profile_photo_url`, `resume_pdf_url`, `cover_image_url`).
+- [ ] Add image optimization and size validation on upload.
+
+### Phase 7: Live Project Previews (Pending)
+- [ ] Replace static `image_url` screenshot approach with live website previews.
+- [ ] Add `preview_url` field to `projects` table for iframe source.
+- [ ] Build responsive iframe/embed preview component for Work page project cards.
+- [ ] Add fallback to static image when iframe is unavailable or blocked (X-Frame-Options).
+- [ ] Add preview toggle in Admin Projects manager (choose between iframe live preview vs. static image).
+- [ ] Handle loading states, error states, and sandbox security for embedded iframes.
