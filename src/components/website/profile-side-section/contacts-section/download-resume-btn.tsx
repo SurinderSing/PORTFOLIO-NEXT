@@ -1,11 +1,20 @@
 import { Download } from 'lucide-react';
 import React from 'react';
 
-const DownloadResumeBtn: React.FC = () => {
+interface DownloadResumeBtnProps {
+  resumeUrl?: string | null;
+}
+
+const DownloadResumeBtn: React.FC<DownloadResumeBtnProps> = ({ resumeUrl }) => {
+  const url = resumeUrl || '/resume/Surinder_Singh_Resume.pdf';
+  const fileName = url.split('/').pop() || 'Surinder_Singh_Resume.pdf';
+
   return (
     <a
-      href="/resume/Surinder_Singh_Resume.pdf"
-      download="Surinder_Singh_Resume.pdf"
+      href={url}
+      download={fileName}
+      target="_blank"
+      rel="noopener noreferrer"
       className="inline-block main-gradient-1 px-4 py-2 rounded-full hover:opacity-90 transition-opacity duration-200"
       aria-label="Download Resume"
     >

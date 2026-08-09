@@ -1,8 +1,9 @@
 import React from 'react';
 import DownloadResumeBtn from './download-resume-btn';
-import { Mail, MapPin, Phone } from 'lucide-react';
 import ContactBox from './contact-box';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { getContacts, getSiteSettings } from '@/lib/supabase-queries';
+import { resolveIcon } from '@/utils/icon-resolver';
 
 export interface ContactsSectionDataInterface {
   id: number | string;
@@ -11,37 +12,34 @@ export interface ContactsSectionDataInterface {
   detail: string;
 }
 
-const contactsSectionData: ContactsSectionDataInterface[] = [
-  {
-    id: 1,
-    icon: <Phone color="#EC1C09" size={18} className="min-w-[18px]" />,
-    title: 'Phone',
-    detail: '+91 6386202678',
-  },
-  {
-    id: 2,
-    icon: <Mail color="#FF9A1A" size={18} className="min-w-[18px]" />,
-    title: 'Email',
-    detail: 'ssurindersingh100@gmail.com',
-  },
-  {
-    id: 3,
-    icon: <MapPin color="#EC1C09" size={18} className="min-w-[18px]" />,
-    title: 'Location',
-    detail: 'Delhi, India',
-  },
-];
+const ContactsSection: React.FC = async () => {
+  const [dbContacts, settings] = await Promise.all([
+    getContacts(),
+    getSiteSettings(),
+  ]);
 
-const ContactsSection: React.FC = () => {
+  const contactsData: ContactsSectionDataInterface[] = dbContacts.map(
+    (item) => ({
+      id: item.id,
+      title: item.title,
+      detail: item.detail,
+      icon: resolveIcon(item.icon_name, {
+        color: item.icon_color || undefined,
+        size: 18,
+        className: 'min-w-[18px]',
+      }),
+    })
+  );
+
   return (
     <ScrollArea className="w-full max-w-[85%] md:max-w-[95%] bg-background rounded-2xl my-5">
       <div>
-        {contactsSectionData?.map((contactData) => (
+        {contactsData.map((contactData) => (
           <ContactBox key={contactData.id} contactData={contactData} />
         ))}
       </div>
       <div className="text-center p-4">
-        <DownloadResumeBtn />
+        <DownloadResumeBtn resumeUrl={settings.resume_pdf_url} />
       </div>
     </ScrollArea>
   );
