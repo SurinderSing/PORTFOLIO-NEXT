@@ -1,0 +1,469 @@
+'use server';
+
+import { createClient } from '@/utils/supabase/server';
+import { revalidatePath } from 'next/cache';
+import {
+  SiteSettings,
+  Contact,
+  SocialLink,
+  AboutCard,
+  SkillCategory,
+  Skill,
+  Experience,
+  Project,
+} from '@/types/database';
+
+export interface ActionResult {
+  success: boolean;
+  message?: string;
+  error?: string;
+}
+
+// Helper to verify admin permissions
+async function verifyAdmin(): Promise<{ authorized: boolean; error?: string }> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { authorized: false, error: 'Unauthorized: Please sign in.' };
+  }
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+
+  if (!profile || profile.role !== 'ADMIN') {
+    return {
+      authorized: false,
+      error: 'Forbidden: Admin access required.',
+    };
+  }
+
+  return { authorized: true };
+}
+
+// ============================================================================
+// 1. Site Settings Actions
+// ============================================================================
+
+export async function updateSiteSettingsAction(
+  data: Partial<SiteSettings>
+): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase.from('site_settings').upsert({
+    id: 1,
+    ...data,
+    updated_at: new Date().toISOString(),
+  });
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  revalidatePath('/', 'layout');
+  revalidatePath('/resume');
+  revalidatePath('/work');
+  revalidatePath('/contact');
+
+  return { success: true, message: 'Site settings updated successfully.' };
+}
+
+// ============================================================================
+// 2. Contacts Actions
+// ============================================================================
+
+export async function createContactAction(
+  data: Omit<Contact, 'id' | 'created_at' | 'updated_at'>
+): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase.from('contacts').insert({
+    ...data,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  });
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/', 'layout');
+  revalidatePath('/contact');
+  return { success: true, message: 'Contact created successfully.' };
+}
+
+export async function updateContactAction(
+  id: number,
+  data: Partial<Contact>
+): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase
+    .from('contacts')
+    .update({ ...data, updated_at: new Date().toISOString() })
+    .eq('id', id);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/', 'layout');
+  revalidatePath('/contact');
+  return { success: true, message: 'Contact updated successfully.' };
+}
+
+export async function deleteContactAction(id: number): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase.from('contacts').delete().eq('id', id);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/', 'layout');
+  revalidatePath('/contact');
+  return { success: true, message: 'Contact deleted successfully.' };
+}
+
+// ============================================================================
+// 3. Social Links Actions
+// ============================================================================
+
+export async function createSocialLinkAction(
+  data: Omit<SocialLink, 'id' | 'created_at' | 'updated_at'>
+): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase.from('social_links').insert({
+    ...data,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  });
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/', 'layout');
+  return { success: true, message: 'Social link created successfully.' };
+}
+
+export async function updateSocialLinkAction(
+  id: number,
+  data: Partial<SocialLink>
+): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase
+    .from('social_links')
+    .update({ ...data, updated_at: new Date().toISOString() })
+    .eq('id', id);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/', 'layout');
+  return { success: true, message: 'Social link updated successfully.' };
+}
+
+export async function deleteSocialLinkAction(
+  id: number
+): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase.from('social_links').delete().eq('id', id);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/', 'layout');
+  return { success: true, message: 'Social link deleted successfully.' };
+}
+
+// ============================================================================
+// 4. About Cards Actions
+// ============================================================================
+
+export async function createAboutCardAction(
+  data: Omit<AboutCard, 'id' | 'created_at' | 'updated_at'>
+): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase.from('about_cards').insert({
+    ...data,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  });
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/');
+  return { success: true, message: 'About card created successfully.' };
+}
+
+export async function updateAboutCardAction(
+  id: number,
+  data: Partial<AboutCard>
+): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase
+    .from('about_cards')
+    .update({ ...data, updated_at: new Date().toISOString() })
+    .eq('id', id);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/');
+  return { success: true, message: 'About card updated successfully.' };
+}
+
+export async function deleteAboutCardAction(id: number): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase.from('about_cards').delete().eq('id', id);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/');
+  return { success: true, message: 'About card deleted successfully.' };
+}
+
+// ============================================================================
+// 5. Skills & Categories Actions
+// ============================================================================
+
+export async function createSkillCategoryAction(
+  data: Omit<SkillCategory, 'id' | 'created_at' | 'updated_at'>
+): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase.from('skill_categories').insert({
+    ...data,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  });
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/resume');
+  return { success: true, message: 'Skill category created successfully.' };
+}
+
+export async function updateSkillCategoryAction(
+  id: number,
+  data: Partial<SkillCategory>
+): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase
+    .from('skill_categories')
+    .update({ ...data, updated_at: new Date().toISOString() })
+    .eq('id', id);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/resume');
+  return { success: true, message: 'Skill category updated successfully.' };
+}
+
+export async function deleteSkillCategoryAction(
+  id: number
+): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase
+    .from('skill_categories')
+    .delete()
+    .eq('id', id);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/resume');
+  return { success: true, message: 'Skill category deleted successfully.' };
+}
+
+export async function createSkillAction(
+  data: Omit<Skill, 'id' | 'created_at' | 'updated_at'>
+): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase.from('skills').insert({
+    ...data,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  });
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/resume');
+  return { success: true, message: 'Skill created successfully.' };
+}
+
+export async function updateSkillAction(
+  id: number,
+  data: Partial<Skill>
+): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase
+    .from('skills')
+    .update({ ...data, updated_at: new Date().toISOString() })
+    .eq('id', id);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/resume');
+  return { success: true, message: 'Skill updated successfully.' };
+}
+
+export async function deleteSkillAction(id: number): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase.from('skills').delete().eq('id', id);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/resume');
+  return { success: true, message: 'Skill deleted successfully.' };
+}
+
+// ============================================================================
+// 6. Experiences Actions
+// ============================================================================
+
+export async function createExperienceAction(
+  data: Omit<Experience, 'id' | 'created_at' | 'updated_at'>
+): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase.from('experiences').insert({
+    ...data,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  });
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/resume');
+  return { success: true, message: 'Experience created successfully.' };
+}
+
+export async function updateExperienceAction(
+  id: number,
+  data: Partial<Experience>
+): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase
+    .from('experiences')
+    .update({ ...data, updated_at: new Date().toISOString() })
+    .eq('id', id);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/resume');
+  return { success: true, message: 'Experience updated successfully.' };
+}
+
+export async function deleteExperienceAction(
+  id: number
+): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase.from('experiences').delete().eq('id', id);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/resume');
+  return { success: true, message: 'Experience deleted successfully.' };
+}
+
+// ============================================================================
+// 7. Projects Actions
+// ============================================================================
+
+export async function createProjectAction(
+  data: Omit<Project, 'id' | 'created_at' | 'updated_at'>
+): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase.from('projects').insert({
+    ...data,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  });
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/work');
+  return { success: true, message: 'Project created successfully.' };
+}
+
+export async function updateProjectAction(
+  id: number,
+  data: Partial<Project>
+): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase
+    .from('projects')
+    .update({ ...data, updated_at: new Date().toISOString() })
+    .eq('id', id);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/work');
+  return { success: true, message: 'Project updated successfully.' };
+}
+
+export async function deleteProjectAction(id: number): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase.from('projects').delete().eq('id', id);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/work');
+  return { success: true, message: 'Project deleted successfully.' };
+}

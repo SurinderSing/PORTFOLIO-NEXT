@@ -48,13 +48,20 @@ export async function updateSession(
 
     const url = request.nextUrl.clone();
 
-    // Route protection
-    if (
-      url.pathname.startsWith('/dashboard') ||
-      url.pathname.startsWith('/admin')
-    ) {
+    // Admin route protection: Must be logged in
+    if (url.pathname.startsWith('/admin')) {
       if (!user) {
         url.pathname = '/sign-in';
+        url.searchParams.set('redirect', request.nextUrl.pathname);
+        return NextResponse.redirect(url);
+      }
+    }
+
+    // General dashboard protection: Must be authenticated
+    if (url.pathname.startsWith('/dashboard')) {
+      if (!user) {
+        url.pathname = '/sign-in';
+        url.searchParams.set('redirect', request.nextUrl.pathname);
         return NextResponse.redirect(url);
       }
     }

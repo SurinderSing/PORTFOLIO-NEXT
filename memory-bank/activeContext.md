@@ -1,32 +1,42 @@
 # Memory Bank - Active Context
 
 ## Active Focus
-The current focus is **Integrating Supabase (Option A)**. This involves replacing NextAuth with native Supabase Auth (`@supabase/ssr`) and refactoring static arrays to fetch experiences and projects dynamically from Supabase database tables, with safe static fallbacks.
+The current focus is **Deployment Fix & Performance Optimization (completed)** with two upcoming feature phases queued.
 
 ---
 
-## Decisions Made & Alignment
+## Recently Completed
 
-1. **Option A Selected:** Decided to replace NextAuth with native Supabase Auth (`@supabase/ssr`) and use the Supabase JS client for server-side and browser-side queries.
-2. **Obsoleted Prisma & Credentials auth:** Deleted obsolete NextAuth routes, dependencies, and `AuthProvider` components.
-3. **Trigger-Based Profiling:** Designed a trigger-based user sync mechanism that automatically duplicates Supabase auth sign-ups into a public `profiles` table to maintain administrative user roles.
-4. **Dynamic Timelines with Fallbacks:** Work and Resume timeline arrays query the Supabase Server Client dynamically, defaulting gracefully to local static variables if the database is unconfigured.
-5. **Experiences Sort Ordering:** Updated Resume timeline query to order by `sort_order` descending (`ascending: false`), placing the latest experiences (highest `sort_order` integer) at the top of the list.
-6. **Middleware Crash Prevention:** Fixed `MIDDLEWARE_INVOCATION_FAILED` on Edge runtime by making Supabase middleware client crash-safe with fallback values and try/catch error handling.
+1. **Anonymous Supabase Server Client:** Created `@/utils/supabase/server-anon` — a cookieless, stateless client using `@supabase/supabase-js` for public read-only queries. All query functions in `supabase-queries.ts` now use this client, enabling static generation (SSG) and ISR revalidation on public pages instead of forced dynamic rendering.
+2. **Suspense Boundary for Sign-In:** Wrapped `useSearchParams()` in the `/sign-in` page inside a `<Suspense>` boundary to satisfy Next.js 14 prerendering requirements.
+3. **Deployment Safety Rules:** Added high-priority rules to both `AGENTS.md` and `.agents/AGENTS.md` requiring build verification (`npm run build`) before concluding tasks, preferring static generation, and documenting the Supabase client architecture.
+4. **All Public Pages Now Statically Generated:** `/`, `/contact`, `/resume`, `/work`, `/sign-in`, `/sign-up` are all `○ Static` in the build output — served from CDN edge.
 
 ---
 
-## Current Status & Next Actions
+## Upcoming Tasks (Pending)
 
-- [x] **Install packages:** Installed `@supabase/supabase-js` and `@supabase/ssr`.
-- [x] **Implement client configurations:** Created browser, server, and middleware clients.
-- [x] **Rewrite middleware:** Integrated Supabase session handling and route guards with crash-safe fallbacks.
-- [x] **Auth views:** Built beautiful, premium Sign-In, Sign-Up, and Verification Success panels.
-- [x] **OTP Confirm Link exchange:** Implemented `/api/auth/confirm` route handler.
-- [x] **Schema SQL script:** Created `supabase/schema.sql` including triggers and initial project/experience seeds.
-- [x] **RSC Database Queries:** Refactored Work and Resume pages to dynamically pull database items ordered by sort_order descending.
-- [x] **Clean NextAuth:** Deassigned NextAuth layouts wrappers and deleted AuthProvider/endpoints files.
-- [x] **Documentation Sync:** Updated PRD, TRD, APP_FLOW, BACKEND_SCHEMA, schema.sql, and memory bank details.
-- [x] **Update Agent Rules:** Added high-priority rule to check and fix errors, warnings, and formatting/style issues across configuration files.
-- [x] **Configure Deployment URL:** Configured sitemap, robots, and layouts with `https://surinder-singh-portfolio.vercel.app/` base URL and added warning comments.
-- [x] **Verification:** User configured `.env` variables and imported `supabase/schema.sql` to execute schema setup on Supabase.
+### Phase 6: File Uploads & Media Management
+- Set up Supabase Storage bucket(s) for media assets.
+- Build **profile photo uploader** in Admin Site Settings.
+- Build **resume PDF uploader** in Admin Site Settings.
+- Build **about card image uploader** (if custom images beyond Lucide icons are needed).
+- Build **blog post cover image uploader** (for future blog feature).
+- Wire uploaded file URLs to the corresponding database fields (`profile_photo_url`, `resume_pdf_url`, `cover_image_url`).
+- Add image optimization and file size validation.
+
+### Phase 7: Live Project Previews
+- Replace static `image_url` screenshot approach with **live website previews** (iframe/embed).
+- Add `preview_url` field to `projects` table for iframe source URL.
+- Build responsive iframe preview component for the Work page project cards.
+- Add fallback to static image when iframe is unavailable (sites blocking via X-Frame-Options).
+- Add toggle in Admin Projects manager (iframe live preview vs. static image).
+- Handle loading states, error states, and sandbox security for embedded iframes.
+
+---
+
+## Verification Status
+
+- **TypeScript Compilation:** `npx tsc --noEmit` -> 0 errors.
+- **ESLint Validation:** `npm run lint` -> 0 errors/warnings.
+- **Production Build:** `npm run build` -> 22/22 routes successfully generated (all public pages static ○, admin pages dynamic ƒ).

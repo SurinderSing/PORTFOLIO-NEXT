@@ -1,29 +1,41 @@
 # Application Flow Document - PORTFOLIO-NEXT
 
-This document outlines the routing, page hierarchies, and logic mapping of the application.
+This document outlines the routing structure, access middleware, and page hierarchies.
 
 ## Routing Map
 
-The application utilizes Next.js App Router folders separated into specific route groups:
+The application utilizes Next.js 14 App Router organized into separated route groups:
 
 ```
 src/app/
-├── (website)/               # Publicly viewable portfolio pages
-│   ├── contact/             # Contact page containing validated email form
-│   ├── resume/              # Timeline summary of skills & career history (Supabase-backed)
-│   ├── work/                # Filterable grid of active project representations (Supabase-backed)
+├── (website)/               # Publicly viewable portfolio pages (SSR / RSC)
+│   ├── contact/             # Dynamic contacts + Formspree form
+│   ├── resume/              # Dynamic education, work timeline & skills matrix
+│   ├── work/                # Dynamic projects showcase cards
 │   ├── layout.tsx           # Global website frame (Header, Navbar, Profile card)
-│   └── page.tsx             # Root home screen ("About me" overview)
+│   └── page.tsx             # Root home screen ("About me" overview & about cards)
 │
-├── (auth)/                  # Session registration routes
-│   ├── sign-in/             # Sign-in login panel (Supabase Client auth)
-│   ├── sign-up/             # Create user account form (Supabase Client auth)
+├── (admin)/                 # Administrative management control center (Protected)
+│   ├── layout.tsx           # Admin shell (Navigation sidebar, header, role guard)
+│   └── admin/
+│       ├── page.tsx         # Dashboard overview with metrics & quick navigation
+│       ├── site-settings/   # Edit global texts, owner info, resume PDF URL
+│       ├── contacts/        # CRUD phone, email, and location entries
+│       ├── social-links/    # CRUD LinkedIn, GitHub, Instagram links
+│       ├── about-cards/     # CRUD "What I do!" homepage cards
+│       ├── skills/          # CRUD skill categories & individual skills
+│       ├── experiences/     # CRUD work & education timelines
+│       └── projects/        # CRUD portfolio projects & tech chips
+│
+├── (auth)/                  # Session registration routes (Supabase Auth)
+│   ├── sign-in/             # Sign-in login panel
+│   ├── sign-up/             # Create user account form
 │   ├── verification-success/# Verified status landing page
-│   └── layout.tsx           # Minimalistic authentication layout header frame
+│   └── layout.tsx           # Minimalistic authentication layout frame
 │
 ├── api/                     # Backend API endpoints
 │   ├── auth/
-│   │   └── confirm/         # Code-exchange OTP redirect handler
+│   │   └── confirm/         # Supabase OTP token verification callback
 │   └── route.ts             # Health check HEAD test endpoint
 │
 ├── provider.tsx             # Redux Store wrapper provider
@@ -33,9 +45,9 @@ src/app/
 
 ---
 
-## Access Controls & Middleware Flow
+## Access Controls & Role-Based Middleware Flow
 
-The application routing is protected by edge middleware (`src/middleware.ts`):
+The application routing is protected by edge middleware (`src/utils/supabase/middleware.ts`):
 
 ```mermaid
 sequenceDiagram
@@ -43,47 +55,47 @@ sequenceDiagram
     actor User as Client Browser
     participant MW as Middleware (Supabase)
     participant Signin as /sign-in
-    participant Dash as /dashboard
+    participant Admin as /admin/*
+    participant Home as /
 
-    User->>MW: Requests /dashboard
-    alt is authenticated (has Supabase cookie session)
-        MW->>Dash: Forward Request
-    else is anonymous
-        MW->>Signin: Redirect to /sign-in
+    User->>MW: Requests /admin/*
+    alt Unauthenticated
+        MW->>Signin: Redirect to /sign-in?redirect=/admin
+    else Authenticated
+        MW->>MW: Query profiles.role for user.id
+        alt role == 'ADMIN'
+            MW->>Admin: Allow Request
+        else role != 'ADMIN'
+            MW->>Home: Redirect to / (Forbidden)
+        end
     end
 
-    User->>MW: Requests /sign-in
-    alt is authenticated
-        MW->>Dash: Redirect to /dashboard
-    else is anonymous
+    User->>MW: Requests /sign-in or /sign-up
+    alt Authenticated
+        MW->>Home: Redirect to /
+    else Unauthenticated
         MW->>Signin: Forward Request
     end
 ```
 
-### Protected Routes List
-- `/dashboard` (and any nested folders like `/dashboard/:path*`)
-- `/admin` (and nested admin routes `/admin/:path*`)
-
 ---
 
-## Session & Verification Flow (Supabase)
+## Admin Mutation Flow (Server Actions)
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor Client as User Browser
-    participant API as /api/auth/confirm
-    participant Supabase as Supabase Auth
+    actor Admin as Admin User
+    participant Page as Admin Client Form
+    participant Action as Server Action (admin-actions.ts)
+    participant Supabase as Supabase DB
+    participant Cache as Next.js Cache (revalidatePath)
 
-    Client->>Supabase: Sign up via Browser Client SDK
-    Supabase->>Client: Send verification email
-    Client->>API: Click email link (/api/auth/confirm?token_hash=xxx&type=signup)
-    API->>Supabase: verifyOtp(type, token_hash)
-    Supabase-->>API: Set session cookie on client response
-    API->>Client: Redirect to /verification-success
+    Admin->>Page: Fill form & click "Save Changes"
+    Page->>Action: Call Server Action (e.g. updateSiteSettingsAction)
+    Action->>Supabase: Verify session & check profiles.role == 'ADMIN'
+    Action->>Supabase: Execute Mutation (insert/update/delete)
+    Action->>Cache: revalidatePath('/', 'layout'), revalidatePath('/resume'), etc.
+    Action-->>Page: Return { success: true, message: 'Saved.' }
+    Page-->>Admin: Show success toast notification
 ```
-
-1. **Sign Up:** User enters details on `/sign-up`. Browser client calls `supabase.auth.signUp()`.
-2. **Mail verification:** User receives signup link which directs them to `/api/auth/confirm?token_hash=...`.
-3. **Session Exchange:** The GET handler in `confirm/route.ts` runs token verification and sets session cookies via `@supabase/ssr`.
-4. **Final Page redirect:** User lands on `/verification-success`.
