@@ -89,3 +89,4 @@
 - [ ] Add fallback to static image when iframe is unavailable or blocked (X-Frame-Options).
 - [ ] Add preview toggle in Admin Projects manager (choose between iframe live preview vs. static image).
 - [ ] Handle loading states, error states, and sandbox security for embedded iframes.
+

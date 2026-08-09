@@ -672,3 +672,4 @@ where not exists (select 1 from public.projects where title = 'Amotus Online');
 insert into public.projects (title, description, technologies, link, image_url, sort_order)
 select 'Drishti IAS Website', 'Improved institute website user interface and experience through collaborative efforts.', array['JavaScript', 'HTML', 'CSS', 'API Integration'], 'https://drishtiias.com', null, 4
 where not exists (select 1 from public.projects where title = 'Drishti IAS Website');
+
