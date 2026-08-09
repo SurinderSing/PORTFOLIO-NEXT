@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server';
+import { createAnonClient } from '@/utils/supabase/server-anon';
 import {
   SiteSettings,
   Contact,
@@ -336,7 +336,7 @@ export const defaultProjects: Project[] = [
 
 export async function getSiteSettings(): Promise<SiteSettings> {
   try {
-    const supabase = createClient();
+    const supabase = createAnonClient();
     const { data, error } = await supabase
       .from('site_settings')
       .select('*')
@@ -355,7 +355,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
 
 export async function getContacts(): Promise<Contact[]> {
   try {
-    const supabase = createClient();
+    const supabase = createAnonClient();
     const { data, error } = await supabase
       .from('contacts')
       .select('*')
@@ -373,7 +373,7 @@ export async function getContacts(): Promise<Contact[]> {
 
 export async function getSocialLinks(): Promise<SocialLink[]> {
   try {
-    const supabase = createClient();
+    const supabase = createAnonClient();
     const { data, error } = await supabase
       .from('social_links')
       .select('*')
@@ -391,7 +391,7 @@ export async function getSocialLinks(): Promise<SocialLink[]> {
 
 export async function getAboutCards(): Promise<AboutCard[]> {
   try {
-    const supabase = createClient();
+    const supabase = createAnonClient();
     const { data, error } = await supabase
       .from('about_cards')
       .select('*')
@@ -411,7 +411,7 @@ export async function getSkillsByCategory(): Promise<
   SkillCategoryWithSkills[]
 > {
   try {
-    const supabase = createClient();
+    const supabase = createAnonClient();
     const { data: categories, error: catError } = await supabase
       .from('skill_categories')
       .select('*')
@@ -439,7 +439,7 @@ export async function getExperiences(
   type?: 'EDUCATION' | 'WORK'
 ): Promise<Experience[]> {
   try {
-    const supabase = createClient();
+    const supabase = createAnonClient();
     let query = supabase
       .from('experiences')
       .select('*')
@@ -464,7 +464,7 @@ export async function getExperiences(
 
 export async function getProjects(): Promise<Project[]> {
   try {
-    const supabase = createClient();
+    const supabase = createAnonClient();
     const { data, error } = await supabase
       .from('projects')
       .select('*')

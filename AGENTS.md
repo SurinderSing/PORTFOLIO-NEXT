@@ -23,6 +23,9 @@ To maintain project integrity, follow this three-tier ruleset:
 ### 🟩 Always Do
 - **Keep Documentation Updated (Highest Priority):** Always update the repository documentation (`/docs/` specifications, instruction rules, memory bank files, and any related contexts) in the same PR or task session as the code changes. Never let documentation get out of sync with code modifications.
 - **Check for and Fix Errors/Warnings (High Priority):** Always run checks for build errors, TypeScript compiler warnings, eslint warnings, and formatting/style warnings after completing the work, and fix all of them before concluding the task.
+- **Prevent Deployment Failures (High Priority):** Always run `npm run build` before concluding any task that modifies source code. If the build fails, fix all errors within the same task session. Never leave the codebase in a broken build state.
+- **Prefer Static Generation & Performance:** Always choose the most optimized and efficient approach. Prefer static generation (SSG) and ISR over `force-dynamic` for public pages. Keep the app fast and responsive. Use the anonymous Supabase client (`@/utils/supabase/server-anon`) for public read-only queries, and the cookie-based client (`@/utils/supabase/server`) only for authenticated operations.
+- **Suspense Boundaries for Client Hooks:** Always wrap `useSearchParams()`, `usePathname()`, and similar client hooks that prevent static prerendering inside a `<Suspense>` boundary.
 - Use Next.js App Router conventions.
 - Build clean, responsive UI components using Tailwind CSS and components from shadcn/ui.
 - Use TypeScript with strict type checking. Ensure type annotations are accurate and complete.
@@ -59,6 +62,6 @@ To maintain project integrity, follow this three-tier ruleset:
   - `lib/`: Data queries layer (`supabase-queries.ts`), Server Actions (`admin-actions.ts`), Redux store, and utility functions.
   - `styles/`: Fonts, global CSS, and main styles.
   - `types/`: Database models (`database.ts`) and TypeScript declarations.
-  - `utils/`: Supabase client wrappers and icon resolver (`icon-resolver.tsx`).
+  - `utils/`: Supabase client wrappers (`server.ts` for auth, `server-anon.ts` for public queries, `client.ts` for browser) and icon resolver (`icon-resolver.tsx`).
 - `docs/`: Technical and design specifications (`PRD.md`, `TRD.md`, `BACKEND_SCHEMA.md`, `APP_FLOW.md`, `UI_UX_DESIGN_BRIEF.md`).
 - `memory-bank/`: Preserved context across work sessions.

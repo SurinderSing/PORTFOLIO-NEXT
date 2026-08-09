@@ -1,16 +1,16 @@
 # Memory Bank - Active Context
 
 ## Active Focus
-The current focus is **Security Hardening (completed)** with two upcoming feature phases queued.
+The current focus is **Deployment Fix & Performance Optimization (completed)** with two upcoming feature phases queued.
 
 ---
 
 ## Recently Completed
 
-1. **Zero Internal Schema Exposure:** Removed database table references, column names, User UUIDs, and SQL execution snippets from the user-facing UI.
-2. **Production-Grade 403 Forbidden Screen:** Non-admin authenticated users see a clean **Access Denied** error with "Return to Website" and "Sign Out" actions.
-3. **Dedicated Sign-Out API Route:** Created `/api/auth/sign-out` for reliable server-side session termination.
-4. **Two-Way Cascading Triggers:** Added `on_profile_deleted` trigger to delete from `auth.users` when `public.profiles` is deleted, and `on delete cascade` when deleted from `auth.users`.
+1. **Anonymous Supabase Server Client:** Created `@/utils/supabase/server-anon` — a cookieless, stateless client using `@supabase/supabase-js` for public read-only queries. All query functions in `supabase-queries.ts` now use this client, enabling static generation (SSG) and ISR revalidation on public pages instead of forced dynamic rendering.
+2. **Suspense Boundary for Sign-In:** Wrapped `useSearchParams()` in the `/sign-in` page inside a `<Suspense>` boundary to satisfy Next.js 14 prerendering requirements.
+3. **Deployment Safety Rules:** Added high-priority rules to both `AGENTS.md` and `.agents/AGENTS.md` requiring build verification (`npm run build`) before concluding tasks, preferring static generation, and documenting the Supabase client architecture.
+4. **All Public Pages Now Statically Generated:** `/`, `/contact`, `/resume`, `/work`, `/sign-in`, `/sign-up` are all `○ Static` in the build output — served from CDN edge.
 
 ---
 
@@ -39,4 +39,4 @@ The current focus is **Security Hardening (completed)** with two upcoming featur
 
 - **TypeScript Compilation:** `npx tsc --noEmit` -> 0 errors.
 - **ESLint Validation:** `npm run lint` -> 0 errors/warnings.
-- **Production Build:** `npm run build` -> 22/22 routes successfully generated.
+- **Production Build:** `npm run build` -> 22/22 routes successfully generated (all public pages static ○, admin pages dynamic ƒ).
