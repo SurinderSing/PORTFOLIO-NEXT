@@ -1,7 +1,14 @@
 'use client';
 
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
+
+/**
+ * Module-level hydration flag shared with FadeIn.
+ * After the initial page load, all ScrollReveal components
+ * skip their entrance animation on client-side navigations.
+ */
+let hasHydrated = false;
 
 interface ScrollRevealProps {
   children: React.ReactNode;
@@ -23,6 +30,11 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
   once = true,
 }) => {
   const shouldReduceMotion = useReducedMotion();
+  const isInitialLoad = useRef(!hasHydrated);
+
+  useEffect(() => {
+    hasHydrated = true;
+  }, []);
 
   const containerVariants: Variants = {
     hidden: {
@@ -44,7 +56,7 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
 
   return (
     <motion.div
-      initial="hidden"
+      initial={isInitialLoad.current ? 'hidden' : false}
       whileInView="visible"
       viewport={{ once, margin: '-10px', amount: 0.1 }}
       variants={containerVariants}

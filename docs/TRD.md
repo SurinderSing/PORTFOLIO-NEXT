@@ -47,3 +47,8 @@ The project is optimized for deployment on the **Vercel Platform** connected to 
 - **Session Strategy:** Persistent cookie-based authentication handled via `@supabase/ssr`.
 - **Role-Based Access Control (RBAC):** Access to `/admin/*` is restricted by middleware and Server Actions verifying `profiles.role = 'ADMIN'`.
 - **Row Level Security (RLS):** Enabled on all 11 PostgreSQL tables (`profiles`, `site_settings`, `contacts`, `social_links`, `about_cards`, `skill_categories`, `skills`, `experiences`, `projects`, `blog_posts`, `stories`, `comments`).
+
+## Drag & Drop Reordering Architecture
+- **Interactive UI:** Implemented in all Admin Dashboard management panels (`/admin/experiences`, `/admin/projects`, `/admin/skills`, `/admin/about-cards`, `/admin/contacts`, `/admin/social-links`) with HTML5 drag-and-drop, `GripVertical` handle indicators, and dynamic hover styling.
+- **Batch State Sync:** Dropping items automatically recalculates `sort_order` (1-based index) and calls dedicated Server Actions (`reorderExperiencesAction`, `reorderProjectsAction`, `reorderSkillCategoriesAction`, `reorderSkillsAction`, `reorderAboutCardsAction`, `reorderContactsAction`, `reorderSocialLinksAction`) with granular RBAC validation and automated ISR cache revalidation.
+

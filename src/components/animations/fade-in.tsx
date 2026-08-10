@@ -1,7 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
+
+/**
+ * Module-level flag to track whether the app has completed its initial hydration.
+ * On the very first render (SSR → hydrate), this is `false` so FadeIn plays
+ * its entrance animation. After hydration, it flips to `true` and all
+ * subsequent client-side navigations skip the animation (content appears instantly).
+ */
+let hasHydrated = false;
 
 interface FadeInProps {
   children: React.ReactNode;
@@ -21,6 +29,11 @@ export const FadeIn: React.FC<FadeInProps> = ({
   yOffset = 30,
 }) => {
   const shouldReduceMotion = useReducedMotion();
+  const isInitialLoad = useRef(!hasHydrated);
+
+  useEffect(() => {
+    hasHydrated = true;
+  }, []);
 
   const containerVariants: Variants = {
     hidden: {
@@ -42,7 +55,7 @@ export const FadeIn: React.FC<FadeInProps> = ({
 
   return (
     <motion.div
-      initial="hidden"
+      initial={isInitialLoad.current ? 'hidden' : false}
       animate="visible"
       variants={containerVariants}
       className={className}
