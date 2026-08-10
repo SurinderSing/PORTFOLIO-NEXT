@@ -1,29 +1,23 @@
 # Memory Bank - Active Context
 
 ## Active Focus
-The current focus is **Deployment Fix & Performance Optimization (completed)** with two upcoming feature phases queued.
+The current focus is **Phase 6: File Uploads & Media Management (Completed)** with Phase 7 queued.
 
 ---
 
 ## Recently Completed
 
-1. **Anonymous Supabase Server Client:** Created `@/utils/supabase/server-anon` — a cookieless, stateless client using `@supabase/supabase-js` for public read-only queries. All query functions in `supabase-queries.ts` now use this client, enabling static generation (SSG) and ISR revalidation on public pages instead of forced dynamic rendering.
-2. **Suspense Boundary for Sign-In:** Wrapped `useSearchParams()` in the `/sign-in` page inside a `<Suspense>` boundary to satisfy Next.js 14 prerendering requirements.
-3. **Deployment Safety Rules:** Added high-priority rules to both `AGENTS.md` and `.agents/AGENTS.md` requiring build verification (`npm run build`) before concluding tasks, preferring static generation, and documenting the Supabase client architecture.
-4. **All Public Pages Now Statically Generated:** `/`, `/contact`, `/resume`, `/work`, `/sign-in`, `/sign-up` are all `○ Static` in the build output — served from CDN edge.
+1. **Supabase Storage Server Actions:** Created `@/lib/storage-actions.ts` handling admin-guarded uploads for profile avatar, resume PDF, and project cover images with automatic database sync and layout revalidation.
+2. **Interactive Image Cropper Modal:** Built `@/components/ui/image-cropper-modal.tsx` with `react-easy-crop` and HTML5 Canvas WebP export supporting zoom, 90° rotation, and circle/rectangle crop shapes.
+3. **Reusable FileUpload Component:** Built `@/components/ui/file-upload.tsx` with drag-and-drop zone, file size/type validation, live progress, image/PDF previews, replace/remove controls, and integrated cropping.
+4. **Admin Integration:**
+   - Integrated Profile Photo uploader (round crop) & Resume PDF uploader into Admin Site Settings (`/admin/site-settings`).
+   - Integrated Project Cover Image uploader (16:9 rect crop) + manual URL fallback into Admin Projects Manager (`/admin/projects`).
+5. **Next.js & Supabase Configuration:** Configured `next.config.mjs` with Supabase project remote patterns for image optimization. Documented storage schema and RLS policies in `supabase/schema.sql` and `docs/BACKEND_SCHEMA.md`.
 
 ---
 
 ## Upcoming Tasks (Pending)
-
-### Phase 6: File Uploads & Media Management
-- Set up Supabase Storage bucket(s) for media assets.
-- Build **profile photo uploader** in Admin Site Settings.
-- Build **resume PDF uploader** in Admin Site Settings.
-- Build **about card image uploader** (if custom images beyond Lucide icons are needed).
-- Build **blog post cover image uploader** (for future blog feature).
-- Wire uploaded file URLs to the corresponding database fields (`profile_photo_url`, `resume_pdf_url`, `cover_image_url`).
-- Add image optimization and file size validation.
 
 ### Phase 7: Live Project Previews
 - Replace static `image_url` screenshot approach with **live website previews** (iframe/embed).

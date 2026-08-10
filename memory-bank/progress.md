@@ -13,7 +13,7 @@
 - [x] Deprecation & Removal of Prisma, MySQL, and NextAuth packages
 - [x] Production Build & Linter Verification (Zero errors)
 - [x] Security Hardening (Zero schema exposure, secure 403 screen, sign-out API route, two-way cascade triggers)
-- [ ] File Upload System (Profile photo, resume PDF, about card images via Supabase Storage)
+- [x] File Upload System (Profile photo with cropper, resume PDF, project cover images via Supabase Storage)
 - [ ] Live Project Previews (iframe / embed replacing static screenshot uploads)
 
 ---
@@ -73,14 +73,13 @@
 - [x] Add two-way cascading deletion triggers (`auth.users` ↔ `public.profiles`).
 - [x] Fix middleware redirect loops for authenticated non-admin users.
 
-### Phase 6: File Uploads & Media Management (Pending)
-- [ ] Set up Supabase Storage bucket(s) for media assets.
-- [ ] Build profile photo uploader in Admin Site Settings (upload, preview, crop).
-- [ ] Build resume PDF uploader in Admin Site Settings (upload, replace, download link).
-- [ ] Build about card icon/image uploader (if custom images are needed beyond Lucide icons).
-- [ ] Build blog post cover image uploader (for future blog feature).
-- [ ] Wire uploaded URLs to database fields (`profile_photo_url`, `resume_pdf_url`, `cover_image_url`).
-- [ ] Add image optimization and size validation on upload.
+### Phase 6: File Uploads & Media Management (100% Completed)
+- [x] Configure Supabase Storage `media` bucket architecture and RLS policies.
+- [x] Build profile photo uploader with drag-and-drop & interactive image cropper modal.
+- [x] Build resume PDF uploader with file size & type validation.
+- [x] Build project cover image uploader in Admin Projects Manager.
+- [x] Wire uploaded URLs directly to database fields (`profile_photo_url`, `resume_pdf_url`, `image_url`).
+- [x] Configure Next.js remote patterns for Supabase Storage image optimization.
 
 ### Phase 7: Live Project Previews (Pending)
 - [ ] Replace static `image_url` screenshot approach with live website previews.

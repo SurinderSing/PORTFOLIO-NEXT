@@ -7,6 +7,8 @@ import {
   updateProjectAction,
   deleteProjectAction,
 } from '@/lib/admin-actions';
+import { uploadProjectImageAction } from '@/lib/storage-actions';
+import FileUpload from '@/components/ui/file-upload';
 import {
   Plus,
   Edit2,
@@ -295,36 +297,57 @@ export default function ProjectsManager({
             />
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-1 gap-4">
-            <div>
-              <label className="block text-xs font-semibold mb-1 text-muted-foreground">
-                Cover Image URL (optional, leave empty for asset fallback)
-              </label>
-              <input
-                type="text"
-                value={formData.image_url}
-                onChange={(e) =>
-                  setFormData({ ...formData, image_url: e.target.value })
-                }
-                placeholder="https://... or bucket URL"
-                className="w-full px-3 py-2 text-sm rounded-lg bg-background border border-border focus:border-primary outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold mb-1 text-muted-foreground">
-                Sort Order
-              </label>
-              <input
-                type="number"
-                value={formData.sort_order}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    sort_order: parseInt(e.target.value) || 0,
-                  })
-                }
-                className="w-full px-3 py-2 text-sm rounded-lg bg-background border border-border focus:border-primary outline-none"
-              />
+          {/* Cover Image Upload & URL */}
+          <div className="space-y-3">
+            <FileUpload
+              label="Project Cover Image (Storage Upload)"
+              accept="image/jpeg,image/png,image/webp"
+              maxSizeMB={5}
+              previewType="image"
+              enableCrop={true}
+              aspectRatio={16 / 9}
+              cropShape="rect"
+              currentUrl={formData.image_url}
+              onUpload={(fd) =>
+                uploadProjectImageAction(fd, editingId || undefined)
+              }
+              onUrlChange={(newUrl) =>
+                setFormData((prev) => ({ ...prev, image_url: newUrl || '' }))
+              }
+              helperText="Upload 16:9 banner image. Cropping tool opens automatically."
+            />
+
+            <div className="grid grid-cols-2 sm:grid-cols-1 gap-4">
+              <div>
+                <label className="block text-[11px] font-medium mb-1 text-muted-foreground">
+                  Or Direct Image URL (optional override)
+                </label>
+                <input
+                  type="text"
+                  value={formData.image_url}
+                  onChange={(e) =>
+                    setFormData({ ...formData, image_url: e.target.value })
+                  }
+                  placeholder="https://... or bucket URL"
+                  className="w-full px-3 py-1.5 text-xs rounded-lg bg-background border border-border focus:border-primary outline-none text-muted-foreground"
+                />
+              </div>
+              <div>
+                <label className="block text-[11px] font-medium mb-1 text-muted-foreground">
+                  Sort Order
+                </label>
+                <input
+                  type="number"
+                  value={formData.sort_order}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      sort_order: parseInt(e.target.value) || 0,
+                    })
+                  }
+                  className="w-full px-3 py-1.5 text-xs rounded-lg bg-background border border-border focus:border-primary outline-none"
+                />
+              </div>
             </div>
           </div>
 
