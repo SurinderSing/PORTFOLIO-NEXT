@@ -14,7 +14,7 @@
 - [x] Production Build & Linter Verification (Zero errors)
 - [x] Security Hardening (Zero schema exposure, secure 403 screen, sign-out API route, two-way cascade triggers)
 - [x] File Upload System (Profile photo with cropper, resume PDF, project cover images via Supabase Storage)
-- [ ] Live Project Previews (iframe / embed replacing static screenshot uploads)
+- [x] Live Project Previews (iframe / embed replacing static screenshot uploads)
 
 ---
 
@@ -81,11 +81,11 @@
 - [x] Wire uploaded URLs directly to database fields (`profile_photo_url`, `resume_pdf_url`, `image_url`).
 - [x] Configure Next.js remote patterns for Supabase Storage image optimization.
 
-### Phase 7: Live Project Previews (Pending)
-- [ ] Replace static `image_url` screenshot approach with live website previews.
-- [ ] Add `preview_url` field to `projects` table for iframe source.
-- [ ] Build responsive iframe/embed preview component for Work page project cards.
-- [ ] Add fallback to static image when iframe is unavailable or blocked (X-Frame-Options).
-- [ ] Add preview toggle in Admin Projects manager (choose between iframe live preview vs. static image).
-- [ ] Handle loading states, error states, and sandbox security for embedded iframes.
+### Phase 7: Live Project Previews (100% Completed)
+- [x] Add `preview_url` and `preview_mode` fields to `projects` table for iframe source and mode selection.
+- [x] Build responsive sandboxed `LivePreview` component for Work page project cards.
+- [x] Implement 6-second timeout fallback to static image when iframe is blocked or unavailable (X-Frame-Options/CSP).
+- [x] Add non-interactive click overlay to ensure cards link cleanly to target URLs.
+- [x] Add preview toggle and preview URL settings in Admin Projects manager (`/admin/projects`).
+- [x] Update database models, default fallback data, documentation, and memory bank.
 

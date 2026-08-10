@@ -288,6 +288,8 @@ export const defaultProjects: Project[] = [
     technologies: ['React', 'TypeScript', 'Mantine', 'Redux Toolkit'],
     link: 'https://gimmefy.ai',
     image_url: null,
+    preview_url: 'https://gimmefy.ai',
+    preview_mode: 'iframe',
     sort_order: 1,
   },
   {
@@ -306,6 +308,8 @@ export const defaultProjects: Project[] = [
     ],
     link: 'https://www.dialmantra.in/',
     image_url: null,
+    preview_url: 'https://www.dialmantra.in/',
+    preview_mode: 'iframe',
     sort_order: 2,
   },
   {
@@ -316,6 +320,8 @@ export const defaultProjects: Project[] = [
     technologies: ['React', 'Node.js', 'MongoDB', 'Express'],
     link: 'https://amotus.online/',
     image_url: null,
+    preview_url: 'https://amotus.online/',
+    preview_mode: 'iframe',
     sort_order: 3,
   },
   {
@@ -326,6 +332,8 @@ export const defaultProjects: Project[] = [
     technologies: ['JavaScript', 'HTML', 'CSS', 'API Integration'],
     link: 'https://drishtiias.com',
     image_url: null,
+    preview_url: 'https://drishtiias.com',
+    preview_mode: 'iframe',
     sort_order: 4,
   },
 ];
