@@ -294,6 +294,8 @@ create table if not exists public.projects (
 
 alter table public.projects enable row level security;
 alter table public.projects add column if not exists sort_order integer default 0;
+alter table public.projects add column if not exists preview_url text;
+alter table public.projects add column if not exists preview_mode text default 'iframe' check (preview_mode in ('image', 'iframe'));
 
 drop policy if exists "Projects are viewable by everyone." on public.projects;
 create policy "Projects are viewable by everyone." on public.projects
@@ -657,20 +659,20 @@ select '2018', 'High School', 'Guru Nanak Public Sr. Sec School, CBSE, Kanpur (F
 where not exists (select 1 from public.experiences where title = 'High School');
 
 -- Seed Projects
-insert into public.projects (title, description, technologies, link, image_url, sort_order)
-select 'Gimmefy AI', 'AI-Enhanced Marketing Platform with 150+ automated tasks and personalized AI assistants designed for marketers, by marketers.', array['React', 'TypeScript', 'Mantine', 'Redux Toolkit'], 'https://gimmefy.ai', null, 1
+insert into public.projects (title, description, technologies, link, image_url, preview_url, preview_mode, sort_order)
+select 'Gimmefy AI', 'AI-Enhanced Marketing Platform with 150+ automated tasks and personalized AI assistants designed for marketers, by marketers.', array['React', 'TypeScript', 'Mantine', 'Redux Toolkit'], 'https://gimmefy.ai', null, 'https://gimmefy.ai', 'iframe', 1
 where not exists (select 1 from public.projects where title = 'Gimmefy AI');
 
-insert into public.projects (title, description, technologies, link, image_url, sort_order)
-select 'Dialmantra Dialer', 'Fast, easy and low cost solution to run a world class contact center without huge investments on hardware and software.', array['React.js', 'Redux.js', 'JavaScript', 'JSSIP', 'HTML', 'Ant Design', 'LESS'], 'https://www.dialmantra.in/', null, 2
+insert into public.projects (title, description, technologies, link, image_url, preview_url, preview_mode, sort_order)
+select 'Dialmantra Dialer', 'Fast, easy and low cost solution to run a world class contact center without huge investments on hardware and software.', array['React.js', 'Redux.js', 'JavaScript', 'JSSIP', 'HTML', 'Ant Design', 'LESS'], 'https://www.dialmantra.in/', null, 'https://www.dialmantra.in/', 'iframe', 2
 where not exists (select 1 from public.projects where title = 'Dialmantra Dialer');
 
-insert into public.projects (title, description, technologies, link, image_url, sort_order)
-select 'Amotus Online', 'Amotus Online stands as an innovative remote screen sharing platform, offering a unique solution for enhanced collaboration and communication.', array['React', 'Node.js', 'MongoDB', 'Express'], 'https://amotus.online/', null, 3
+insert into public.projects (title, description, technologies, link, image_url, preview_url, preview_mode, sort_order)
+select 'Amotus Online', 'Amotus Online stands as an innovative remote screen sharing platform, offering a unique solution for enhanced collaboration and communication.', array['React', 'Node.js', 'MongoDB', 'Express'], 'https://amotus.online/', null, 'https://amotus.online/', 'iframe', 3
 where not exists (select 1 from public.projects where title = 'Amotus Online');
 
-insert into public.projects (title, description, technologies, link, image_url, sort_order)
-select 'Drishti IAS Website', 'Improved institute website user interface and experience through collaborative efforts.', array['JavaScript', 'HTML', 'CSS', 'API Integration'], 'https://drishtiias.com', null, 4
+insert into public.projects (title, description, technologies, link, image_url, preview_url, preview_mode, sort_order)
+select 'Drishti IAS Website', 'Improved institute website user interface and experience through collaborative efforts.', array['JavaScript', 'HTML', 'CSS', 'API Integration'], 'https://drishtiias.com', null, 'https://drishtiias.com', 'iframe', 4
 where not exists (select 1 from public.projects where title = 'Drishti IAS Website');
 
 -- ==============================================================================

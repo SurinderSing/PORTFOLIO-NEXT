@@ -2,6 +2,8 @@ import Image, { StaticImageData } from 'next/image';
 import React from 'react';
 import FailedImage from '@/assets/images/failed-image.jpg';
 import { ScrollRevealItem } from '@/components/animations/scroll-reveal';
+import LivePreview from '@/components/website/pages/work/live-preview';
+import { PreviewMode } from '@/types/database';
 
 interface ProjectCardProps {
   image?: StaticImageData | string;
@@ -9,6 +11,8 @@ interface ProjectCardProps {
   technologies: string[];
   link?: string;
   description?: string;
+  previewUrl?: string | null;
+  previewMode?: PreviewMode;
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
@@ -17,7 +21,13 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   image = FailedImage,
   link,
   description,
+  previewUrl,
+  previewMode = 'iframe',
 }) => {
+  const effectivePreviewUrl =
+    previewUrl || (link && link !== '#' ? link : null);
+  const showIframe = previewMode === 'iframe' && effectivePreviewUrl;
+
   const content = (
     <div
       className={`w-full h-full bg-card p-2 rounded-xl text-left dark:bg-secondary transition-[transform,box-shadow] duration-200 hover:-translate-y-1.5 hover:shadow-lg shadow-sm ${
@@ -25,16 +35,24 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       }`}
     >
       <div className="relative">
-        <Image
-          src={image}
-          alt={title}
-          width={500}
-          height={300}
-          className="rounded-xl object-cover aspect-[4/1.3] mb-2 mx-auto"
-          priority={false}
-        />
+        {showIframe ? (
+          <LivePreview
+            previewUrl={effectivePreviewUrl}
+            title={title}
+            fallbackImage={image}
+          />
+        ) : (
+          <Image
+            src={image}
+            alt={title}
+            width={500}
+            height={300}
+            className="rounded-xl object-cover aspect-[4/1.3] mb-2 mx-auto"
+            priority={false}
+          />
+        )}
         {link && link !== '#' && (
-          <div className="absolute top-2 right-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+          <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-xs text-white text-xs px-2 py-1 rounded shadow-xs">
             View Project
           </div>
         )}

@@ -41,6 +41,8 @@ export default async function Work() {
     technologies: proj.technologies,
     link: proj.link,
     image: proj.image_url || staticImageMap[proj.title] || undefined,
+    previewUrl: proj.preview_url,
+    previewMode: proj.preview_mode,
   }));
 
   return (
@@ -66,6 +68,8 @@ export default async function Work() {
                 image={project.image}
                 link={project.link || undefined}
                 description={project.description}
+                previewUrl={project.previewUrl}
+                previewMode={project.previewMode}
               />
             ))}
           </ScrollReveal>

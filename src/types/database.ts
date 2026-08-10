@@ -108,6 +108,8 @@ export interface Experience {
   updated_at?: string;
 }
 
+export type PreviewMode = 'image' | 'iframe';
+
 export interface Project {
   id: number;
   title: string;
@@ -115,6 +117,8 @@ export interface Project {
   technologies: string[];
   link: string | null;
   image_url: string | null;
+  preview_url?: string | null;
+  preview_mode?: PreviewMode;
   sort_order: number;
   created_at?: string;
   updated_at?: string;
