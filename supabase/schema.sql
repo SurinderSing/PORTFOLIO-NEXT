@@ -674,50 +674,49 @@ select 'Drishti IAS Website', 'Improved institute website user interface and exp
 where not exists (select 1 from public.projects where title = 'Drishti IAS Website');
 
 -- ==============================================================================
--- 11. Supabase Storage Buckets & RLS Policies Documentation
+-- 11. Supabase Storage Buckets & RLS Policies
 -- ==============================================================================
--- Buckets are created in the Supabase Dashboard (Storage > New Bucket: "media", Public: true)
--- Or via SQL if storage schema is accessible:
---
--- insert into storage.buckets (id, name, public) 
--- values ('media', 'media', true)
--- on conflict (id) do nothing;
+
+-- Create "media" storage bucket if it does not already exist
+insert into storage.buckets (id, name, public) 
+values ('media', 'media', true)
+on conflict (id) do nothing;
 
 -- 1. Public Read Policy (Allow anyone to view public media assets)
--- drop policy if exists "Public media is viewable by everyone" on storage.objects;
--- create policy "Public media is viewable by everyone" on storage.objects
---   for select using (bucket_id = 'media');
+drop policy if exists "Public media is viewable by everyone" on storage.objects;
+create policy "Public media is viewable by everyone" on storage.objects
+  for select using (bucket_id = 'media');
 
 -- 2. Admin Upload Policy (Allow ADMIN profiles to upload files to media bucket)
--- drop policy if exists "Admins can upload to media" on storage.objects;
--- create policy "Admins can upload to media" on storage.objects
---   for insert with check (
---     bucket_id = 'media' and
---     exists (
---       select 1 from public.profiles
---       where profiles.id = auth.uid() and profiles.role = 'ADMIN'
---     )
---   );
+drop policy if exists "Admins can upload to media" on storage.objects;
+create policy "Admins can upload to media" on storage.objects
+  for insert with check (
+    bucket_id = 'media' and
+    exists (
+      select 1 from public.profiles
+      where profiles.id = auth.uid() and profiles.role = 'ADMIN'
+    )
+  );
 
 -- 3. Admin Update Policy (Allow ADMIN profiles to update files in media bucket)
--- drop policy if exists "Admins can update media" on storage.objects;
--- create policy "Admins can update media" on storage.objects
---   for update using (
---     bucket_id = 'media' and
---     exists (
---       select 1 from public.profiles
---       where profiles.id = auth.uid() and profiles.role = 'ADMIN'
---     )
---   );
+drop policy if exists "Admins can update media" on storage.objects;
+create policy "Admins can update media" on storage.objects
+  for update using (
+    bucket_id = 'media' and
+    exists (
+      select 1 from public.profiles
+      where profiles.id = auth.uid() and profiles.role = 'ADMIN'
+    )
+  );
 
 -- 4. Admin Delete Policy (Allow ADMIN profiles to delete files in media bucket)
--- drop policy if exists "Admins can delete media" on storage.objects;
--- create policy "Admins can delete media" on storage.objects
---   for delete using (
---     bucket_id = 'media' and
---     exists (
---       select 1 from public.profiles
---       where profiles.id = auth.uid() and profiles.role = 'ADMIN'
---     )
---   );
+drop policy if exists "Admins can delete media" on storage.objects;
+create policy "Admins can delete media" on storage.objects
+  for delete using (
+    bucket_id = 'media' and
+    exists (
+      select 1 from public.profiles
+      where profiles.id = auth.uid() and profiles.role = 'ADMIN'
+    )
+  );
 
