@@ -29,7 +29,7 @@
         "endOfLine": "auto"
       }
     ],
-    "no-unused-vars": "warn",
+    "no-unused-vars": ["warn", { "args": "none", "ignoreRestSiblings": true }],
     "no-console": "warn",
     "prefer-const": "error",
     "@next/next/no-html-link-for-pages": "off"

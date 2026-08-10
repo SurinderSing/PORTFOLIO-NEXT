@@ -15,10 +15,32 @@
 - [x] Security Hardening (Zero schema exposure, secure 403 screen, sign-out API route, two-way cascade triggers)
 - [x] File Upload System (Profile photo with cropper, resume PDF, project cover images via Supabase Storage)
 - [x] Live Project Previews (iframe / embed replacing static screenshot uploads)
+- [x] HTML5 Drag & Drop Reordering Across All Admin Managers (Experiences, Projects, Skills & Categories, About Cards, Contacts, Social Links)
+- [x] DRY Reusable Utilities, Custom Hooks & Single-Responsibility Component Modularization
 
 ---
 
 ## Detailed Task Checklist
+
+### Phase 9: DRY Reusable Utilities, Custom Hooks & Single-Responsibility Component Modularization (100% Completed)
+- [x] Update project and workspace agent rules (`AGENTS.md` and `.agents/AGENTS.md`) with High-Priority DRY and SRP mandates.
+- [x] Create pure array reordering utility `src/utils/reorder.ts` (`reorderArray`).
+- [x] Create custom drag-and-drop hook `src/hooks/use-drag-drop-reorder.ts` (`useDragDropReorder`).
+- [x] Create shared Admin UI components (`AdminStatusBanner`, `AdminPageHeader`, `AdminDragHandle`).
+- [x] Deduplicate backend batch reorder logic in `src/lib/admin-actions.ts` with `genericReorderTableItems`.
+- [x] Decompose all 6 admin managers into focused subcomponents (About Cards, Contacts, Social Links, Experiences, Projects, Skills).
+- [x] Run `npm run lint` and `npm run build` verification (0 warnings, 23/23 routes compiled).
+
+### Phase 8: Drag-and-Drop Reordering in Admin Dashboard (100% Completed)
+- [x] Preserve 1-based ascending `sort_order` ordering in database and public server queries.
+- [x] Create 7 batch reorder server actions in `src/lib/admin-actions.ts` with `verifyAdmin()` and path revalidation.
+- [x] Add drag-and-drop reordering with visual grip handles (`GripVertical`) in `/admin/experiences` (Work & Education).
+- [x] Add drag-and-drop reordering in `/admin/projects`.
+- [x] Add drag-and-drop reordering in `/admin/skills` for both Skill Categories and Skills within cards.
+- [x] Add drag-and-drop reordering in `/admin/about-cards`.
+- [x] Add drag-and-drop reordering in `/admin/contacts`.
+- [x] Add drag-and-drop reordering in `/admin/social-links`.
+- [x] Run `npm run lint` and `npm run build` verification (23/23 routes successfully prerendered).
 
 ### Phase 1: Core AI Agent Config (100% Completed)
 - [x] Create root `AGENTS.md` operational guide.

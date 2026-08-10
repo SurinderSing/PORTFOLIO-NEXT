@@ -467,3 +467,105 @@ export async function deleteProjectAction(id: number): Promise<ActionResult> {
   revalidatePath('/work');
   return { success: true, message: 'Project deleted successfully.' };
 }
+
+// ============================================================================
+// 8. Reorder Actions (Drag & Drop - DRY Centralized Helper)
+// ============================================================================
+
+async function genericReorderTableItems(
+  tableName: string,
+  items: { id: number; sort_order: number }[],
+  pathsToRevalidate: { path: string; type?: 'layout' | 'page' }[]
+): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const updates = items.map((item) =>
+    supabase
+      .from(tableName)
+      .update({
+        sort_order: item.sort_order,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', item.id)
+  );
+
+  const results = await Promise.all(updates);
+  const failure = results.find((r) => r.error);
+  if (failure?.error) return { success: false, error: failure.error.message };
+
+  for (const { path, type } of pathsToRevalidate) {
+    if (type) {
+      revalidatePath(path, type);
+    } else {
+      revalidatePath(path);
+    }
+  }
+
+  return { success: true, message: 'Order updated successfully.' };
+}
+
+export async function reorderContactsAction(
+  items: { id: number; sort_order: number }[]
+): Promise<ActionResult> {
+  return genericReorderTableItems('contacts', items, [
+    { path: '/', type: 'layout' },
+    { path: '/contact' },
+    { path: '/admin/contacts' },
+  ]);
+}
+
+export async function reorderSocialLinksAction(
+  items: { id: number; sort_order: number }[]
+): Promise<ActionResult> {
+  return genericReorderTableItems('social_links', items, [
+    { path: '/', type: 'layout' },
+    { path: '/admin/social-links' },
+  ]);
+}
+
+export async function reorderAboutCardsAction(
+  items: { id: number; sort_order: number }[]
+): Promise<ActionResult> {
+  return genericReorderTableItems('about_cards', items, [
+    { path: '/', type: 'layout' },
+    { path: '/admin/about-cards' },
+  ]);
+}
+
+export async function reorderSkillCategoriesAction(
+  items: { id: number; sort_order: number }[]
+): Promise<ActionResult> {
+  return genericReorderTableItems('skill_categories', items, [
+    { path: '/resume' },
+    { path: '/admin/skills' },
+  ]);
+}
+
+export async function reorderSkillsAction(
+  items: { id: number; sort_order: number }[]
+): Promise<ActionResult> {
+  return genericReorderTableItems('skills', items, [
+    { path: '/resume' },
+    { path: '/admin/skills' },
+  ]);
+}
+
+export async function reorderExperiencesAction(
+  items: { id: number; sort_order: number }[]
+): Promise<ActionResult> {
+  return genericReorderTableItems('experiences', items, [
+    { path: '/resume' },
+    { path: '/admin/experiences' },
+  ]);
+}
+
+export async function reorderProjectsAction(
+  items: { id: number; sort_order: number }[]
+): Promise<ActionResult> {
+  return genericReorderTableItems('projects', items, [
+    { path: '/work' },
+    { path: '/admin/projects' },
+  ]);
+}

@@ -6,17 +6,16 @@ import {
   createExperienceAction,
   updateExperienceAction,
   deleteExperienceAction,
+  reorderExperiencesAction,
 } from '@/lib/admin-actions';
-import {
-  Plus,
-  Edit2,
-  Trash2,
-  CheckCircle2,
-  AlertCircle,
-  Briefcase,
-  GraduationCap,
-  X,
-} from 'lucide-react';
+import { Plus, Briefcase, GraduationCap } from 'lucide-react';
+import { reorderArray } from '@/utils/reorder';
+import AdminStatusBanner, {
+  AdminStatusState,
+} from '@/components/admin/admin-status-banner';
+import AdminPageHeader from '@/components/admin/admin-page-header';
+import ExperienceForm, { ExperienceFormData } from './experience-form';
+import ExperiencesTable from './experiences-table';
 
 interface ExperiencesManagerProps {
   initialExperiences: Experience[];
@@ -30,21 +29,20 @@ export default function ExperiencesManager({
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<{
-    type: 'success' | 'error' | null;
-    message: string;
-  }>({
+  const [draggedItem, setDraggedItem] = useState<{
+    type: ExperienceType;
+    index: number;
+  } | null>(null);
+  const [dragOverItem, setDragOverItem] = useState<{
+    type: ExperienceType;
+    index: number;
+  } | null>(null);
+  const [status, setStatus] = useState<AdminStatusState>({
     type: null,
     message: '',
   });
 
-  const [formData, setFormData] = useState<{
-    date_range: string;
-    title: string;
-    place: string;
-    type: ExperienceType;
-    sort_order: number;
-  }>({
+  const [formData, setFormData] = useState<ExperienceFormData>({
     date_range: '',
     title: '',
     place: '',
@@ -167,301 +165,155 @@ export default function ExperiencesManager({
     }
   };
 
+  const handleDragStart = (
+    e: React.DragEvent,
+    type: ExperienceType,
+    index: number
+  ) => {
+    setDraggedItem({ type, index });
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', `${type}:${index}`);
+  };
+
+  const handleDragOver = (
+    e: React.DragEvent,
+    type: ExperienceType,
+    index: number
+  ) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    if (
+      !draggedItem ||
+      draggedItem.type !== type ||
+      draggedItem.index === index
+    )
+      return;
+    setDragOverItem({ type, index });
+  };
+
+  const handleDragEnd = () => {
+    setDraggedItem(null);
+    setDragOverItem(null);
+  };
+
+  const handleDrop = async (
+    e: React.DragEvent,
+    targetType: ExperienceType,
+    targetIndex: number
+  ) => {
+    e.preventDefault();
+    if (
+      !draggedItem ||
+      draggedItem.type !== targetType ||
+      draggedItem.index === targetIndex
+    ) {
+      setDraggedItem(null);
+      setDragOverItem(null);
+      return;
+    }
+
+    const sourceIndex = draggedItem.index;
+    const currentGroup = experiences
+      .filter((item) => item.type === targetType)
+      .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+    const otherGroup = experiences.filter((item) => item.type !== targetType);
+
+    const updatedGroup = reorderArray(currentGroup, sourceIndex, targetIndex);
+
+    setExperiences([...otherGroup, ...updatedGroup]);
+    setDraggedItem(null);
+    setDragOverItem(null);
+    setStatus({
+      type: 'success',
+      message: `${targetType === 'WORK' ? 'Work' : 'Education'} experiences reordered.`,
+    });
+
+    const res = await reorderExperiencesAction(
+      updatedGroup.map((item) => ({
+        id: item.id,
+        sort_order: item.sort_order || 0,
+      }))
+    );
+    if (!res.success) {
+      setStatus({
+        type: 'error',
+        message: res.error || 'Failed to sync reordered experiences.',
+      });
+    }
+  };
+
   const workItems = experiences.filter((e) => e.type === 'WORK');
   const educationItems = experiences.filter((e) => e.type === 'EDUCATION');
 
   return (
     <div className="space-y-6">
-      {status.type && (
-        <div
-          className={`p-4 rounded-xl flex items-center gap-3 text-sm font-medium ${
-            status.type === 'success'
-              ? 'bg-green-500/10 text-green-600 border border-green-500/20'
-              : 'bg-red-500/10 text-red-600 border border-red-500/20'
-          }`}
+      <AdminStatusBanner status={status} />
+
+      <AdminPageHeader
+        title="Manage Experiences"
+        description="Reorder items by dragging the grip icon on the left, or add and edit records."
+      >
+        <button
+          onClick={() => handleStartCreate('WORK')}
+          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl main-gradient-1 text-white text-xs font-semibold hover:opacity-90 transition-opacity"
         >
-          {status.type === 'success' ? (
-            <CheckCircle2 size={18} />
-          ) : (
-            <AlertCircle size={18} />
-          )}
-          <span>{status.message}</span>
-        </div>
-      )}
+          <Plus size={15} />
+          <span>Add Work</span>
+        </button>
+        <button
+          onClick={() => handleStartCreate('EDUCATION')}
+          className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-secondary text-white text-xs font-semibold hover:opacity-90 transition-opacity"
+        >
+          <Plus size={15} />
+          <span>Add Education</span>
+        </button>
+      </AdminPageHeader>
 
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold font-poppins flex items-center gap-2">
-            <Briefcase size={20} className="text-primary" />
-            <span>Manage Experiences</span>
-          </h2>
-          <p className="text-xs text-muted-foreground mt-1">
-            Update work history timeline and educational qualifications on the
-            resume page.
-          </p>
-        </div>
-
-        {!isCreating && editingId === null && (
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => handleStartCreate('WORK')}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full main-gradient-1 text-white text-xs font-semibold shadow-md hover:opacity-90 transition-opacity"
-            >
-              <Plus size={14} />
-              <span>Add Work</span>
-            </button>
-            <button
-              onClick={() => handleStartCreate('EDUCATION')}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-border bg-card text-foreground text-xs font-semibold hover:bg-tertiary transition-colors"
-            >
-              <Plus size={14} />
-              <span>Add Education</span>
-            </button>
-          </div>
-        )}
-      </div>
-
+      {/* Form Section */}
       {(isCreating || editingId !== null) && (
-        <form
+        <ExperienceForm
+          isCreating={isCreating}
+          formData={formData}
+          setFormData={setFormData}
           onSubmit={handleSave}
-          className="p-6 rounded-2xl bg-card border border-primary/40 space-y-4 shadow-md"
-        >
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold font-poppins text-primary">
-              {isCreating
-                ? `Add ${formData.type} Record`
-                : `Edit ${formData.type} Record`}
-            </h3>
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="p-1 rounded-lg text-muted-foreground hover:bg-tertiary"
-            >
-              <X size={16} />
-            </button>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-1 gap-4">
-            <div>
-              <label className="block text-xs font-semibold mb-1 text-muted-foreground">
-                Type
-              </label>
-              <select
-                value={formData.type}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    type: e.target.value as ExperienceType,
-                  })
-                }
-                className="w-full px-3 py-2 text-sm rounded-lg bg-background border border-border focus:border-primary outline-none"
-              >
-                <option value="WORK">WORK (Job / Internship)</option>
-                <option value="EDUCATION">EDUCATION (Degree / School)</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-semibold mb-1 text-muted-foreground">
-                Date Range
-              </label>
-              <input
-                type="text"
-                value={formData.date_range}
-                onChange={(e) =>
-                  setFormData({ ...formData, date_range: e.target.value })
-                }
-                required
-                placeholder="e.g. 12/2023 - Present or 2022 - 2023"
-                className="w-full px-3 py-2 text-sm rounded-lg bg-background border border-border focus:border-primary outline-none"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-1 gap-4">
-            <div>
-              <label className="block text-xs font-semibold mb-1 text-muted-foreground">
-                Role / Degree Title
-              </label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) =>
-                  setFormData({ ...formData, title: e.target.value })
-                }
-                required
-                placeholder="Front-End Developer / Bachelor of Computer Applications"
-                className="w-full px-3 py-2 text-sm rounded-lg bg-background border border-border focus:border-primary outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold mb-1 text-muted-foreground">
-                Organization / University & Location
-              </label>
-              <input
-                type="text"
-                value={formData.place}
-                onChange={(e) =>
-                  setFormData({ ...formData, place: e.target.value })
-                }
-                required
-                placeholder="Gimmefy AI - Remote / Capital University, Jharkhand"
-                className="w-full px-3 py-2 text-sm rounded-lg bg-background border border-border focus:border-primary outline-none"
-              />
-            </div>
-          </div>
-
-          <div className="flex justify-between items-center pt-2">
-            <div className="w-36">
-              <label className="block text-xs font-semibold mb-1 text-muted-foreground">
-                Sort Order
-              </label>
-              <input
-                type="number"
-                value={formData.sort_order}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    sort_order: parseInt(e.target.value) || 0,
-                  })
-                }
-                className="w-full px-3 py-2 text-sm rounded-lg bg-background border border-border focus:border-primary outline-none"
-              />
-            </div>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={handleCancel}
-                className="px-4 py-2 rounded-full border border-border text-xs font-medium hover:bg-tertiary"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className="px-5 py-2 rounded-full main-gradient-1 text-white text-xs font-semibold hover:opacity-90 disabled:opacity-50"
-              >
-                {loading ? 'Saving...' : 'Save Experience'}
-              </button>
-            </div>
-          </div>
-        </form>
+          onCancel={handleCancel}
+          loading={loading}
+        />
       )}
 
-      {/* Work Experiences Section */}
-      <div className="rounded-2xl bg-card border border-border overflow-hidden shadow-sm">
-        <div className="p-4 border-b border-border bg-tertiary/30 flex items-center justify-between">
-          <h3 className="text-sm font-semibold font-poppins flex items-center gap-2">
-            <Briefcase size={16} className="text-primary" />
-            <span>Work Experience ({workItems.length})</span>
-          </h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-tertiary/20 border-b border-border text-xs text-muted-foreground uppercase font-semibold">
-              <tr>
-                <th className="py-2.5 px-4">Period</th>
-                <th className="py-2.5 px-4">Title</th>
-                <th className="py-2.5 px-4">Place</th>
-                <th className="py-2.5 px-4">Order</th>
-                <th className="py-2.5 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {workItems.map((item) => (
-                <tr
-                  key={item.id}
-                  className="hover:bg-tertiary/30 transition-colors"
-                >
-                  <td className="py-3 px-4 font-mono text-xs text-primary whitespace-nowrap">
-                    {item.date_range}
-                  </td>
-                  <td className="py-3 px-4 font-semibold">{item.title}</td>
-                  <td className="py-3 px-4 text-xs text-muted-foreground">
-                    {item.place}
-                  </td>
-                  <td className="py-3 px-4 text-xs">{item.sort_order}</td>
-                  <td className="py-3 px-4 text-right">
-                    <div className="inline-flex items-center gap-2">
-                      <button
-                        onClick={() => handleStartEdit(item)}
-                        className="p-1.5 rounded-lg text-primary hover:bg-primary/10 transition-colors"
-                        title="Edit"
-                      >
-                        <Edit2 size={14} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(item.id)}
-                        className="p-1.5 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors"
-                        title="Delete"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {/* Work Experiences Table */}
+      <ExperiencesTable
+        title="Work Experience"
+        type="WORK"
+        icon={Briefcase}
+        iconColorClass="text-primary"
+        items={workItems}
+        draggedItem={draggedItem}
+        dragOverItem={dragOverItem}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
+        onDrop={handleDrop}
+        onEdit={handleStartEdit}
+        onDelete={handleDelete}
+      />
 
-      {/* Education Experiences Section */}
-      <div className="rounded-2xl bg-card border border-border overflow-hidden shadow-sm">
-        <div className="p-4 border-b border-border bg-tertiary/30 flex items-center justify-between">
-          <h3 className="text-sm font-semibold font-poppins flex items-center gap-2">
-            <GraduationCap size={16} className="text-secondary" />
-            <span>Education ({educationItems.length})</span>
-          </h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-tertiary/20 border-b border-border text-xs text-muted-foreground uppercase font-semibold">
-              <tr>
-                <th className="py-2.5 px-4">Period</th>
-                <th className="py-2.5 px-4">Degree / School</th>
-                <th className="py-2.5 px-4">University / Board</th>
-                <th className="py-2.5 px-4">Order</th>
-                <th className="py-2.5 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {educationItems.map((item) => (
-                <tr
-                  key={item.id}
-                  className="hover:bg-tertiary/30 transition-colors"
-                >
-                  <td className="py-3 px-4 font-mono text-xs text-secondary whitespace-nowrap">
-                    {item.date_range}
-                  </td>
-                  <td className="py-3 px-4 font-semibold">{item.title}</td>
-                  <td className="py-3 px-4 text-xs text-muted-foreground">
-                    {item.place}
-                  </td>
-                  <td className="py-3 px-4 text-xs">{item.sort_order}</td>
-                  <td className="py-3 px-4 text-right">
-                    <div className="inline-flex items-center gap-2">
-                      <button
-                        onClick={() => handleStartEdit(item)}
-                        className="p-1.5 rounded-lg text-primary hover:bg-primary/10 transition-colors"
-                        title="Edit"
-                      >
-                        <Edit2 size={14} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(item.id)}
-                        className="p-1.5 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors"
-                        title="Delete"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {/* Education Experiences Table */}
+      <ExperiencesTable
+        title="Education"
+        type="EDUCATION"
+        icon={GraduationCap}
+        iconColorClass="text-secondary"
+        items={educationItems}
+        draggedItem={draggedItem}
+        dragOverItem={dragOverItem}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
+        onDrop={handleDrop}
+        onEdit={handleStartEdit}
+        onDelete={handleDelete}
+      />
     </div>
   );
 }

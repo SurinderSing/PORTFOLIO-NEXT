@@ -6,20 +6,16 @@ import {
   createProjectAction,
   updateProjectAction,
   deleteProjectAction,
+  reorderProjectsAction,
 } from '@/lib/admin-actions';
-import { uploadProjectImageAction } from '@/lib/storage-actions';
-import FileUpload from '@/components/ui/file-upload';
-import {
-  Plus,
-  Edit2,
-  Trash2,
-  CheckCircle2,
-  AlertCircle,
-  FolderGit2,
-  X,
-  ExternalLink,
-} from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Plus, FolderKanban } from 'lucide-react';
+import { useDragDropReorder } from '@/hooks/use-drag-drop-reorder';
+import AdminStatusBanner, {
+  AdminStatusState,
+} from '@/components/admin/admin-status-banner';
+import AdminPageHeader from '@/components/admin/admin-page-header';
+import ProjectForm, { ProjectFormData } from './project-form';
+import ProjectsTable from './projects-table';
 
 interface ProjectsManagerProps {
   initialProjects: Project[];
@@ -32,32 +28,35 @@ export default function ProjectsManager({
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [status, setStatus] = useState<{
-    type: 'success' | 'error' | null;
-    message: string;
-  }>({
+  const [status, setStatus] = useState<AdminStatusState>({
     type: null,
     message: '',
   });
 
-  const [formData, setFormData] = useState<{
-    title: string;
-    description: string;
-    technologiesText: string;
-    link: string;
-    image_url: string;
-    preview_url: string;
-    preview_mode: 'image' | 'iframe';
-    sort_order: number;
-  }>({
+  const [formData, setFormData] = useState<ProjectFormData>({
     title: '',
     description: '',
-    technologiesText: '',
+    technologies: '',
     link: '',
     image_url: '',
     preview_url: '',
     preview_mode: 'iframe',
     sort_order: 0,
+  });
+
+  const {
+    draggedIndex,
+    dragOverIndex,
+    handleDragStart,
+    handleDragOver,
+    handleDragEnd,
+    handleDrop,
+  } = useDragDropReorder({
+    items: projects,
+    setItems: setProjects,
+    onPersist: reorderProjectsAction,
+    onStatusChange: setStatus,
+    successMessage: 'Projects reordered successfully.',
   });
 
   const handleStartCreate = () => {
@@ -66,7 +65,7 @@ export default function ProjectsManager({
     setFormData({
       title: '',
       description: '',
-      technologiesText: 'React, Next.js, TypeScript',
+      technologies: '',
       link: '',
       image_url: '',
       preview_url: '',
@@ -75,18 +74,20 @@ export default function ProjectsManager({
     });
   };
 
-  const handleStartEdit = (proj: Project) => {
-    setEditingId(proj.id);
+  const handleStartEdit = (project: Project) => {
+    setEditingId(project.id);
     setIsCreating(false);
     setFormData({
-      title: proj.title,
-      description: proj.description,
-      technologiesText: (proj.technologies || []).join(', '),
-      link: proj.link || '',
-      image_url: proj.image_url || '',
-      preview_url: proj.preview_url || '',
-      preview_mode: proj.preview_mode || 'iframe',
-      sort_order: proj.sort_order,
+      title: project.title,
+      description: project.description || '',
+      technologies: Array.isArray(project.technologies)
+        ? project.technologies.join(', ')
+        : (project.technologies as any) || '',
+      link: project.link || '',
+      image_url: project.image_url || '',
+      preview_url: project.preview_url || '',
+      preview_mode: project.preview_mode || 'iframe',
+      sort_order: project.sort_order,
     });
   };
 
@@ -100,18 +101,18 @@ export default function ProjectsManager({
     setLoading(true);
     setStatus({ type: null, message: '' });
 
-    const techArray = formData.technologiesText
+    const techArray = formData.technologies
       .split(',')
       .map((t) => t.trim())
-      .filter((t) => t.length > 0);
+      .filter(Boolean);
 
     const payload = {
       title: formData.title,
       description: formData.description,
       technologies: techArray,
-      link: formData.link.trim() || null,
-      image_url: formData.image_url.trim() || null,
-      preview_url: formData.preview_url.trim() || null,
+      link: formData.link || null,
+      image_url: formData.image_url || null,
+      preview_url: formData.preview_url || null,
       preview_mode: formData.preview_mode,
       sort_order: Number(formData.sort_order),
     };
@@ -125,11 +126,17 @@ export default function ProjectsManager({
             message: 'Project created successfully.',
           });
           setIsCreating(false);
-          setProjects((prev) => [...prev, { ...payload, id: Date.now() }]);
+          setProjects((prev) => [
+            ...prev,
+            {
+              ...payload,
+              id: Date.now(),
+            },
+          ]);
         } else {
           setStatus({
             type: 'error',
-            message: res.error || 'Failed to create.',
+            message: res.error || 'Failed to create project.',
           });
         }
       } else if (editingId !== null) {
@@ -141,14 +148,12 @@ export default function ProjectsManager({
           });
           setEditingId(null);
           setProjects((prev) =>
-            prev.map((item) =>
-              item.id === editingId ? { ...item, ...payload } : item
-            )
+            prev.map((p) => (p.id === editingId ? { ...p, ...payload } : p))
           );
         } else {
           setStatus({
             type: 'error',
-            message: res.error || 'Failed to update.',
+            message: res.error || 'Failed to update project.',
           });
         }
       }
@@ -174,10 +179,16 @@ export default function ProjectsManager({
           message: 'Project deleted successfully.',
         });
       } else {
-        setStatus({ type: 'error', message: res.error || 'Failed to delete.' });
+        setStatus({
+          type: 'error',
+          message: res.error || 'Failed to delete project.',
+        });
       }
     } catch (err: any) {
-      setStatus({ type: 'error', message: err.message || 'Failed to delete.' });
+      setStatus({
+        type: 'error',
+        message: err.message || 'Failed to delete project.',
+      });
     } finally {
       setLoading(false);
     }
@@ -185,381 +196,49 @@ export default function ProjectsManager({
 
   return (
     <div className="space-y-6">
-      {status.type && (
-        <div
-          className={`p-4 rounded-xl flex items-center gap-3 text-sm font-medium ${
-            status.type === 'success'
-              ? 'bg-green-500/10 text-green-600 border border-green-500/20'
-              : 'bg-red-500/10 text-red-600 border border-red-500/20'
-          }`}
-        >
-          {status.type === 'success' ? (
-            <CheckCircle2 size={18} />
-          ) : (
-            <AlertCircle size={18} />
-          )}
-          <span>{status.message}</span>
-        </div>
-      )}
+      <AdminStatusBanner status={status} />
 
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold font-poppins flex items-center gap-2">
-            <FolderGit2 size={20} className="text-primary" />
-            <span>Manage Portfolio Projects</span>
-          </h2>
-          <p className="text-xs text-muted-foreground mt-1">
-            Create, update, or reorder showcase projects on the portfolio work
-            page.
-          </p>
-        </div>
-
+      <AdminPageHeader
+        title="Manage Portfolio Projects"
+        description="Reorder projects by dragging the grip icon, or configure live interactive embeds & screenshots."
+        icon={FolderKanban}
+      >
         {!isCreating && editingId === null && (
           <button
             onClick={handleStartCreate}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full main-gradient-1 text-white text-xs font-semibold shadow-md hover:opacity-90 transition-opacity"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl main-gradient-1 text-white text-xs font-semibold hover:opacity-90 transition-opacity"
           >
-            <Plus size={14} />
+            <Plus size={15} />
             <span>Add Project</span>
           </button>
         )}
-      </div>
+      </AdminPageHeader>
 
+      {/* Form Section */}
       {(isCreating || editingId !== null) && (
-        <form
+        <ProjectForm
+          isCreating={isCreating}
+          editingId={editingId}
+          formData={formData}
+          setFormData={setFormData}
           onSubmit={handleSave}
-          className="p-6 rounded-2xl bg-card border border-primary/40 space-y-4 shadow-md"
-        >
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-semibold font-poppins text-primary">
-              {isCreating ? 'Add Portfolio Project' : 'Edit Portfolio Project'}
-            </h3>
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="p-1 rounded-lg text-muted-foreground hover:bg-tertiary"
-            >
-              <X size={16} />
-            </button>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-1 gap-4">
-            <div>
-              <label className="block text-xs font-semibold mb-1 text-muted-foreground">
-                Project Title
-              </label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) =>
-                  setFormData({ ...formData, title: e.target.value })
-                }
-                required
-                placeholder="Gimmefy AI, Dialmantra Dialer..."
-                className="w-full px-3 py-2 text-sm rounded-lg bg-background border border-border focus:border-primary outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold mb-1 text-muted-foreground">
-                Project Live Link (URL)
-              </label>
-              <input
-                type="url"
-                value={formData.link}
-                onChange={(e) =>
-                  setFormData({ ...formData, link: e.target.value })
-                }
-                placeholder="https://..."
-                className="w-full px-3 py-2 text-sm rounded-lg bg-background border border-border focus:border-primary outline-none"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold mb-1 text-muted-foreground">
-              Description
-            </label>
-            <textarea
-              rows={3}
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              required
-              placeholder="Detailed description of the project and its value..."
-              className="w-full px-3 py-2 text-sm rounded-lg bg-background border border-border focus:border-primary outline-none resize-y"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold mb-1 text-muted-foreground">
-              Technologies (comma-separated)
-            </label>
-            <input
-              type="text"
-              value={formData.technologiesText}
-              onChange={(e) =>
-                setFormData({ ...formData, technologiesText: e.target.value })
-              }
-              placeholder="React, TypeScript, Redux Toolkit, Mantine"
-              required
-              className="w-full px-3 py-2 text-sm rounded-lg bg-background border border-border focus:border-primary outline-none"
-            />
-          </div>
-
-          {/* Preview Mode & URL Settings */}
-          <div className="p-4 rounded-xl bg-tertiary/20 border border-border space-y-4">
-            <div>
-              <label className="block text-xs font-semibold mb-2 text-foreground flex items-center justify-between">
-                <span>Card Preview Display Mode</span>
-                <span className="text-[11px] font-normal text-muted-foreground">
-                  Choose what visitors see on the Work page card
-                </span>
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() =>
-                    setFormData((prev) => ({ ...prev, preview_mode: 'iframe' }))
-                  }
-                  className={`px-3 py-2 text-xs font-medium rounded-lg border transition-all flex items-center justify-center gap-2 ${
-                    formData.preview_mode === 'iframe'
-                      ? 'bg-primary/10 border-primary text-primary font-semibold shadow-xs'
-                      : 'bg-background border-border text-muted-foreground hover:bg-tertiary'
-                  }`}
-                >
-                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                  Live Website Preview (iframe)
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setFormData((prev) => ({ ...prev, preview_mode: 'image' }))
-                  }
-                  className={`px-3 py-2 text-xs font-medium rounded-lg border transition-all flex items-center justify-center gap-2 ${
-                    formData.preview_mode === 'image'
-                      ? 'bg-primary/10 border-primary text-primary font-semibold shadow-xs'
-                      : 'bg-background border-border text-muted-foreground hover:bg-tertiary'
-                  }`}
-                >
-                  <span className="w-2 h-2 rounded-full bg-blue-500" />
-                  Static Cover Image
-                </button>
-              </div>
-            </div>
-
-            {formData.preview_mode === 'iframe' && (
-              <div>
-                <label className="block text-[11px] font-semibold mb-1 text-muted-foreground">
-                  Custom Preview URL (Optional - defaults to Project Live Link
-                  above)
-                </label>
-                <input
-                  type="url"
-                  value={formData.preview_url}
-                  onChange={(e) =>
-                    setFormData({ ...formData, preview_url: e.target.value })
-                  }
-                  placeholder={formData.link || 'https://...'}
-                  className="w-full px-3 py-1.5 text-xs rounded-lg bg-background border border-border focus:border-primary outline-none"
-                />
-                <p className="text-[10px] text-muted-foreground mt-1">
-                  If the target website blocks iframe embeds (X-Frame-Options),
-                  the card will automatically fall back to the cover image
-                  below.
-                </p>
-              </div>
-            )}
-          </div>
-
-          {/* Cover Image Upload & URL (Fallback / Static View) */}
-          <div className="space-y-3">
-            <FileUpload
-              label={`Project Cover Image ${
-                formData.preview_mode === 'iframe' ? '(Fallback)' : ''
-              }`}
-              accept="image/jpeg,image/png,image/webp"
-              maxSizeMB={5}
-              previewType="image"
-              enableCrop={true}
-              aspectRatio={16 / 9}
-              cropShape="rect"
-              currentUrl={formData.image_url}
-              onUpload={(fd) =>
-                uploadProjectImageAction(fd, editingId || undefined)
-              }
-              onUrlChange={(newUrl) =>
-                setFormData((prev) => ({ ...prev, image_url: newUrl || '' }))
-              }
-              helperText="Upload 16:9 banner image. Used as static cover and live preview fallback."
-            />
-
-            <div className="grid grid-cols-2 sm:grid-cols-1 gap-4">
-              <div>
-                <label className="block text-[11px] font-medium mb-1 text-muted-foreground">
-                  Or Direct Image URL (optional override)
-                </label>
-                <input
-                  type="text"
-                  value={formData.image_url}
-                  onChange={(e) =>
-                    setFormData({ ...formData, image_url: e.target.value })
-                  }
-                  placeholder="https://... or bucket URL"
-                  className="w-full px-3 py-1.5 text-xs rounded-lg bg-background border border-border focus:border-primary outline-none text-muted-foreground"
-                />
-              </div>
-              <div>
-                <label className="block text-[11px] font-medium mb-1 text-muted-foreground">
-                  Sort Order
-                </label>
-                <input
-                  type="number"
-                  value={formData.sort_order}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      sort_order: parseInt(e.target.value) || 0,
-                    })
-                  }
-                  className="w-full px-3 py-1.5 text-xs rounded-lg bg-background border border-border focus:border-primary outline-none"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-end gap-2 pt-2">
-            <button
-              type="button"
-              onClick={handleCancel}
-              className="px-4 py-2 rounded-full border border-border text-xs font-medium hover:bg-tertiary"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-5 py-2 rounded-full main-gradient-1 text-white text-xs font-semibold hover:opacity-90 disabled:opacity-50"
-            >
-              {loading ? 'Saving...' : 'Save Project'}
-            </button>
-          </div>
-        </form>
+          onCancel={handleCancel}
+          loading={loading}
+        />
       )}
 
-      {/* Projects List Table */}
-      <div className="rounded-2xl bg-card border border-border overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-tertiary/50 border-b border-border text-xs text-muted-foreground uppercase font-semibold">
-              <tr>
-                <th className="py-3 px-4">Title</th>
-                <th className="py-3 px-4">Preview Mode</th>
-                <th className="py-3 px-4">Description</th>
-                <th className="py-3 px-4">Technologies</th>
-                <th className="py-3 px-4">Link</th>
-                <th className="py-3 px-4">Order</th>
-                <th className="py-3 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {projects.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="py-8 text-center text-muted-foreground text-xs"
-                  >
-                    No projects configured yet.
-                  </td>
-                </tr>
-              ) : (
-                projects.map((proj) => (
-                  <tr
-                    key={proj.id}
-                    className="hover:bg-tertiary/30 transition-colors"
-                  >
-                    <td className="py-3 px-4 font-semibold whitespace-nowrap">
-                      {proj.title}
-                    </td>
-                    <td className="py-3 px-4 whitespace-nowrap">
-                      {proj.preview_mode === 'image' ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-500/10 text-blue-600 border border-blue-500/20">
-                          <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-                          Static Image
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                          Live Iframe
-                        </span>
-                      )}
-                    </td>
-                    <td className="py-3 px-4 text-xs text-muted-foreground max-w-xs truncate">
-                      {proj.description}
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="flex flex-wrap gap-1 max-w-xs">
-                        {(proj.technologies || [])
-                          .slice(0, 3)
-                          .map((tech, idx) => (
-                            <Badge
-                              key={idx}
-                              variant="outline"
-                              className="text-[10px] py-0"
-                            >
-                              {tech}
-                            </Badge>
-                          ))}
-                        {(proj.technologies || []).length > 3 && (
-                          <span className="text-[10px] text-muted-foreground">
-                            +{(proj.technologies || []).length - 3}
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="py-3 px-4">
-                      {proj.link ? (
-                        <a
-                          href={proj.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
-                        >
-                          <span className="max-w-[120px] truncate">
-                            {proj.link}
-                          </span>
-                          <ExternalLink size={11} />
-                        </a>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">-</span>
-                      )}
-                    </td>
-                    <td className="py-3 px-4 text-xs">{proj.sort_order}</td>
-                    <td className="py-3 px-4 text-right">
-                      <div className="inline-flex items-center gap-2">
-                        <button
-                          onClick={() => handleStartEdit(proj)}
-                          className="p-1.5 rounded-lg text-primary hover:bg-primary/10 transition-colors"
-                          title="Edit"
-                        >
-                          <Edit2 size={14} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(proj.id)}
-                          className="p-1.5 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors"
-                          title="Delete"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {/* List Table Section */}
+      <ProjectsTable
+        projects={projects}
+        draggedIndex={draggedIndex}
+        dragOverIndex={dragOverIndex}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
+        onDrop={handleDrop}
+        onEdit={handleStartEdit}
+        onDelete={handleDelete}
+      />
     </div>
   );
 }

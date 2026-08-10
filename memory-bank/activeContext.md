@@ -1,27 +1,37 @@
 # Memory Bank - Active Context
 
 ## Active Focus
-The current focus is **Phase 7: Live Project Previews & Embeds (Completed)**.
+The current focus is **Phase 9: DRY Reusable Utilities, Custom Hooks & Single-Responsibility Component Modularization (Completed)**.
 
 ---
 
 ## Recently Completed
 
-1. **Database Schema & Types:** Added `preview_url` (text) and `preview_mode` ('image' | 'iframe', default 'iframe') to `public.projects` in `supabase/schema.sql`, `src/types/database.ts`, and fallback records in `src/lib/supabase-queries.ts`.
-2. **LivePreview Component:** Built `@/components/website/pages/work/live-preview.tsx` featuring:
-   - Sandboxed iframe with scaled 2x responsive viewport (`transform scale-50`).
-   - Loading skeleton state with spinning indicator.
-   - Automatic 6-second timeout fallback to static project cover image if iframe fails or is blocked by `X-Frame-Options` / CSP.
-   - Non-interactive transparent overlay ensuring smooth click-through card navigation to project URLs.
-   - Visual "Live Preview" status badge.
-3. **Project Card Integration:** Updated `@/components/website/pages/work/porject-card/index.tsx` and `@/app/(website)/work/page.tsx` to conditionally render live iframes or static images based on `preview_mode`.
-4. **Admin Projects Manager:** Added interactive preview mode switcher (Live Iframe vs. Static Image), custom `preview_url` input, and preview mode badges in `/admin/projects`.
-5. **Documentation:** Updated `docs/BACKEND_SCHEMA.md` and memory bank files.
+1. **Updated Agent Operational Rules (High Priority):**
+   - Updated `AGENTS.md` and `.agents/AGENTS.md` with strict rules mandating:
+     - **DRY & Centralized Reusable Utilities:** Reusable logic/helpers/hooks must be centralized in `@/utils/`, `@/hooks/`, or `@/lib/` and imported everywhere.
+     - **Single-Responsibility Component Design:** Monolithic managers must be decomposed into small, focused subcomponents (separate form modals, tables/lists, header bars, status banners, card items).
+2. **Backend Server Action Deduplication:**
+   - Centralized all 7 reorder actions in `src/lib/admin-actions.ts` to call a single generic `genericReorderTableItems` helper with transactional updates and targeted ISR path revalidations.
+3. **Shared Utilities & Hooks:**
+   - Created pure array reordering math in `src/utils/reorder.ts` (`reorderArray`).
+   - Created custom hook `src/hooks/use-drag-drop-reorder.ts` (`useDragDropReorder`) encapsulating HTML5 drag events, optimistic updates, and server persistence.
+4. **Shared Admin UI Components:**
+   - `AdminStatusBanner` (`src/components/admin/admin-status-banner.tsx`)
+   - `AdminPageHeader` (`src/components/admin/admin-page-header.tsx`)
+   - `AdminDragHandle` (`src/components/admin/admin-drag-handle.tsx`)
+5. **Component Decomposition Across All 6 Admin Modules:**
+   - **About Cards:** `about-card-form.tsx`, `about-cards-table.tsx`, `about-cards-manager.tsx`
+   - **Contacts:** `contact-form.tsx`, `contacts-table.tsx`, `contacts-manager.tsx`
+   - **Social Links:** `social-link-form.tsx`, `social-links-table.tsx`, `social-links-manager.tsx`
+   - **Experiences:** `experience-form.tsx`, `experiences-table.tsx`, `experiences-manager.tsx`
+   - **Projects:** `project-form.tsx`, `projects-table.tsx`, `projects-manager.tsx`
+   - **Skills:** `skill-category-form.tsx`, `skill-category-card.tsx`, `skills-manager.tsx`
+6. **Documentation & Memory Bank:** Concurrently updated `docs/TRD.md`, `memory-bank/activeContext.md`, `memory-bank/progress.md`, and created `walkthrough.md`.
 
 ---
 
 ## Verification Status
 
-- **TypeScript Compilation:** `npx tsc --noEmit` -> 0 errors.
-- **ESLint Validation:** `npm run lint` -> 0 errors/warnings.
-- **Production Build:** `npm run build` -> 23/23 routes successfully generated (all public pages static ○, admin & preview-check dynamic ƒ).
+- **ESLint Validation:** `npm run lint` -> 0 warnings, 0 errors.
+- **Production Build:** `npm run build` -> 23/23 routes successfully generated and prerendered.
