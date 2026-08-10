@@ -46,6 +46,8 @@ export default function ProjectsManager({
     technologiesText: string;
     link: string;
     image_url: string;
+    preview_url: string;
+    preview_mode: 'image' | 'iframe';
     sort_order: number;
   }>({
     title: '',
@@ -53,6 +55,8 @@ export default function ProjectsManager({
     technologiesText: '',
     link: '',
     image_url: '',
+    preview_url: '',
+    preview_mode: 'iframe',
     sort_order: 0,
   });
 
@@ -65,6 +69,8 @@ export default function ProjectsManager({
       technologiesText: 'React, Next.js, TypeScript',
       link: '',
       image_url: '',
+      preview_url: '',
+      preview_mode: 'iframe',
       sort_order: projects.length + 1,
     });
   };
@@ -78,6 +84,8 @@ export default function ProjectsManager({
       technologiesText: (proj.technologies || []).join(', '),
       link: proj.link || '',
       image_url: proj.image_url || '',
+      preview_url: proj.preview_url || '',
+      preview_mode: proj.preview_mode || 'iframe',
       sort_order: proj.sort_order,
     });
   };
@@ -103,6 +111,8 @@ export default function ProjectsManager({
       technologies: techArray,
       link: formData.link.trim() || null,
       image_url: formData.image_url.trim() || null,
+      preview_url: formData.preview_url.trim() || null,
+      preview_mode: formData.preview_mode,
       sort_order: Number(formData.sort_order),
     };
 
@@ -297,10 +307,77 @@ export default function ProjectsManager({
             />
           </div>
 
-          {/* Cover Image Upload & URL */}
+          {/* Preview Mode & URL Settings */}
+          <div className="p-4 rounded-xl bg-tertiary/20 border border-border space-y-4">
+            <div>
+              <label className="block text-xs font-semibold mb-2 text-foreground flex items-center justify-between">
+                <span>Card Preview Display Mode</span>
+                <span className="text-[11px] font-normal text-muted-foreground">
+                  Choose what visitors see on the Work page card
+                </span>
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFormData((prev) => ({ ...prev, preview_mode: 'iframe' }))
+                  }
+                  className={`px-3 py-2 text-xs font-medium rounded-lg border transition-all flex items-center justify-center gap-2 ${
+                    formData.preview_mode === 'iframe'
+                      ? 'bg-primary/10 border-primary text-primary font-semibold shadow-xs'
+                      : 'bg-background border-border text-muted-foreground hover:bg-tertiary'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  Live Website Preview (iframe)
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setFormData((prev) => ({ ...prev, preview_mode: 'image' }))
+                  }
+                  className={`px-3 py-2 text-xs font-medium rounded-lg border transition-all flex items-center justify-center gap-2 ${
+                    formData.preview_mode === 'image'
+                      ? 'bg-primary/10 border-primary text-primary font-semibold shadow-xs'
+                      : 'bg-background border-border text-muted-foreground hover:bg-tertiary'
+                  }`}
+                >
+                  <span className="w-2 h-2 rounded-full bg-blue-500" />
+                  Static Cover Image
+                </button>
+              </div>
+            </div>
+
+            {formData.preview_mode === 'iframe' && (
+              <div>
+                <label className="block text-[11px] font-semibold mb-1 text-muted-foreground">
+                  Custom Preview URL (Optional - defaults to Project Live Link
+                  above)
+                </label>
+                <input
+                  type="url"
+                  value={formData.preview_url}
+                  onChange={(e) =>
+                    setFormData({ ...formData, preview_url: e.target.value })
+                  }
+                  placeholder={formData.link || 'https://...'}
+                  className="w-full px-3 py-1.5 text-xs rounded-lg bg-background border border-border focus:border-primary outline-none"
+                />
+                <p className="text-[10px] text-muted-foreground mt-1">
+                  If the target website blocks iframe embeds (X-Frame-Options),
+                  the card will automatically fall back to the cover image
+                  below.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Cover Image Upload & URL (Fallback / Static View) */}
           <div className="space-y-3">
             <FileUpload
-              label="Project Cover Image (Storage Upload)"
+              label={`Project Cover Image ${
+                formData.preview_mode === 'iframe' ? '(Fallback)' : ''
+              }`}
               accept="image/jpeg,image/png,image/webp"
               maxSizeMB={5}
               previewType="image"
@@ -314,7 +391,7 @@ export default function ProjectsManager({
               onUrlChange={(newUrl) =>
                 setFormData((prev) => ({ ...prev, image_url: newUrl || '' }))
               }
-              helperText="Upload 16:9 banner image. Cropping tool opens automatically."
+              helperText="Upload 16:9 banner image. Used as static cover and live preview fallback."
             />
 
             <div className="grid grid-cols-2 sm:grid-cols-1 gap-4">
@@ -377,6 +454,7 @@ export default function ProjectsManager({
             <thead className="bg-tertiary/50 border-b border-border text-xs text-muted-foreground uppercase font-semibold">
               <tr>
                 <th className="py-3 px-4">Title</th>
+                <th className="py-3 px-4">Preview Mode</th>
                 <th className="py-3 px-4">Description</th>
                 <th className="py-3 px-4">Technologies</th>
                 <th className="py-3 px-4">Link</th>
@@ -388,7 +466,7 @@ export default function ProjectsManager({
               {projects.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={6}
+                    colSpan={7}
                     className="py-8 text-center text-muted-foreground text-xs"
                   >
                     No projects configured yet.
@@ -402,6 +480,19 @@ export default function ProjectsManager({
                   >
                     <td className="py-3 px-4 font-semibold whitespace-nowrap">
                       {proj.title}
+                    </td>
+                    <td className="py-3 px-4 whitespace-nowrap">
+                      {proj.preview_mode === 'image' ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-blue-500/10 text-blue-600 border border-blue-500/20">
+                          <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                          Static Image
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                          Live Iframe
+                        </span>
+                      )}
                     </td>
                     <td className="py-3 px-4 text-xs text-muted-foreground max-w-xs truncate">
                       {proj.description}
