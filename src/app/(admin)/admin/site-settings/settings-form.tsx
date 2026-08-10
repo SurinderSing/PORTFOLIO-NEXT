@@ -3,6 +3,11 @@
 import React, { useState } from 'react';
 import { SiteSettings } from '@/types/database';
 import { updateSiteSettingsAction } from '@/lib/admin-actions';
+import {
+  uploadProfilePhotoAction,
+  uploadResumePdfAction,
+} from '@/lib/storage-actions';
+import FileUpload from '@/components/ui/file-upload';
 import { Save, CheckCircle2, AlertCircle } from 'lucide-react';
 
 interface SettingsFormProps {
@@ -119,32 +124,67 @@ export default function SettingsForm({ initialSettings }: SettingsFormProps) {
           />
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-1 gap-4">
-          <div>
-            <label className="block text-xs font-semibold mb-1 text-muted-foreground">
-              Profile Photo URL (optional)
-            </label>
-            <input
-              type="text"
-              name="profile_photo_url"
-              value={formData.profile_photo_url || ''}
-              onChange={handleChange}
-              placeholder="https://... or leave empty for default asset"
-              className="w-full px-3 py-2 text-sm rounded-lg bg-background border border-border focus:border-primary outline-none"
+        {/* Media Uploaders */}
+        <div className="grid grid-cols-2 sm:grid-cols-1 gap-6 pt-2">
+          {/* Profile Photo Uploader */}
+          <div className="space-y-2">
+            <FileUpload
+              label="Profile Photo (Storage Upload)"
+              accept="image/jpeg,image/png,image/webp"
+              maxSizeMB={5}
+              previewType="image"
+              enableCrop={true}
+              aspectRatio={1}
+              cropShape="round"
+              currentUrl={formData.profile_photo_url}
+              onUpload={uploadProfilePhotoAction}
+              onUrlChange={(newUrl) =>
+                setFormData((prev) => ({ ...prev, profile_photo_url: newUrl }))
+              }
+              helperText="Upload JPEG/PNG/WebP. Cropping tool opens automatically."
             />
+            <div>
+              <label className="block text-[11px] font-medium mb-1 text-muted-foreground">
+                Or Direct Image URL (optional override)
+              </label>
+              <input
+                type="text"
+                name="profile_photo_url"
+                value={formData.profile_photo_url || ''}
+                onChange={handleChange}
+                placeholder="https://... or leave empty for default asset"
+                className="w-full px-3 py-1.5 text-xs rounded-lg bg-background border border-border focus:border-primary outline-none text-muted-foreground"
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-xs font-semibold mb-1 text-muted-foreground">
-              Resume PDF URL / Path
-            </label>
-            <input
-              type="text"
-              name="resume_pdf_url"
-              value={formData.resume_pdf_url || ''}
-              onChange={handleChange}
-              placeholder="/assets/Surinder-Singh-Resume.pdf"
-              className="w-full px-3 py-2 text-sm rounded-lg bg-background border border-border focus:border-primary outline-none"
+
+          {/* Resume PDF Uploader */}
+          <div className="space-y-2">
+            <FileUpload
+              label="Resume PDF (Storage Upload)"
+              accept=".pdf,application/pdf"
+              maxSizeMB={10}
+              previewType="pdf"
+              currentUrl={formData.resume_pdf_url}
+              onUpload={uploadResumePdfAction}
+              onUrlChange={(newUrl) =>
+                setFormData((prev) => ({ ...prev, resume_pdf_url: newUrl }))
+              }
+              helperText="Upload PDF document (Max 10MB)."
             />
+            <div>
+              <label className="block text-[11px] font-medium mb-1 text-muted-foreground">
+                Or Direct PDF Path / URL
+              </label>
+              <input
+                type="text"
+                name="resume_pdf_url"
+                value={formData.resume_pdf_url || ''}
+                onChange={handleChange}
+                placeholder="/assets/Surinder-Singh-Resume.pdf"
+                className="w-full px-3 py-1.5 text-xs rounded-lg bg-background border border-border focus:border-primary outline-none text-muted-foreground"
+              />
+            </div>
           </div>
         </div>
       </div>

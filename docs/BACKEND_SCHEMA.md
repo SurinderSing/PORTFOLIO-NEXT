@@ -215,3 +215,19 @@ create table public.comments (
 - **Public Read Access:** All portfolio tables (`site_settings`, `contacts`, `social_links`, `about_cards`, `skill_categories`, `skills`, `experiences`, `projects`, `profiles`, published `blog_posts`, published `stories`, `comments`) permit public `SELECT`.
 - **Admin Write Access:** Mutations on core portfolio configuration tables are restricted to authenticated users with `profiles.role = 'ADMIN'`.
 - **Author & Commenter Access:** Authenticated users can author and manage their own blog posts, stories, and comments.
+
+---
+
+## 11. Supabase Storage Architecture
+
+### Bucket Configuration: `media`
+- **Bucket ID:** `media`
+- **Public:** `true` (enables global CDN read distribution)
+- **Folder Conventions:**
+  - `profile/profile-photo.[webp|png|jpg]`: Profile avatar image, automatically cropped and scaled.
+  - `resume/resume.pdf`: Uploaded resume document, replacing local static asset.
+  - `projects/project-{id}-{timestamp}.[webp|png|jpg]`: Project card showcase media banners.
+
+### Storage RLS Policies
+- **Read:** `SELECT` allowed on `bucket_id = 'media'` for all public/anonymous traffic.
+- **Write/Update/Delete:** `INSERT`, `UPDATE`, `DELETE` permitted only for authenticated users where `profiles.role = 'ADMIN'`.

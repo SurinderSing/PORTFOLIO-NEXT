@@ -10,6 +10,14 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'instagram.fdel52-1.fna.fbcdn.net',
       },
+      {
+        protocol: 'https',
+        hostname: 'irqstahzdalcbusyubbo.supabase.co',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.supabase.co',
+      },
     ],
   },
 };
