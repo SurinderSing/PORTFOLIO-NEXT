@@ -17,10 +17,19 @@
 - [x] Live Project Previews (iframe / embed replacing static screenshot uploads)
 - [x] HTML5 Drag & Drop Reordering Across All Admin Managers (Experiences, Projects, Skills & Categories, About Cards, Contacts, Social Links)
 - [x] DRY Reusable Utilities, Custom Hooks & Single-Responsibility Component Modularization
+- [x] Navigation Performance Optimization & Route Transition Polish
 
 ---
 
 ## Detailed Task Checklist
+
+### Phase 10: Navigation Performance Optimization & Route Transition Polish (100% Completed)
+- [x] Replace full-screen blocking overlay (`fixed inset-0 z-[9999]`) in `src/app/(website)/loading.tsx` with non-blocking inline page skeleton.
+- [x] Create dedicated `src/app/(admin)/admin/loading.tsx` skeleton for instant feedback across all admin subpages.
+- [x] Add `<Suspense><RouteLoader /></Suspense>` progress bar to `src/app/(admin)/layout.tsx`.
+- [x] Optimize Next.js middleware matcher in `src/middleware.ts` to only target auth-protected routes.
+- [x] Add fast-path bypass in `src/utils/supabase/middleware.ts` to skip Supabase `getUser()` network calls on public routes.
+- [x] Run `npm run lint` (0 warnings/errors) and `npm run build` (23/23 routes compiled successfully).
 
 ### Phase 9: DRY Reusable Utilities, Custom Hooks & Single-Responsibility Component Modularization (100% Completed)
 - [x] Update project and workspace agent rules (`AGENTS.md` and `.agents/AGENTS.md`) with High-Priority DRY and SRP mandates.

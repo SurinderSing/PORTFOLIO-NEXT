@@ -21,6 +21,20 @@ export async function updateSession(
     return supabaseResponse;
   }
 
+  const pathname = request.nextUrl.pathname;
+  const isAuthRoute =
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/sign-in') ||
+    pathname.startsWith('/sign-up') ||
+    pathname.startsWith('/verification-success') ||
+    pathname.startsWith('/api/auth') ||
+    pathname.startsWith('/api/user');
+
+  if (!isAuthRoute) {
+    return supabaseResponse;
+  }
+
   try {
     const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
       cookies: {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import '@/styles/globals.css';
@@ -7,6 +7,7 @@ import { raleway, poppins, pacifico } from '@/styles/fonts';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/utils/theme-provider';
 import ToggleDarkModeBtn from '@/components/website/toggle-dark-mode-btn';
+import RouteLoader from '@/components/ui/route-loader';
 import {
   LayoutDashboard,
   Settings,
@@ -120,6 +121,9 @@ export default async function AdminLayout({
           'antialiased min-h-screen bg-background text-foreground font-raleway'
         )}
       >
+        <Suspense>
+          <RouteLoader />
+        </Suspense>
         <Providers>
           <ThemeProvider
             attribute="class"
