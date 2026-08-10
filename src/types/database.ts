@@ -3,6 +3,13 @@ export type UserStatus = 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
 export type ExperienceType = 'EDUCATION' | 'WORK';
 export type PostStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
 
+export interface StorageActionResult {
+  success: boolean;
+  message?: string;
+  error?: string;
+  url?: string;
+}
+
 export interface Profile {
   id: string;
   username: string | null;
