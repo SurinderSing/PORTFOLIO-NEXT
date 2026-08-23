@@ -10,6 +10,7 @@ import Footer from '@/features/website/footer';
 import GlobalLoader from '@/components/ui/global-loader';
 import RouteLoader from '@/components/ui/route-loader';
 import CustomCursor from '@/components/animations/custom-cursor';
+import AntigravityBackground from '@/components/animations/antigravity-background';
 import Providers from '../provider';
 import { getSiteSettings, getSocialLinks } from '@/lib/supabase-queries';
 
@@ -118,7 +119,8 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <div className="min-h-screen flex flex-col justify-between">
+            <div className="min-h-screen flex flex-col justify-between relative">
+              <AntigravityBackground />
               <CustomCursor />
               <div>
                 <TopNavbar settings={settings} />
