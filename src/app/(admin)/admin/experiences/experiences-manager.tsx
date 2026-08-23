@@ -14,6 +14,7 @@ import AdminStatusBanner, {
   AdminStatusState,
 } from '@/components/admin/admin-status-banner';
 import AdminPageHeader from '@/components/admin/admin-page-header';
+import AdminDeleteModal from '@/components/admin/admin-delete-modal';
 import ExperienceForm, { ExperienceFormData } from './experience-form';
 import ExperiencesTable from './experiences-table';
 
@@ -27,6 +28,7 @@ export default function ExperiencesManager({
   const [experiences, setExperiences] =
     useState<Experience[]>(initialExperiences);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [deletingItem, setDeletingItem] = useState<Experience | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [loading, setLoading] = useState(false);
   const [draggedItem, setDraggedItem] = useState<{
@@ -143,16 +145,24 @@ export default function ExperiencesManager({
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleStartDelete = (item: Experience) => {
+    setDeletingItem(item);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingItem) return;
     setLoading(true);
     try {
-      const res = await deleteExperienceAction(id);
+      const res = await deleteExperienceAction(deletingItem.id);
       if (res.success) {
-        setExperiences((prev) => prev.filter((item) => item.id !== id));
+        setExperiences((prev) =>
+          prev.filter((item) => item.id !== deletingItem.id)
+        );
         setStatus({
           type: 'success',
-          message: 'Experience deleted successfully.',
+          message: `Experience "${deletingItem.title}" deleted successfully.`,
         });
+        setDeletingItem(null);
       } else {
         setStatus({ type: 'error', message: res.error || 'Failed to delete.' });
       }
@@ -293,7 +303,7 @@ export default function ExperiencesManager({
         onDragEnd={handleDragEnd}
         onDrop={handleDrop}
         onEdit={handleStartEdit}
-        onDelete={handleDelete}
+        onDelete={handleStartDelete}
       />
 
       {/* Education Experiences Table */}
@@ -310,7 +320,22 @@ export default function ExperiencesManager({
         onDragEnd={handleDragEnd}
         onDrop={handleDrop}
         onEdit={handleStartEdit}
-        onDelete={handleDelete}
+        onDelete={handleStartDelete}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <AdminDeleteModal
+        isOpen={deletingItem !== null}
+        title="Delete Experience Record"
+        description="Are you sure you want to permanently delete this experience / education record? This action will remove it from your live resume."
+        itemName={
+          deletingItem
+            ? `${deletingItem.title} (${deletingItem.place})`
+            : undefined
+        }
+        loading={loading}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeletingItem(null)}
       />
     </div>
   );

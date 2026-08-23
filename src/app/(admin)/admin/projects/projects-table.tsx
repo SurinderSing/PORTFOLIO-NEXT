@@ -15,7 +15,7 @@ interface ProjectsTableProps {
   onDragEnd: () => void;
   onDrop: (_e: React.DragEvent, _index: number) => void;
   onEdit: (_project: Project) => void;
-  onDelete: (_id: number) => void;
+  onDelete: (_project: Project) => void;
 }
 
 export default function ProjectsTable({
@@ -186,7 +186,7 @@ export default function ProjectsTable({
                           draggable={false}
                           onClick={(e) => {
                             e.stopPropagation();
-                            onDelete(project.id);
+                            onDelete(project);
                           }}
                           onMouseDown={(e) => e.stopPropagation()}
                           className="p-1.5 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors"
