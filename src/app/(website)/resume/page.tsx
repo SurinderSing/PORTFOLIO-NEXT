@@ -70,7 +70,7 @@ export default async function ResumePage() {
                 </p>
               </div>
 
-              <p className="text-xs text-muted-foreground leading-relaxed max-w-xl">
+              <p className="text-xs text-muted-foreground leading-relaxed max-w-2xl">
                 {settings.resume_summary}
               </p>
 
@@ -97,12 +97,12 @@ export default async function ResumePage() {
               </div>
             </div>
 
-            <div className="relative h-28 w-28 sm:h-32 sm:w-32 shrink-0 rounded-2xl overflow-hidden border-2 border-border shadow-sm">
+            <div className="relative h-48 w-48 sm:h-56 sm:w-56 lg:h-60 lg:w-60 shrink-0 rounded-2xl overflow-hidden border-2 border-border shadow-md">
               <Image
                 src={settings.profile_photo_url || ProfileImg}
                 alt={settings.owner_name}
                 fill
-                sizes="128px"
+                sizes="(max-width: 768px) 192px, 240px"
                 priority
                 className="object-cover"
               />
