@@ -79,7 +79,7 @@ const TopNavbar: React.FC<TopNavbarProps> = ({ settings }) => {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="hidden sm:flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-foreground hover:bg-tertiary-2 transition-colors"
+              className="flex md:hidden h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-foreground hover:bg-tertiary-2 transition-colors"
               aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
             >
               {mobileMenuOpen ? (
@@ -93,7 +93,7 @@ const TopNavbar: React.FC<TopNavbarProps> = ({ settings }) => {
 
         {/* Mobile Dropdown Menu */}
         {mobileMenuOpen && (
-          <div className="hidden sm:block border-t border-border/60 py-3 pb-4 font-mono text-xs">
+          <div className="md:hidden border-t border-border/60 py-3 pb-4 font-mono text-xs">
             <div className="flex flex-col gap-1">
               {navLinks.map((link) => {
                 const isActive = pathname === link.href;

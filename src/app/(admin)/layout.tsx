@@ -166,7 +166,7 @@ export default async function AdminLayout({
                     title="Sign Out"
                   >
                     <LogOut size={12} />
-                    <span className="sm:hidden">Sign Out</span>
+                    <span className="hidden sm:inline">Sign Out</span>
                   </a>
                 </div>
               </header>
@@ -174,7 +174,7 @@ export default async function AdminLayout({
               {/* Body: Sidebar + Main Content */}
               <div className="flex-1 flex overflow-hidden">
                 {/* Sidebar Navigation */}
-                <aside className="w-60 sm:hidden border-r border-border bg-card/40 p-4 flex flex-col justify-between">
+                <aside className="w-60 hidden md:flex border-r border-border bg-card/40 p-4 flex-col justify-between">
                   <div className="space-y-1">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground px-3 mb-2">
                       Management
@@ -214,7 +214,7 @@ export default async function AdminLayout({
                 {/* Main Content Area */}
                 <main className="flex-1 overflow-y-auto p-6 md:p-4 max-w-6xl mx-auto w-full">
                   {/* Mobile Navigation Pills */}
-                  <div className="hidden sm:flex overflow-x-auto gap-2 pb-3 mb-4 no-scrollbar border-b border-border">
+                  <div className="flex md:hidden overflow-x-auto gap-2 pb-3 mb-4 no-scrollbar border-b border-border">
                     {navItems.map((item) => (
                       <Link
                         key={item.href}
