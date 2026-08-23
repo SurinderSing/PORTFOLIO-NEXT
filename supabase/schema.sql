@@ -256,6 +256,8 @@ create table if not exists public.experiences (
   title text not null,
   place text not null,
   type text check (type in ('EDUCATION', 'WORK')) not null,
+  description text null,
+  technologies text[] default '{}',
   sort_order integer default 0,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) null
@@ -263,6 +265,8 @@ create table if not exists public.experiences (
 
 alter table public.experiences enable row level security;
 alter table public.experiences add column if not exists sort_order integer default 0;
+alter table public.experiences add column if not exists description text null;
+alter table public.experiences add column if not exists technologies text[] default '{}';
 
 drop policy if exists "Experiences are viewable by everyone." on public.experiences;
 create policy "Experiences are viewable by everyone." on public.experiences

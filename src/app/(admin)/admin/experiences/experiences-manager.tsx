@@ -49,6 +49,8 @@ export default function ExperiencesManager({
     title: '',
     place: '',
     type: 'WORK',
+    description: '',
+    technologies: '',
     sort_order: 0,
   });
 
@@ -60,6 +62,8 @@ export default function ExperiencesManager({
       title: '',
       place: '',
       type,
+      description: '',
+      technologies: '',
       sort_order: experiences.filter((e) => e.type === type).length + 1,
     });
   };
@@ -72,6 +76,10 @@ export default function ExperiencesManager({
       title: item.title,
       place: item.place,
       type: item.type,
+      description: item.description || '',
+      technologies: Array.isArray(item.technologies)
+        ? item.technologies.join(', ')
+        : (item.technologies as any) || '',
       sort_order: item.sort_order,
     });
   };
@@ -86,9 +94,24 @@ export default function ExperiencesManager({
     setLoading(true);
     setStatus({ type: null, message: '' });
 
+    const techArray = formData.technologies
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean);
+
+    const payload = {
+      date_range: formData.date_range,
+      title: formData.title,
+      place: formData.place,
+      type: formData.type,
+      description: formData.description || null,
+      technologies: techArray,
+      sort_order: Number(formData.sort_order),
+    };
+
     try {
       if (isCreating) {
-        const res = await createExperienceAction(formData);
+        const res = await createExperienceAction(payload);
         if (res.success) {
           setStatus({
             type: 'success',
@@ -98,9 +121,8 @@ export default function ExperiencesManager({
           setExperiences((prev) => [
             ...prev,
             {
-              ...formData,
+              ...payload,
               id: Date.now(),
-              sort_order: Number(formData.sort_order),
             },
           ]);
         } else {
@@ -110,7 +132,7 @@ export default function ExperiencesManager({
           });
         }
       } else if (editingId !== null) {
-        const res = await updateExperienceAction(editingId, formData);
+        const res = await updateExperienceAction(editingId, payload);
         if (res.success) {
           setStatus({
             type: 'success',
@@ -122,8 +144,7 @@ export default function ExperiencesManager({
               item.id === editingId
                 ? {
                     ...item,
-                    ...formData,
-                    sort_order: Number(formData.sort_order),
+                    ...payload,
                   }
                 : item
             )

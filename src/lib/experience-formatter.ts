@@ -138,20 +138,40 @@ export function formatExperiencesToTimeline(
               ? educationDetailsMap.school
               : null;
 
+    // Parse DB description into bullet points if present
+    const dbBullets = item.description
+      ? item.description
+          .split(/\r?\n/)
+          .map((line) => line.trim().replace(/^[-•*›]\s*/, ''))
+          .filter(Boolean)
+      : null;
+
+    // Parse DB technologies if present
+    const dbTechnologies =
+      item.technologies &&
+      Array.isArray(item.technologies) &&
+      item.technologies.length > 0
+        ? item.technologies
+        : null;
+
     return {
       id: item.id,
       company: details?.company || item.place || 'Organization',
       role: details?.role || item.title || 'Role',
       dateRange: item.date_range,
-      bullets: details?.bullets || [
-        'Executed core technical deliverables with focus on scalability, maintainability, and clean architecture.',
-        'Collaborated with cross-functional stakeholders to deliver reliable and tested features.',
-      ],
-      technologies: details?.technologies || [
-        'Frontend Architecture',
-        'TypeScript',
-        'React',
-      ],
+      bullets:
+        dbBullets && dbBullets.length > 0
+          ? dbBullets
+          : details?.bullets || [
+              'Executed core technical deliverables with focus on scalability, maintainability, and clean architecture.',
+              'Collaborated with cross-functional stakeholders to deliver reliable and tested features.',
+            ],
+      technologies: dbTechnologies ||
+        details?.technologies || [
+          'Frontend Architecture',
+          'TypeScript',
+          'React',
+        ],
       type: item.type,
       isCurrent: item.date_range.toLowerCase().includes('present'),
     };

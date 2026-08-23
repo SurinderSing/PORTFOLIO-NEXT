@@ -98,7 +98,7 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
                       <h3 className="text-base font-bold text-foreground">
                         {item.company}
                       </h3>
-                      <span className="inline-flex items-center self-start sm:self-auto rounded bg-primary/10 px-2 py-0.5 text-[11px] font-semibold text-primary border border-primary/20">
+                      <span className="inline-flex items-center shrink-0 whitespace-nowrap self-start sm:self-auto rounded bg-primary/10 px-2.5 py-0.5 text-[11px] font-semibold text-primary border border-primary/20">
                         {item.dateRange}
                       </span>
                     </div>
