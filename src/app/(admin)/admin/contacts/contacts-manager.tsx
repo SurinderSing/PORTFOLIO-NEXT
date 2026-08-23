@@ -149,7 +149,6 @@ export default function ContactsManager({
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this contact?')) return;
     setLoading(true);
     try {
       const res = await deleteContactAction(id);

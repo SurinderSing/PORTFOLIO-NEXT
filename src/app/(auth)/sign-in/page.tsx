@@ -8,7 +8,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import FormErrorMsg from '@/components/common/form-error-msg';
 import Link from 'next/link';
-import { LogOut, ArrowRight, ShieldCheck } from 'lucide-react';
+import {
+  LogOut,
+  ArrowRight,
+  ShieldCheck,
+  Terminal,
+  Lock,
+  Mail,
+} from 'lucide-react';
 
 const formSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -72,39 +79,43 @@ function SignInContent() {
   };
 
   return (
-    <div className="flex min-h-[80vh] items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8 bg-tertiary p-8 rounded-2xl shadow-custom-1 border border-border/55">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-bold font-poppins main-text-gradient">
-            Sign In to Admin
-          </h2>
-          <p className="mt-2 text-center text-xs text-muted-foreground font-raleway">
-            Manage your portfolio dynamic details
+    <div className="w-full max-w-md font-mono">
+      <div className="rounded-2xl border border-border/80 bg-card p-7 sm:p-9 shadow-sm space-y-6">
+        {/* Terminal Header */}
+        <div className="text-center space-y-2">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary mx-auto">
+            <Terminal className="h-5 w-5" />
+          </div>
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">
+            Portfolio Admin
+          </h1>
+          <p className="text-xs text-muted-foreground">
+            Sign in to manage portfolio assets and configuration.
           </p>
         </div>
 
         {/* If user is already authenticated */}
         {!checkingAuth && currentUser && (
-          <div className="p-4 rounded-xl bg-card border border-primary/30 space-y-3 text-center">
+          <div className="p-4 rounded-xl bg-background border border-primary/40 space-y-3 text-center">
             <div className="flex items-center justify-center gap-2 text-xs font-semibold text-primary">
               <ShieldCheck size={16} />
-              <span>Signed In As:</span>
+              <span>Active Session:</span>
             </div>
-            <p className="text-xs font-mono font-semibold text-foreground truncate">
+            <p className="text-xs font-semibold text-foreground truncate">
               {currentUser.email}
             </p>
             <div className="flex items-center justify-center gap-2 pt-1">
               <Link
                 href={redirectTarget}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full main-gradient-1 text-white text-xs font-semibold hover:opacity-90 transition-opacity"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:opacity-90 transition-opacity"
               >
-                <span>Continue to Dashboard</span>
+                <span>Dashboard</span>
                 <ArrowRight size={13} />
               </Link>
               <button
                 type="button"
                 onClick={handleSignOut}
-                className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-border bg-background text-xs font-medium hover:bg-tertiary transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-card text-xs font-medium hover:bg-tertiary-2 transition-colors"
               >
                 <LogOut size={13} />
                 <span>Sign Out</span>
@@ -114,65 +125,67 @@ function SignInContent() {
         )}
 
         {errorMsg && (
-          <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-lg border border-destructive/20 text-center font-raleway">
+          <div className="bg-destructive/10 text-destructive text-xs p-3 rounded-lg border border-destructive/20 text-center">
             {errorMsg}
           </div>
         )}
 
         {/* Regular Login Form */}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <div className="space-y-4 rounded-md shadow-sm">
-            <div>
-              <label htmlFor="email-address">Email address</label>
-              <input
-                id="email-address"
-                type="email"
-                required
-                className="w-full px-3 py-2 border-b-2 border-b-tertiary-2 focus:border-b-primary bg-background text-foreground"
-                placeholder="email@example.com"
-                {...register('email')}
-              />
-              {errors.email && (
-                <FormErrorMsg>{errors.email.message}</FormErrorMsg>
-              )}
-            </div>
-
-            <div>
-              <label htmlFor="password">Password</label>
-              <input
-                id="password"
-                type="password"
-                required
-                className="w-full px-3 py-2 border-b-2 border-b-tertiary-2 focus:border-b-primary bg-background text-foreground"
-                placeholder="••••••••"
-                {...register('password')}
-              />
-              {errors.password && (
-                <FormErrorMsg>{errors.password.message}</FormErrorMsg>
-              )}
-            </div>
+        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
+          <div className="space-y-1.5">
+            <label htmlFor="email-address" className="flex items-center gap-1">
+              <Mail className="h-3 w-3 text-primary" />
+              <span>EMAIL_ADDRESS</span>
+            </label>
+            <input
+              id="email-address"
+              type="email"
+              required
+              className="text-xs bg-background/80"
+              placeholder="admin@surinder.dev"
+              {...register('email')}
+            />
+            {errors.email && (
+              <FormErrorMsg>{errors.email.message}</FormErrorMsg>
+            )}
           </div>
 
-          <div>
+          <div className="space-y-1.5">
+            <label htmlFor="password" className="flex items-center gap-1">
+              <Lock className="h-3 w-3 text-primary" />
+              <span>PASSWORD</span>
+            </label>
+            <input
+              id="password"
+              type="password"
+              required
+              className="text-xs bg-background/80"
+              placeholder="••••••••"
+              {...register('password')}
+            />
+            {errors.password && (
+              <FormErrorMsg>{errors.password.message}</FormErrorMsg>
+            )}
+          </div>
+
+          <div className="pt-2">
             <button
               type="submit"
               disabled={loading}
-              className="group relative flex w-full justify-center rounded-full main-gradient-1 py-2 px-4 text-sm font-semibold hover:opacity-90 transition duration-300 disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 rounded-lg bg-primary py-2.5 px-4 text-xs font-bold text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50"
             >
-              {loading ? 'Signing in...' : 'Sign In'}
+              <span>{loading ? 'AUTHENTICATING...' : 'Sign In'}</span>
             </button>
           </div>
         </form>
 
-        <div className="text-center text-xs font-raleway">
-          <span className="text-muted-foreground">
-            Don&apos;t have an account?{' '}
-          </span>
+        <div className="text-center text-xs text-muted-foreground pt-1">
+          <span>Need an account? </span>
           <Link
             href="/sign-up"
             className="text-primary hover:underline font-semibold"
           >
-            Sign Up
+            Create Admin Account
           </Link>
         </div>
       </div>
@@ -184,8 +197,8 @@ export default function SignInPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-[80vh] items-center justify-center">
-          <div className="animate-pulse text-muted-foreground">Loading...</div>
+        <div className="flex min-h-[60vh] items-center justify-center font-mono text-xs text-muted-foreground">
+          Initializing authentication system...
         </div>
       }
     >

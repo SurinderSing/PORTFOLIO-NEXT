@@ -376,6 +376,8 @@ export async function createExperienceAction(
   if (error) return { success: false, error: error.message };
 
   revalidatePath('/resume');
+  revalidatePath('/admin/experiences');
+  revalidatePath('/', 'layout');
   return { success: true, message: 'Experience created successfully.' };
 }
 
@@ -395,6 +397,8 @@ export async function updateExperienceAction(
   if (error) return { success: false, error: error.message };
 
   revalidatePath('/resume');
+  revalidatePath('/admin/experiences');
+  revalidatePath('/', 'layout');
   return { success: true, message: 'Experience updated successfully.' };
 }
 
@@ -410,6 +414,8 @@ export async function deleteExperienceAction(
   if (error) return { success: false, error: error.message };
 
   revalidatePath('/resume');
+  revalidatePath('/admin/experiences');
+  revalidatePath('/', 'layout');
   return { success: true, message: 'Experience deleted successfully.' };
 }
 
@@ -433,6 +439,8 @@ export async function createProjectAction(
   if (error) return { success: false, error: error.message };
 
   revalidatePath('/work');
+  revalidatePath('/admin/projects');
+  revalidatePath('/', 'layout');
   return { success: true, message: 'Project created successfully.' };
 }
 
@@ -452,6 +460,8 @@ export async function updateProjectAction(
   if (error) return { success: false, error: error.message };
 
   revalidatePath('/work');
+  revalidatePath('/admin/projects');
+  revalidatePath('/', 'layout');
   return { success: true, message: 'Project updated successfully.' };
 }
 
@@ -465,6 +475,8 @@ export async function deleteProjectAction(id: number): Promise<ActionResult> {
   if (error) return { success: false, error: error.message };
 
   revalidatePath('/work');
+  revalidatePath('/admin/projects');
+  revalidatePath('/', 'layout');
   return { success: true, message: 'Project deleted successfully.' };
 }
 

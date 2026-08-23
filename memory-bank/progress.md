@@ -18,10 +18,36 @@
 - [x] HTML5 Drag & Drop Reordering Across All Admin Managers (Experiences, Projects, Skills & Categories, About Cards, Contacts, Social Links)
 - [x] DRY Reusable Utilities, Custom Hooks & Single-Responsibility Component Modularization
 - [x] Navigation Performance Optimization & Route Transition Polish
+- [x] Complete Portfolio UI/UX Redesign Aligned with Figma Specifications
+- [x] Custom Cursor, In-App Confirmation Modals, Dynamic HTML Heading & Experience Achievements
 
 ---
 
 ## Detailed Task Checklist
+
+### Phase 12: Custom Cursor, In-App Modals, Dynamic HTML Heading & Experience Achievements (100% Completed)
+- [x] Build reusable in-app delete confirmation modal (`AdminDeleteModal`) with monospace styling and loading indicators.
+- [x] Replace native `window.confirm()` across all 6 admin managers with `AdminDeleteModal` and isolate drag events.
+- [x] Add `description` (bullet points) and `technologies` columns to `public.experiences` in Supabase with live row migration.
+- [x] Update Admin Experience manager form and table with multi-line textarea and technology tags.
+- [x] Implement dual-layer spring-smoothed `CustomCursor` with shape morphing (Pointer, Text I-Beam, Form Beacon, Drag Ring).
+- [x] Mount `CustomCursor` with top-level `zIndex: 999999` across website and admin control center.
+- [x] Add HTML parsing support (`html-react-parser`) to `HeroSection` for `home_heading` with `<h1>` `<span>` green accent styling.
+- [x] Perform comprehensive dynamic data audit across all pages and components.
+- [x] Synchronize database schema (`supabase/schema.sql`), specification docs (`docs/BACKEND_SCHEMA.md`), and memory bank records.
+
+### Phase 11: Complete Portfolio UI/UX Redesign Aligned with Figma Specifications (100% Completed)
+- [x] Integrate Google Fonts `JetBrains_Mono` (`--font-mono`) and `Inter` (`--font-sans`).
+- [x] Configure Emerald Green (`#22C55E` / `142 71% 45%`) color tokens and dark/light mode palette in `globals.css` and `main.css`.
+- [x] Implement unified `TopNavbar` with dynamic brand logo, status dot indicator, navigation items, and theme toggle.
+- [x] Implement dynamic `Footer` with DB-driven ownership credits and social media links.
+- [x] Build single-page flowing Home experience with `HeroSection` (`$ whoami`), `SkillsGrid`, `ExperiencePreview`, `FeaturedWork`, and `ContactTeaser`.
+- [x] Redesign Work page (`/work`) with terminal breadcrumb (`$ ls -la ./projects`), Systems & Architecture cards, and GitHub callout.
+- [x] Redesign Resume page (`/resume`) with terminal breadcrumb (`$ cat resume.md`), profile header with PDF download, and skills matrix.
+- [x] Redesign Contact page (`/contact`) with interactive code transmission form (`~/contact/transmission.sh`), System Status panel, and Network Nodes.
+- [x] Redesign Auth pages (`/sign-in`, `/sign-up`) with monospace aesthetic, terminal branding, and theme toggle support.
+- [x] Refresh Admin Control Center (`/admin/*`) with new typography and status indicators.
+- [x] Run `npm run lint` (0 warnings/errors), `npx tsc --noEmit` (0 errors), and `npm run build` (23/23 routes compiled and prerendered).
 
 ### Phase 10: Navigation Performance Optimization & Route Transition Polish (100% Completed)
 - [x] Replace full-screen blocking overlay (`fixed inset-0 z-[9999]`) in `src/app/(website)/loading.tsx` with non-blocking inline page skeleton.
@@ -119,4 +145,17 @@
 - [x] Add non-interactive click overlay to ensure cards link cleanly to target URLs.
 - [x] Add preview toggle and preview URL settings in Admin Projects manager (`/admin/projects`).
 - [x] Update database models, default fallback data, documentation, and memory bank.
+
+### Phase 13: Resume Content Synchronization, Dynamic Parity & UI Polishing (100% Completed)
+- [x] Seed real production resume data in Supabase across `site_settings`, `experiences`, `projects`, `skill_categories`, and `skills`.
+- [x] Integrate Paytm (*Senior Software Engineer*), Teemuno/Gimmefy AI (*Frontend Engineer*), Collaberus Technologies (*Frontend Engineer*), and Drishti IAS (*Frontend & Technical Associate*) with granular bullet points and technologies.
+- [x] Update project catalog (Gimmefy AI, Dialmantra Dialer, Amotus Online, Drishti IAS Platform) with production descriptions, tags, and iframe previews.
+- [x] Optimize Admin Sidebar with zero-scroll sticky viewport layout (`h-14` header match, active tab highlighting, pinned user info).
+- [x] Remove legacy override maps in `experience-formatter.ts`, enable flexible thumbnail fallback matching, and remove category regex stripping.
+- [x] Remove MapPin location icon from Hero Section bio paragraph.
+- [x] Fix duplicate `<>` brackets on "View Source" button in project cards.
+- [x] Synchronize defaults in `src/lib/supabase-queries.ts` and `supabase/schema.sql`.
+- [x] Synchronize all specifications in `/docs/` (`PRD.md`, `TRD.md`, `APP_FLOW.md`, `UI_UX_DESIGN_BRIEF.md`, `BACKEND_SCHEMA.md`) and `/memory-bank/`.
+- [x] Full validation with `npm run lint` (0 errors), `npx tsc --noEmit` (0 errors), and `npm run build` (23/23 routes compiled).
+
 

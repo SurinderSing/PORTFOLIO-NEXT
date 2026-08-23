@@ -103,6 +103,8 @@ export interface Experience {
   title: string;
   place: string;
   type: ExperienceType;
+  description?: string | null;
+  technologies?: string[] | null;
   sort_order: number;
   created_at?: string;
   updated_at?: string;

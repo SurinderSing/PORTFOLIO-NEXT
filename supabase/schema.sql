@@ -256,6 +256,8 @@ create table if not exists public.experiences (
   title text not null,
   place text not null,
   type text check (type in ('EDUCATION', 'WORK')) not null,
+  description text null,
+  technologies text[] default '{}',
   sort_order integer default 0,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) null
@@ -263,6 +265,8 @@ create table if not exists public.experiences (
 
 alter table public.experiences enable row level security;
 alter table public.experiences add column if not exists sort_order integer default 0;
+alter table public.experiences add column if not exists description text null;
+alter table public.experiences add column if not exists technologies text[] default '{}';
 
 drop policy if exists "Experiences are viewable by everyone." on public.experiences;
 create policy "Experiences are viewable by everyone." on public.experiences
@@ -548,132 +552,67 @@ where not exists (select 1 from public.about_cards where title = 'Communication 
 
 -- Seed Skill Categories and Skills
 insert into public.skill_categories (id, name, sort_order) values
-(1, 'Frontend Skills', 1),
-(2, 'Component Libraries', 2),
-(3, 'Additional Skills', 3),
-(4, 'Backend & Databases', 4),
-(5, 'Soft Skills', 5)
+(1, 'Frontend', 1),
+(2, 'Build & DevOps', 2),
+(3, 'UI & Component Libraries', 3),
+(4, 'Backend & APIs', 4),
+(5, 'Testing & Performance', 5),
+(6, 'AI & Developer Tools', 6)
 on conflict (id) do nothing;
 
-insert into public.skills (category_id, name, sort_order)
-select 1, 'React', 1 where not exists (select 1 from public.skills where category_id = 1 and name = 'React');
-insert into public.skills (category_id, name, sort_order)
-select 1, 'Next.js', 2 where not exists (select 1 from public.skills where category_id = 1 and name = 'Next.js');
-insert into public.skills (category_id, name, sort_order)
-select 1, 'Redux', 3 where not exists (select 1 from public.skills where category_id = 1 and name = 'Redux');
-insert into public.skills (category_id, name, sort_order)
-select 1, 'Redux Toolkit', 4 where not exists (select 1 from public.skills where category_id = 1 and name = 'Redux Toolkit');
-insert into public.skills (category_id, name, sort_order)
-select 1, 'Tailwind', 5 where not exists (select 1 from public.skills where category_id = 1 and name = 'Tailwind');
-insert into public.skills (category_id, name, sort_order)
-select 1, 'HTML5', 6 where not exists (select 1 from public.skills where category_id = 1 and name = 'HTML5');
-insert into public.skills (category_id, name, sort_order)
-select 1, 'CSS3', 7 where not exists (select 1 from public.skills where category_id = 1 and name = 'CSS3');
-insert into public.skills (category_id, name, sort_order)
-select 1, 'TypeScript', 8 where not exists (select 1 from public.skills where category_id = 1 and name = 'TypeScript');
-insert into public.skills (category_id, name, sort_order)
-select 1, 'JavaScript', 9 where not exists (select 1 from public.skills where category_id = 1 and name = 'JavaScript');
-
-insert into public.skills (category_id, name, sort_order)
-select 2, 'ShadCn', 1 where not exists (select 1 from public.skills where category_id = 2 and name = 'ShadCn');
-insert into public.skills (category_id, name, sort_order)
-select 2, 'Mantine', 2 where not exists (select 1 from public.skills where category_id = 2 and name = 'Mantine');
-insert into public.skills (category_id, name, sort_order)
-select 2, 'AntDesign', 3 where not exists (select 1 from public.skills where category_id = 2 and name = 'AntDesign');
-insert into public.skills (category_id, name, sort_order)
-select 2, 'MaterialUI', 4 where not exists (select 1 from public.skills where category_id = 2 and name = 'MaterialUI');
-insert into public.skills (category_id, name, sort_order)
-select 2, 'Bootstrap', 5 where not exists (select 1 from public.skills where category_id = 2 and name = 'Bootstrap');
-
-insert into public.skills (category_id, name, sort_order)
-select 3, 'Websockets', 1 where not exists (select 1 from public.skills where category_id = 3 and name = 'Websockets');
-insert into public.skills (category_id, name, sort_order)
-select 3, 'Git', 2 where not exists (select 1 from public.skills where category_id = 3 and name = 'Git');
-insert into public.skills (category_id, name, sort_order)
-select 3, 'GitHub', 3 where not exists (select 1 from public.skills where category_id = 3 and name = 'GitHub');
-insert into public.skills (category_id, name, sort_order)
-select 3, 'CI/CD Pipeline', 4 where not exists (select 1 from public.skills where category_id = 3 and name = 'CI/CD Pipeline');
-insert into public.skills (category_id, name, sort_order)
-select 3, 'REST API', 5 where not exists (select 1 from public.skills where category_id = 3 and name = 'REST API');
-insert into public.skills (category_id, name, sort_order)
-select 3, 'Linux', 6 where not exists (select 1 from public.skills where category_id = 3 and name = 'Linux');
-insert into public.skills (category_id, name, sort_order)
-select 3, 'Nginx', 7 where not exists (select 1 from public.skills where category_id = 3 and name = 'Nginx');
-insert into public.skills (category_id, name, sort_order)
-select 3, 'ESLint', 8 where not exists (select 1 from public.skills where category_id = 3 and name = 'ESLint');
-insert into public.skills (category_id, name, sort_order)
-select 3, 'Webpack', 9 where not exists (select 1 from public.skills where category_id = 3 and name = 'Webpack');
-insert into public.skills (category_id, name, sort_order)
-select 3, 'Vite.js', 10 where not exists (select 1 from public.skills where category_id = 3 and name = 'Vite.js');
-insert into public.skills (category_id, name, sort_order)
-select 3, 'AI Tools', 11 where not exists (select 1 from public.skills where category_id = 3 and name = 'AI Tools');
-insert into public.skills (category_id, name, sort_order)
-select 3, 'Prompting', 12 where not exists (select 1 from public.skills where category_id = 3 and name = 'Prompting');
-
-insert into public.skills (category_id, name, sort_order)
-select 4, 'Node.js', 1 where not exists (select 1 from public.skills where category_id = 4 and name = 'Node.js');
-insert into public.skills (category_id, name, sort_order)
-select 4, 'Express.js', 2 where not exists (select 1 from public.skills where category_id = 4 and name = 'Express.js');
-insert into public.skills (category_id, name, sort_order)
-select 4, 'MongoDB', 3 where not exists (select 1 from public.skills where category_id = 4 and name = 'MongoDB');
-insert into public.skills (category_id, name, sort_order)
-select 4, 'SQL', 4 where not exists (select 1 from public.skills where category_id = 4 and name = 'SQL');
-
-insert into public.skills (category_id, name, sort_order)
-select 5, 'Problem Solving', 1 where not exists (select 1 from public.skills where category_id = 5 and name = 'Problem Solving');
-insert into public.skills (category_id, name, sort_order)
-select 5, 'Team Collaboration', 2 where not exists (select 1 from public.skills where category_id = 5 and name = 'Team Collaboration');
-insert into public.skills (category_id, name, sort_order)
-select 5, 'Communication', 3 where not exists (select 1 from public.skills where category_id = 5 and name = 'Communication');
-insert into public.skills (category_id, name, sort_order)
-select 5, 'Time Management', 4 where not exists (select 1 from public.skills where category_id = 5 and name = 'Time Management');
-insert into public.skills (category_id, name, sort_order)
-select 5, 'Mentoring', 5 where not exists (select 1 from public.skills where category_id = 5 and name = 'Mentoring');
-insert into public.skills (category_id, name, sort_order)
-select 5, 'Project Management', 6 where not exists (select 1 from public.skills where category_id = 5 and name = 'Project Management');
+insert into public.skills (category_id, name, sort_order) values
+(1, 'React', 1), (1, 'Next.js', 2), (1, 'TypeScript', 3), (1, 'JavaScript', 4), (1, 'Redux Toolkit', 5), (1, 'Redux', 6), (1, 'Frontend Architecture', 7), (1, 'State Management', 8), (1, 'Micro-Frontend (Module Federation)', 9), (1, 'HTML5', 10), (1, 'CSS3', 11), (1, 'Tailwind CSS', 12),
+(2, 'Git', 1), (2, 'GitHub', 2), (2, 'Jenkins', 3), (2, 'CI/CD Pipelines', 4), (2, 'Webpack', 5), (2, 'Vite', 6), (2, 'Docker', 7), (2, 'Nginx', 8), (2, 'ESLint', 9),
+(3, 'ShadCN', 1), (3, 'Mantine', 2), (3, 'Ant Design', 3), (3, 'Material UI', 4), (3, 'Bootstrap', 5), (3, 'Reusable UI Components', 6), (3, 'Design Systems', 7),
+(4, 'Node.js', 1), (4, 'Express.js', 2), (4, 'REST APIs', 3), (4, 'API Integration', 4), (4, 'MongoDB', 5), (4, 'SQL', 6), (4, 'WebSockets', 7), (4, 'Server-Sent Events (SSE)', 8),
+(5, 'Unit Testing', 1), (5, 'Lighthouse', 2), (5, 'Core Web Vitals', 3), (5, 'Performance Optimization', 4),
+(6, 'Cursor', 1), (6, 'AI-Assisted Development', 2), (6, 'Agentic Coding', 3), (6, 'Prompt Engineering', 4)
+on conflict (id) do nothing;
 
 -- Seed Experiences (WORK)
-insert into public.experiences (date_range, title, place, type, sort_order)
-select '12/2023 - Present', 'Front-End Developer (Product- AI Marketing Tools)', 'Gimmefy AI - Remote', 'WORK', 1
-where not exists (select 1 from public.experiences where title like 'Front-End Developer (Product- AI Marketing Tools)%');
+insert into public.experiences (id, date_range, title, place, type, sort_order, description, technologies) values
+(1, 'April 2026 – Present', 'Senior Software Engineer', 'Paytm | Noida, India', 'WORK', 1,
+'• Architected and deployed 2 micro-frontend applications using Module Federation, supporting 100K+ daily active users and millions of daily transactions while cutting bundle size by 30%
+• Shipped 6 core platform features within a focused 2-person engineering team, partnering directly with product to adapt the platform to fast-evolving business requirements
+• Reached 100%-unit test coverage and raised Lighthouse performance scores to 95%+ across core web vitals
+• Built automated CI/CD pipelines in Jenkins, keeping deployments and repositories consistently release-ready
+• Adopted Cursor and agentic AI coding workflows to speed up delivery while keeping repositories clean and fully documented',
+array['React', 'TypeScript', 'Module Federation', 'Micro-Frontends', 'Jenkins', 'Redux Toolkit', 'Webpack', 'Unit Testing']),
 
-insert into public.experiences (date_range, title, place, type, sort_order)
-select '06/2022 - 10/2023', 'Front-End Developer (Products- Amotus online, Diamantra dialer, Call Center CRM)', 'Collaberus technologies pvt. ltd. - Delhi', 'WORK', 2
-where not exists (select 1 from public.experiences where title like 'Front-End Developer (Products-%');
+(2, 'December 2023 – February 2026', 'Frontend Engineer', 'Teemuno (gimmefy AI) | Singapore (Remote)', 'WORK', 2,
+'• Built AI-powered image and video editing tools using React, TypeScript, Mantine, and Polotno, enabling marketers to produce and edit media directly within the platform
+• Developed reusable UI component systems supporting 150+ automated AI marketing tasks and assistants
+• Implemented Redux Toolkit for complex state management and optimized deployment pipelines, improving client-side render speed by 25%',
+array['React', 'TypeScript', 'Mantine', 'Polotno', 'Redux Toolkit', 'AI Tools', 'Vite']),
 
-insert into public.experiences (date_range, title, place, type, sort_order)
-select '10/2021 - 06/2022', 'Front-End & Technical Associate', 'Drishti IAS - Delhi', 'WORK', 3
-where not exists (select 1 from public.experiences where title = 'Front-End & Technical Associate');
+(3, 'June 2022 – October 2023', 'Frontend Engineer', 'Collaberus Technologies Pvt. Ltd. | New Delhi, India', 'WORK', 3,
+'• Led frontend development for 3 SaaS dialer and CRM platforms (Dialmantra Dialer, Amotus Online, Call Center CRM) using React, Redux, and Webpack
+• Built Admin, Customer, and Caller portals with Ant Design and WebSocket-driven real-time updates, cutting data latency by 35%
+• Integrated browser-based VoIP calling via JsSIP, removing hardware setup cost cutting onboarding time by 50%',
+array['React', 'Redux', 'WebSockets', 'JsSIP', 'Ant Design', 'Webpack', 'VoIP']),
+
+(4, 'October 2021 – June 2022', 'Frontend & Technical Associate', 'VDK Eduventures Pvt. Ltd. (Drishti IAS) | New Delhi, India', 'WORK', 4,
+'• Enhanced UI/UX responsiveness for an educational platform serving 500K+ monthly users, cutting initial page load times by 40%
+• Streamlined asynchronous API calls with JavaScript async/await and Axios, reducing client-side error and crash reports by 30%',
+array['JavaScript', 'HTML5', 'CSS3', 'Axios', 'REST APIs', 'Performance Optimization']),
 
 -- Seed Experiences (EDUCATION)
-insert into public.experiences (date_range, title, place, type, sort_order)
-select '2022 - 2023', 'Bachelor of Computer Applications', 'Capital University, Jharkhand (First Division)', 'EDUCATION', 1
-where not exists (select 1 from public.experiences where title = 'Bachelor of Computer Applications');
+(5, '2021 – 2023', 'Bachelor of Computer Applications (BCA)', 'Capital University', 'EDUCATION', 1,
+'Completed Bachelor of Computer Applications focused on software development, computer architecture, databases, and modern web engineering methodologies.',
+array['Software Engineering', 'Data Structures', 'Database Systems', 'Web Technologies']),
 
-insert into public.experiences (date_range, title, place, type, sort_order)
-select '2018 - 2021', 'CSE Diploma', 'B.B.S.B.P. College, Sirhind, PSBTE & IT, Chandigarh (First Division)', 'EDUCATION', 2
-where not exists (select 1 from public.experiences where title = 'CSE Diploma');
-
-insert into public.experiences (date_range, title, place, type, sort_order)
-select '2018', 'High School', 'Guru Nanak Public Sr. Sec School, CBSE, Kanpur (First Division)', 'EDUCATION', 3
-where not exists (select 1 from public.experiences where title = 'High School');
+(6, '2018 – 2021', 'Diploma in Computer Science', 'B.B.S.B.P. College, Sirhind (PSBTE & IT, Chandigarh)', 'EDUCATION', 2,
+'Comprehensive 3-year technical diploma curriculum covering foundational computer science, C/C++, Java, data structures, and computer networks.',
+array['Computer Science', 'Data Structures', 'Algorithms', 'OOP', 'C/C++'])
+on conflict (id) do nothing;
 
 -- Seed Projects
-insert into public.projects (title, description, technologies, link, image_url, preview_url, preview_mode, sort_order)
-select 'Gimmefy AI', 'AI-Enhanced Marketing Platform with 150+ automated tasks and personalized AI assistants designed for marketers, by marketers.', array['React', 'TypeScript', 'Mantine', 'Redux Toolkit'], 'https://gimmefy.ai', null, 'https://gimmefy.ai', 'iframe', 1
-where not exists (select 1 from public.projects where title = 'Gimmefy AI');
-
-insert into public.projects (title, description, technologies, link, image_url, preview_url, preview_mode, sort_order)
-select 'Dialmantra Dialer', 'Fast, easy and low cost solution to run a world class contact center without huge investments on hardware and software.', array['React.js', 'Redux.js', 'JavaScript', 'JSSIP', 'HTML', 'Ant Design', 'LESS'], 'https://www.dialmantra.in/', null, 'https://www.dialmantra.in/', 'iframe', 2
-where not exists (select 1 from public.projects where title = 'Dialmantra Dialer');
-
-insert into public.projects (title, description, technologies, link, image_url, preview_url, preview_mode, sort_order)
-select 'Amotus Online', 'Amotus Online stands as an innovative remote screen sharing platform, offering a unique solution for enhanced collaboration and communication.', array['React', 'Node.js', 'MongoDB', 'Express'], 'https://amotus.online/', null, 'https://amotus.online/', 'iframe', 3
-where not exists (select 1 from public.projects where title = 'Amotus Online');
-
-insert into public.projects (title, description, technologies, link, image_url, preview_url, preview_mode, sort_order)
-select 'Drishti IAS Website', 'Improved institute website user interface and experience through collaborative efforts.', array['JavaScript', 'HTML', 'CSS', 'API Integration'], 'https://drishtiias.com', null, 'https://drishtiias.com', 'iframe', 4
-where not exists (select 1 from public.projects where title = 'Drishti IAS Website');
+insert into public.projects (id, title, description, technologies, link, image_url, preview_url, preview_mode, sort_order) values
+(1, 'Gimmefy AI', 'AI-powered marketing and media creation platform featuring 150+ automated AI tasks, personalized assistants, and in-browser image/video canvas editors built with React, TypeScript, Mantine, and Polotno.', array['React', 'TypeScript', 'Mantine', 'Polotno', 'Redux Toolkit', 'Generative AI', 'Vite'], 'https://gimmefy.ai', null, 'https://gimmefy.ai', 'iframe', 1),
+(2, 'Dialmantra Dialer', 'High-concurrency SaaS cloud telephony and dialer platform featuring browser-based VoIP calling via JsSIP, real-time WebSocket caller portals, and automated campaign management.', array['React', 'Redux', 'JsSIP', 'WebSockets', 'Ant Design', 'Webpack', 'VoIP'], 'https://www.dialmantra.in/', null, 'https://www.dialmantra.in/', 'iframe', 2),
+(3, 'Amotus Online', 'Innovative remote screen-sharing and real-time collaboration SaaS platform engineered with low-latency media streams, responsive dashboard interfaces, and multi-user sessions.', array['React', 'Node.js', 'MongoDB', 'Express', 'WebSockets', 'WebRTC'], 'https://amotus.online/', null, 'https://amotus.online/', 'iframe', 3),
+(4, 'Drishti IAS Platform', 'High-traffic educational web portal serving 500K+ monthly active students, optimized for sub-second page loads, responsive learning workflows, and streamlined async API integrations.', array['JavaScript', 'HTML5', 'CSS3', 'Axios', 'REST APIs', 'Core Web Vitals'], 'https://drishtiias.com', null, 'https://drishtiias.com', 'iframe', 4)
+on conflict (id) do nothing;
 
 -- ==============================================================================
 -- 11. Supabase Storage Buckets & RLS Policies
