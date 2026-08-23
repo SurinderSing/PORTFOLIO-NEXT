@@ -1,36 +1,35 @@
 # Memory Bank - Active Context
 
 ## Active Focus
-The current focus is **Phase 11: Complete Portfolio UI/UX Redesign Aligned with Figma Specifications (Completed)**.
+The current focus is **Phase 12: Custom Cursor, In-App Modal Dialogs, Dynamic HTML Heading & Comprehensive Documentation Parity (Completed)**.
 
 ---
 
 ## Recently Completed
 
-1. **Design System & Typography Overhaul:**
-   - Integrated `JetBrains_Mono` (`--font-mono`) and `Inter` (`--font-sans`) via `next/font/google`.
-   - Shifted color tokens in `globals.css` and `main.css` to a modern Emerald Green (`#22C55E` / `142 71% 45%`) accent scheme with rich dark/light mode parity.
-   - Updated Tailwind configuration, button variants, and utility classes for terminal-styled aesthetics.
+1. **In-App Delete Confirmation Modal (`AdminDeleteModal`):**
+   - Created `src/components/admin/admin-delete-modal.tsx` with high-contrast monospace theme, warning icon, item title badge, escape/click-outside dismiss, and loading state.
+   - Replaced native `window.confirm()` across all Admin management sections (`projects`, `experiences`, `contacts`, `social-links`, `about-cards`, `skills`).
+   - Isolated drag handles and action cells (`draggable={false}`) to prevent drag event interference with modal triggers and buttons.
 
-2. **Layout Architecture Transformation:**
-   - Replaced the legacy sidebar layout with a unified `TopNavbar` featuring dynamic brand title, status dot, navigation links, and theme toggle.
-   - Created a dynamic `Footer` component with DB-driven ownership credits and social media links.
-   - Removed viewport constraints to enable seamless full-page scrolling across all device viewports.
+2. **Experience Description & Technologies Integration:**
+   - Added `description text null` and `technologies text[] default '{}'` columns to `public.experiences` in Supabase via MCP.
+   - Migrated live data rows in Supabase so experiences are populated with detailed achievements and tech tags.
+   - Updated `src/types/database.ts`, `src/lib/experience-formatter.ts`, `src/app/(admin)/admin/experiences/*`, and `supabase/schema.sql`.
 
-3. **Single-Page Home Experience:**
-   - Rebuilt `src/app/(website)/page.tsx` with focused subcomponents:
-     - `HeroSection`: Monospace terminal prompt (`$ whoami`), dynamic heading, profile image, status pill, and action triggers.
-     - `SkillsGrid`: 4-column categorized technical competencies layout.
-     - `ExperiencePreview`: Clean timeline cards with "View Full Resume →" navigation.
-     - `FeaturedWork`: 2-column deployment cards with "View All Projects →".
-     - `ContactTeaser`: Engaging collaboration CTA leading to `/contact`.
+3. **Dual-Layer Multi-State Custom Cursor (`CustomCursor`):**
+   - Created `src/components/animations/custom-cursor.tsx` with spring physics follower ring and center dot.
+   - Layered at `zIndex: 999999` to float above modals, navbars, and buttons.
+   - Added dynamic shape morphing (Pointer / Interactive emerald glow, Text Selection I-Beam, Form Input Beacon, Draggable Ring, Default).
+   - Mounted `<CustomCursor />` across both the public portfolio (`src/app/(website)/layout.tsx`) and the admin control center (`src/app/(admin)/layout.tsx`).
 
-4. **Subpage & Auth Modernization:**
-   - **Work Page (`/work`):** Systems & Architecture showcase with interactive deployment cards, tech tags, and live demo buttons.
-   - **Resume Page (`/resume`):** Profile header with PDF download, categorized skills matrix cards, and education/work timelines.
-   - **Contact Page (`/contact`):** Interactive code transmission form (`~/contact/transmission.sh`), System Status panel (`● ONLINE`, `~12ms`), and Network Nodes panel with coordinate radar badge.
-   - **Auth Pages (`/sign-in`, `/sign-up`):** Terminal-inspired login and account creation cards with monospace styling and theme toggles.
-   - **Admin Control Center:** Streamlined overview dashboard and sidebar with green accent status indicators.
+4. **Dynamic Home Heading & Direct HTML Parsing Support:**
+   - Updated `src/components/website/pages/home/hero-section.tsx` to directly parse HTML via `html-react-parser`.
+   - Added `[&_span]:text-primary [&_span]:font-bold` to the `<h1>` element so wrapping text in `<span>...</span>` applies the emerald brand color.
+   - Verified that `<br />` and custom HTML tags render formatted without keyword interference.
+
+5. **Full System Dynamic Audit:**
+   - Verified all pages (Home, Resume, Work, Contact, Navbar, Footer) dynamically stream live content from Supabase.
 
 ---
 
@@ -38,4 +37,4 @@ The current focus is **Phase 11: Complete Portfolio UI/UX Redesign Aligned with 
 
 - **ESLint Validation:** `npm run lint` -> 0 warnings, 0 errors.
 - **TypeScript Compiler:** `npx tsc --noEmit` -> 0 errors.
-- **Production Build:** `npm run build` -> 23/23 routes successfully compiled and prerendered.
+- **Production Build:** `npm run build` -> Passed with 0 errors.

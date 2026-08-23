@@ -141,6 +141,8 @@ create table public.experiences (
   date_range text not null,
   title text not null,
   place text not null,
+  description text,
+  technologies text[] default '{}',
   type text check (type in ('EDUCATION', 'WORK')) not null,
   sort_order integer default 0,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,

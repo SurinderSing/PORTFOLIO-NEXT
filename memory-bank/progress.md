@@ -19,10 +19,22 @@
 - [x] DRY Reusable Utilities, Custom Hooks & Single-Responsibility Component Modularization
 - [x] Navigation Performance Optimization & Route Transition Polish
 - [x] Complete Portfolio UI/UX Redesign Aligned with Figma Specifications
+- [x] Custom Cursor, In-App Confirmation Modals, Dynamic HTML Heading & Experience Achievements
 
 ---
 
 ## Detailed Task Checklist
+
+### Phase 12: Custom Cursor, In-App Modals, Dynamic HTML Heading & Experience Achievements (100% Completed)
+- [x] Build reusable in-app delete confirmation modal (`AdminDeleteModal`) with monospace styling and loading indicators.
+- [x] Replace native `window.confirm()` across all 6 admin managers with `AdminDeleteModal` and isolate drag events.
+- [x] Add `description` (bullet points) and `technologies` columns to `public.experiences` in Supabase with live row migration.
+- [x] Update Admin Experience manager form and table with multi-line textarea and technology tags.
+- [x] Implement dual-layer spring-smoothed `CustomCursor` with shape morphing (Pointer, Text I-Beam, Form Beacon, Drag Ring).
+- [x] Mount `CustomCursor` with top-level `zIndex: 999999` across website and admin control center.
+- [x] Add HTML parsing support (`html-react-parser`) to `HeroSection` for `home_heading` with `<h1>` `<span>` green accent styling.
+- [x] Perform comprehensive dynamic data audit across all pages and components.
+- [x] Synchronize database schema (`supabase/schema.sql`), specification docs (`docs/BACKEND_SCHEMA.md`), and memory bank records.
 
 ### Phase 11: Complete Portfolio UI/UX Redesign Aligned with Figma Specifications (100% Completed)
 - [x] Integrate Google Fonts `JetBrains_Mono` (`--font-mono`) and `Inter` (`--font-sans`).
