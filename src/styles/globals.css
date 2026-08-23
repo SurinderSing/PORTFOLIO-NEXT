@@ -172,3 +172,11 @@
     }
   }
 }
+
+/* Hide default cursor on desktop when custom cursor is active */
+@media (pointer: fine) {
+  body.custom-cursor-none,
+  body.custom-cursor-none * {
+    cursor: none !important;
+  }
+}
