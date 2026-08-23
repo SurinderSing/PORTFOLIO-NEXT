@@ -159,6 +159,7 @@ create table public.projects (
   description text not null,
   technologies text[] not null default '{}',
   link text,
+  github_url text,
   image_url text,
   preview_url text,
   preview_mode text default 'iframe' check (preview_mode in ('image', 'iframe')),

@@ -290,6 +290,7 @@ create table if not exists public.projects (
   description text not null,
   technologies text[] not null default '{}',
   link text,
+  github_url text,
   image_url text,
   sort_order integer default 0,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
@@ -300,6 +301,7 @@ alter table public.projects enable row level security;
 alter table public.projects add column if not exists sort_order integer default 0;
 alter table public.projects add column if not exists preview_url text;
 alter table public.projects add column if not exists preview_mode text default 'iframe' check (preview_mode in ('image', 'iframe'));
+alter table public.projects add column if not exists github_url text;
 
 drop policy if exists "Projects are viewable by everyone." on public.projects;
 create policy "Projects are viewable by everyone." on public.projects

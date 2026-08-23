@@ -36,7 +36,7 @@ export default async function Home() {
     ]);
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full">
       <FadeIn staggerChildren={0.12}>
         <FadeInItem>
           <HeroSection settings={settings} socialLinks={socialLinks} />

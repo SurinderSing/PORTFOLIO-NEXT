@@ -64,6 +64,7 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({
                 undefined
               }
               link={project.link || undefined}
+              githubUrl={project.github_url}
               description={project.description}
               previewUrl={project.preview_url}
               previewMode={project.preview_mode}

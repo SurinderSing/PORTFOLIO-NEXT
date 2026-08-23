@@ -11,6 +11,7 @@ interface ProjectCardProps {
   title: string;
   technologies: string[];
   link?: string;
+  githubUrl?: string | null;
   description?: string;
   previewUrl?: string | null;
   previewMode?: PreviewMode;
@@ -22,6 +23,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
   technologies,
   image = FailedImage,
   link,
+  githubUrl,
   description,
   previewUrl,
   previewMode = 'image',
@@ -108,15 +110,17 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
                   </a>
                 )}
 
-                <a
-                  href="https://github.com/SurinderSing"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 rounded border border-border bg-card px-3.5 py-2 text-xs font-semibold text-foreground hover:bg-tertiary-2 transition-colors"
-                >
-                  <Code2 className="h-3.5 w-3.5" />
-                  <span>View Source</span>
-                </a>
+                {githubUrl && githubUrl !== '#' && (
+                  <a
+                    href={githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 rounded border border-border bg-card px-3.5 py-2 text-xs font-semibold text-foreground hover:bg-tertiary-2 transition-colors"
+                  >
+                    <Code2 className="h-3.5 w-3.5" />
+                    <span>View Source</span>
+                  </a>
+                )}
               </div>
             </div>
           </div>
@@ -171,15 +175,17 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
               </a>
             )}
 
-            <a
-              href="https://github.com/SurinderSing"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded border border-border bg-card px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-tertiary-2 transition-colors"
-            >
-              <Code2 className="h-3.5 w-3.5" />
-              <span>View Source</span>
-            </a>
+            {githubUrl && githubUrl !== '#' && (
+              <a
+                href={githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 rounded border border-border bg-card px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-tertiary-2 transition-colors"
+              >
+                <Code2 className="h-3.5 w-3.5" />
+                <span>View Source</span>
+              </a>
+            )}
           </div>
         </div>
       </div>
