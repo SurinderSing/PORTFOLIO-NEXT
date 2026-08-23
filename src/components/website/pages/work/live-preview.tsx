@@ -97,16 +97,16 @@ export default function LivePreview({
   // If the iframe failed to load or timed out, gracefully render the fallback image
   if (hasError) {
     return (
-      <div className="relative w-full aspect-[4/1.3] rounded-xl overflow-hidden mb-2 mx-auto bg-muted">
+      <div className="relative w-full h-full overflow-hidden bg-muted">
         <Image
           src={fallbackImage}
           alt={title}
-          width={500}
-          height={300}
+          fill
+          sizes="(max-width: 768px) 100vw, 50vw"
           className="w-full h-full object-cover"
           priority={false}
         />
-        <div className="absolute bottom-1.5 left-2 bg-black/60 backdrop-blur-sm text-[10px] text-white/90 px-1.5 py-0.5 rounded font-mono">
+        <div className="absolute bottom-2 left-2 z-30 bg-black/70 backdrop-blur-xs text-[10px] text-white/90 px-2 py-0.5 rounded font-mono">
           Preview unavailable • Static view
         </div>
       </div>
@@ -114,7 +114,7 @@ export default function LivePreview({
   }
 
   return (
-    <div className="relative w-full aspect-[4/1.3] rounded-xl overflow-hidden mb-2 mx-auto bg-secondary/30 group">
+    <div className="relative w-full h-full overflow-hidden bg-tertiary-2 group">
       {/* Loading Skeleton */}
       {isLoading && (
         <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-card/80 backdrop-blur-xs text-muted-foreground transition-opacity duration-300">
@@ -125,7 +125,7 @@ export default function LivePreview({
         </div>
       )}
 
-      {/* Embedded Sandboxed Iframe with scaled responsive viewport (only mounted if frameable) */}
+      {/* Embedded Sandboxed Iframe with scaled responsive viewport */}
       {isFrameable && (
         <div className="w-full h-full overflow-hidden relative">
           <iframe
@@ -151,7 +151,7 @@ export default function LivePreview({
 
       {/* Live Badge */}
       {!isLoading && !hasError && (
-        <div className="absolute bottom-1.5 left-2 z-30 flex items-center gap-1.5 bg-black/60 backdrop-blur-sm text-emerald-400 text-[10px] px-1.5 py-0.5 rounded font-mono font-medium shadow-sm">
+        <div className="absolute bottom-2 left-2 z-30 flex items-center gap-1.5 bg-black/70 backdrop-blur-xs text-emerald-400 text-[10px] px-2 py-0.5 rounded font-mono font-medium shadow-sm">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
           Live Preview
         </div>

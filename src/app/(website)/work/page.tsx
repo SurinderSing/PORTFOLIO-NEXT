@@ -72,18 +72,25 @@ export default async function WorkPage() {
           delay={0.15}
           className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12"
         >
-          {projectsData.map((project) => (
-            <ProjectCard
-              key={project.id}
-              title={project.title}
-              technologies={project.technologies}
-              image={project.image}
-              link={project.link || undefined}
-              description={project.description}
-              previewUrl={project.previewUrl}
-              previewMode={project.previewMode}
-            />
-          ))}
+          {projectsData.map((project, index) => {
+            const isLastItem = index === projectsData.length - 1;
+            const isOddTotal = projectsData.length % 2 !== 0;
+            const isWide = isLastItem && isOddTotal;
+
+            return (
+              <ProjectCard
+                key={project.id}
+                title={project.title}
+                technologies={project.technologies}
+                image={project.image}
+                link={project.link || undefined}
+                description={project.description}
+                previewUrl={project.previewUrl}
+                previewMode={project.previewMode}
+                isWide={isWide}
+              />
+            );
+          })}
         </ScrollReveal>
 
         {/* GitHub Section Callout */}
