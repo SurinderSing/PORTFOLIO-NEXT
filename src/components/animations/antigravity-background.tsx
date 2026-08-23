@@ -279,7 +279,7 @@ export const AntigravityBackground: React.FC = () => {
     <canvas
       ref={canvasRef}
       aria-hidden="true"
-      className="fixed inset-0 pointer-events-none z-0 h-full w-full opacity-90 transition-opacity duration-300"
+      className="fixed inset-0 pointer-events-none -z-10 h-full w-full opacity-90 transition-opacity duration-300"
     />
   );
 };

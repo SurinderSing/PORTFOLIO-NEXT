@@ -106,7 +106,7 @@ export default function LivePreview({
           className="w-full h-full object-cover"
           priority={false}
         />
-        <div className="absolute bottom-2 left-2 z-30 bg-black/70 backdrop-blur-xs text-[10px] text-white/90 px-2 py-0.5 rounded font-mono">
+        <div className="absolute bottom-2 left-2 z-30 bg-black/90 text-[10px] text-white/90 px-2 py-0.5 rounded font-mono border border-white/10 shadow-xs">
           Preview unavailable • Static view
         </div>
       </div>
@@ -117,7 +117,7 @@ export default function LivePreview({
     <div className="relative w-full h-full overflow-hidden bg-tertiary-2 group">
       {/* Loading Skeleton */}
       {isLoading && (
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-card/80 backdrop-blur-xs text-muted-foreground transition-opacity duration-300">
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-card text-muted-foreground transition-opacity duration-300">
           <Loader2 className="w-5 h-5 animate-spin text-primary mb-1.5" />
           <span className="text-[11px] font-medium tracking-wide">
             Loading preview...
@@ -151,7 +151,7 @@ export default function LivePreview({
 
       {/* Live Badge */}
       {!isLoading && !hasError && (
-        <div className="absolute bottom-2 left-2 z-30 flex items-center gap-1.5 bg-black/70 backdrop-blur-xs text-emerald-400 text-[10px] px-2 py-0.5 rounded font-mono font-medium shadow-sm">
+        <div className="absolute bottom-2 left-2 z-30 flex items-center gap-1.5 bg-black/90 text-emerald-400 text-[10px] px-2 py-0.5 rounded font-mono font-medium border border-emerald-500/20 shadow-xs">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
           Live Preview
         </div>
