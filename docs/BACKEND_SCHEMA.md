@@ -48,10 +48,10 @@ Single-row configuration storing global website texts, headings, owner summaries
 ```sql
 create table public.site_settings (
   id int primary key default 1 check (id = 1),
-  site_title text not null default 'Surinder Singh | Frontend Developer',
+  site_title text not null default 'Surinder Singh | Senior Software Engineer',
   site_description text not null,
   owner_name text not null default 'Surinder Singh',
-  owner_title text not null default 'Frontend Developer',
+  owner_title text not null default 'Senior Software Engineer',
   owner_summary text not null,
   home_heading text not null,
   home_description text not null,

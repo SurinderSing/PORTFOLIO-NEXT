@@ -1,7 +1,7 @@
 # Memory Bank - Active Context
 
 ## Active Focus
-The current focus is **Phase 13: Resume Content Synchronization, Zero-Scroll Admin Sidebar & Full Dynamic Supabase Data Parity (Completed)**.
+The current focus is **Phase 13: Resume Content Synchronization, Zero-Scroll Admin Sidebar, Full Dynamic Data Audit & UI Polishing (Completed)**.
 
 ---
 
@@ -19,6 +19,15 @@ The current focus is **Phase 13: Resume Content Synchronization, Zero-Scroll Adm
    - **`projects`**: Enhanced Gimmefy AI, Dialmantra Dialer, Amotus Online, and Drishti IAS Platform with production-grade descriptions, technologies, links, and iframe preview modes.
    - **`skill_categories` & `skills`**: Re-categorized into 6 specialized groups (Frontend, Build & DevOps, UI & Component Libraries, Backend & APIs, Testing & Performance, AI & Developer Tools) with exact skill entries matching the resume.
    - Synchronized static fallbacks in `src/lib/supabase-queries.ts` and `supabase/schema.sql`.
+
+3. **Complete Dynamic Audit & Legacy Map Removal:**
+   - Removed legacy `workDetailsMap` and `educationDetailsMap` overrides from `src/lib/experience-formatter.ts` to allow live database descriptions, places, and titles to stream directly to the Resume timeline.
+   - Updated `src/components/website/pages/home/featured-work.tsx` and `src/app/(website)/work/page.tsx` with flexible project thumbnail fallback matching (`getProjectFallbackImage`).
+   - Removed regex stripping in `src/components/website/pages/home/skills-grid.tsx` so custom category names render untruncated.
+
+4. **UI Polishing & Cleanup:**
+   - Removed misplaced location `MapPin` icon from the Hero Section bio paragraph in `src/components/website/pages/home/hero-section.tsx`.
+   - Fixed duplicate open/close brackets (`&lt;&gt;`) in the "View Source" button in `src/components/website/pages/work/porject-card/index.tsx`.
 
 ---
 

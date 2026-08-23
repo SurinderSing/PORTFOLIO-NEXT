@@ -66,4 +66,4 @@ The application leverages HSL variables mapped dynamically for light and dark th
 7. **Auth Pages (`/sign-in`, `/sign-up`):**
    - Monospace terminal authentication cards with green action buttons and full theme toggle support.
 8. **Admin Control Center (`/admin/*`):**
-   - Dark/Light responsive dashboard shell with icon-based navigation sidebar, Supabase synchronization status banner, and content management cards.
+   - Dark/Light responsive dashboard shell with zero-scroll sticky sidebar navigation (`h-14` header match, active tab emerald highlights/dots, permanently pinned bottom user profile), Supabase synchronization status banner, in-app delete confirmation modals, and drag-and-drop reordering panels.

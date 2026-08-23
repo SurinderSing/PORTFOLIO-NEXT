@@ -146,11 +146,16 @@
 - [x] Add preview toggle and preview URL settings in Admin Projects manager (`/admin/projects`).
 - [x] Update database models, default fallback data, documentation, and memory bank.
 
-### Phase 13: Resume Content Synchronization & Dynamic Parity (100% Completed)
+### Phase 13: Resume Content Synchronization, Dynamic Parity & UI Polishing (100% Completed)
 - [x] Seed real production resume data in Supabase across `site_settings`, `experiences`, `projects`, `skill_categories`, and `skills`.
 - [x] Integrate Paytm (*Senior Software Engineer*), Teemuno/Gimmefy AI (*Frontend Engineer*), Collaberus Technologies (*Frontend Engineer*), and Drishti IAS (*Frontend & Technical Associate*) with granular bullet points and technologies.
 - [x] Update project catalog (Gimmefy AI, Dialmantra Dialer, Amotus Online, Drishti IAS Platform) with production descriptions, tags, and iframe previews.
 - [x] Optimize Admin Sidebar with zero-scroll sticky viewport layout (`h-14` header match, active tab highlighting, pinned user info).
+- [x] Remove legacy override maps in `experience-formatter.ts`, enable flexible thumbnail fallback matching, and remove category regex stripping.
+- [x] Remove MapPin location icon from Hero Section bio paragraph.
+- [x] Fix duplicate `<>` brackets on "View Source" button in project cards.
 - [x] Synchronize defaults in `src/lib/supabase-queries.ts` and `supabase/schema.sql`.
+- [x] Synchronize all specifications in `/docs/` (`PRD.md`, `TRD.md`, `APP_FLOW.md`, `UI_UX_DESIGN_BRIEF.md`, `BACKEND_SCHEMA.md`) and `/memory-bank/`.
 - [x] Full validation with `npm run lint` (0 errors), `npx tsc --noEmit` (0 errors), and `npm run build` (23/23 routes compiled).
+
 
