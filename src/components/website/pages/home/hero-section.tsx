@@ -10,6 +10,50 @@ interface HeroSectionProps {
   socialLinks?: SocialLink[];
 }
 
+/**
+ * Dynamically highlights key role titles or keywords in green within the home heading.
+ */
+function renderHeading(heading: string, ownerTitle?: string) {
+  if (!heading) return null;
+
+  // Highlights list (priority to user's configured owner_title)
+  const highlights = [
+    ownerTitle,
+    'Frontend Engineer',
+    'Frontend Developer',
+    'Full Stack Developer',
+    'Full-Stack Developer',
+    'Software Engineer',
+    'React Developer',
+    'Next.js Developer',
+    'Web Developer',
+  ].filter(Boolean) as string[];
+
+  // Find if any highlight term matches
+  const matchedTerm = highlights.find((term) =>
+    heading.toLowerCase().includes(term.toLowerCase())
+  );
+
+  if (matchedTerm) {
+    const escaped = matchedTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escaped})`, 'gi');
+    const parts = heading.split(regex);
+
+    return parts.map((part, index) => {
+      if (part.toLowerCase() === matchedTerm.toLowerCase()) {
+        return (
+          <span key={index} className="text-primary font-bold">
+            {part}
+          </span>
+        );
+      }
+      return <React.Fragment key={index}>{part}</React.Fragment>;
+    });
+  }
+
+  return heading;
+}
+
 export const HeroSection: React.FC<HeroSectionProps> = ({
   settings,
   socialLinks = [],
@@ -19,6 +63,23 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     'https://github.com/SurinderSing';
   const resumeUrl =
     settings.resume_pdf_url || '/assets/Surinder-Singh-Resume.pdf';
+
+  const headingContent = settings.home_heading ? (
+    renderHeading(settings.home_heading, settings.owner_title)
+  ) : (
+    <>
+      Hi, I&apos;m {settings.owner_name.split(' ')[0] || 'Surinder'}. <br />A{' '}
+      <span className="text-primary font-bold">
+        {settings.owner_title || 'Frontend Engineer'}
+      </span>{' '}
+      focused on building scalable web applications.
+    </>
+  );
+
+  const descriptionContent =
+    settings.home_description ||
+    settings.owner_summary ||
+    'Located in Delhi, India. Specializing in React, Next.js, and modern TypeScript ecosystems.';
 
   return (
     <section className="relative w-full py-8 md:py-12 border-b border-border/50">
@@ -33,19 +94,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 
           {/* Heading */}
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-mono tracking-tight text-foreground leading-[1.2]">
-            Hi, I&apos;m {settings.owner_name.split(' ')[0] || 'Surinder'}.{' '}
-            <br />A{' '}
-            <span className="text-primary font-bold">Frontend Engineer</span>{' '}
-            focused on building scalable web applications.
+            {headingContent}
           </h1>
 
           {/* Location & Summary Description */}
-          <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono">
-            <MapPin className="h-3.5 w-3.5 text-primary" />
-            <span>
-              Located in Delhi, India. Specializing in React, Next.js, and
-              modern TypeScript ecosystems.
-            </span>
+          <div className="flex items-start gap-2 text-xs text-muted-foreground font-mono leading-relaxed max-w-2xl">
+            <MapPin className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
+            <span>{descriptionContent}</span>
           </div>
 
           {/* Action Buttons & Social Icons */}
