@@ -118,6 +118,7 @@ export interface Project {
   description: string;
   technologies: string[];
   link: string | null;
+  github_url?: string | null;
   image_url: string | null;
   preview_url?: string | null;
   preview_mode?: PreviewMode;

@@ -10,6 +10,7 @@ export interface ProjectFormData {
   description: string;
   technologies: string;
   link: string;
+  github_url: string;
   image_url: string;
   preview_url: string;
   preview_mode: 'image' | 'iframe';
@@ -103,13 +104,28 @@ export default function ProjectForm({
 
         <div className="space-y-1.5">
           <label className="text-xs font-medium text-muted-foreground">
-            External Project URL
+            External Project URL (Live Demo)
           </label>
           <input
             type="url"
             placeholder="https://gimmefy.ai"
             value={formData.link}
             onChange={(e) => setFormData({ ...formData, link: e.target.value })}
+            className="w-full px-3.5 py-2 rounded-xl bg-tertiary border border-border text-sm outline-none focus:border-primary"
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <label className="text-xs font-medium text-muted-foreground">
+            Source Code URL (GitHub - Optional)
+          </label>
+          <input
+            type="url"
+            placeholder="https://github.com/SurinderSing/project-repo"
+            value={formData.github_url}
+            onChange={(e) =>
+              setFormData({ ...formData, github_url: e.target.value })
+            }
             className="w-full px-3.5 py-2 rounded-xl bg-tertiary border border-border text-sm outline-none focus:border-primary"
           />
         </div>

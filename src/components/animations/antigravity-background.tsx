@@ -223,14 +223,14 @@ export const AntigravityBackground: React.FC = () => {
           p.vy -= Math.sin(pushAngle) * pushForce * 0.03;
         }
 
-        // Dynamic length, opacity, and theme color transition
+        // Dynamic length, opacity, and theme color transition (lightened further)
         const scrollStretch =
           absScrollVel > 0.05 ? Math.min(absScrollVel * 0.15, 4.0) : 0;
         const length = p.baseLength + easeForce * 7.5 + scrollStretch;
 
         const opacity = isDark
-          ? 0.12 + easeForce * 0.8
-          : 0.08 + easeForce * 0.82;
+          ? 0.045 + easeForce * 0.32
+          : 0.03 + easeForce * 0.32;
 
         // Brand Emerald Green: #34D399 (dark) / #16A34A (light)
         const color = isDark ? '52, 211, 153' : '22, 163, 74';

@@ -42,13 +42,14 @@ export default async function WorkPage() {
     description: proj.description,
     technologies: proj.technologies,
     link: proj.link,
+    githubUrl: proj.github_url,
     image: proj.image_url || getProjectFallbackImage(proj.title) || undefined,
     previewUrl: proj.preview_url,
     previewMode: proj.preview_mode,
   }));
 
   return (
-    <div className="w-full max-w-4xl mx-auto font-mono py-4">
+    <div className="w-full font-mono py-4">
       <FadeIn staggerChildren={0.15}>
         {/* Page Header with Terminal Breadcrumb */}
         <FadeInItem className="mb-8 space-y-3">
@@ -86,6 +87,7 @@ export default async function WorkPage() {
                 technologies={project.technologies}
                 image={project.image}
                 link={project.link || undefined}
+                githubUrl={project.githubUrl}
                 description={project.description}
                 previewUrl={project.previewUrl}
                 previewMode={project.previewMode}
