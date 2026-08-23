@@ -8,11 +8,13 @@ import DialmantraImage from '@/assets/images/projects/dialmantra.png';
 import AmotusImage from '@/assets/images/projects/amotus-online.png';
 import DrishtiImage from '@/assets/images/projects/drishti-ias.png';
 
-const staticImageMap: Record<string, any> = {
-  'Gimmefy AI': GimmefyImage,
-  'Dialmantra Dialer': DialmantraImage,
-  'Amotus Online': AmotusImage,
-  'Drishti IAS Website': DrishtiImage,
+const getProjectFallbackImage = (title: string) => {
+  const normalized = title.toLowerCase();
+  if (normalized.includes('gimmefy')) return GimmefyImage;
+  if (normalized.includes('dialmantra')) return DialmantraImage;
+  if (normalized.includes('amotus')) return AmotusImage;
+  if (normalized.includes('drishti')) return DrishtiImage;
+  return undefined;
 };
 
 interface FeaturedWorkProps {
@@ -57,7 +59,9 @@ export const FeaturedWork: React.FC<FeaturedWorkProps> = ({
               title={project.title}
               technologies={project.technologies}
               image={
-                project.image_url || staticImageMap[project.title] || undefined
+                project.image_url ||
+                getProjectFallbackImage(project.title) ||
+                undefined
               }
               link={project.link || undefined}
               description={project.description}

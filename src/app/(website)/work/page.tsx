@@ -19,11 +19,13 @@ export const metadata: Metadata = {
   },
 };
 
-const staticImageMap: Record<string, any> = {
-  'Gimmefy AI': GimmefyImage,
-  'Dialmantra Dialer': DialmantraImage,
-  'Amotus Online': AmotusImage,
-  'Drishti IAS Website': DrishtiImage,
+const getProjectFallbackImage = (title: string) => {
+  const normalized = title.toLowerCase();
+  if (normalized.includes('gimmefy')) return GimmefyImage;
+  if (normalized.includes('dialmantra')) return DialmantraImage;
+  if (normalized.includes('amotus')) return AmotusImage;
+  if (normalized.includes('drishti')) return DrishtiImage;
+  return undefined;
 };
 
 export const revalidate = 3600;
@@ -40,7 +42,7 @@ export default async function WorkPage() {
     description: proj.description,
     technologies: proj.technologies,
     link: proj.link,
-    image: proj.image_url || staticImageMap[proj.title] || undefined,
+    image: proj.image_url || getProjectFallbackImage(proj.title) || undefined,
     previewUrl: proj.preview_url,
     previewMode: proj.preview_mode,
   }));

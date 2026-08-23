@@ -33,12 +33,9 @@ const fallbackSkillColumns = [
 export const SkillsGrid: React.FC<SkillsGridProps> = ({ categories = [] }) => {
   // If categories exist in DB, format up to 4 columns or use fallbacks
   const displayColumns =
-    categories.length >= 3
+    categories.length > 0
       ? categories.slice(0, 4).map((cat) => ({
-          title:
-            cat.name
-              .replace(/Skills|and Databases|Component Libraries/i, '')
-              .trim() || cat.name,
+          title: cat.name,
           skills: cat.skills.map((s) => s.name),
         }))
       : fallbackSkillColumns;
