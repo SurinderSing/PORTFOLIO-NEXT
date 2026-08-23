@@ -2,22 +2,16 @@ import React from 'react';
 import { Metadata } from 'next';
 import Image from 'next/image';
 import SubContainer from '@/components/website/pages/resume/sub-container';
-import DetailCard from '@/components/website/pages/resume/detail-card';
+import TimelineExperience from '@/components/website/pages/resume/timeline-experience';
 import { Badge } from '@/components/ui/badge';
 import { FadeIn, FadeInItem } from '@/components/animations/fade-in';
-import { ScrollReveal } from '@/components/animations/scroll-reveal';
 import {
   getSiteSettings,
   getExperiences,
   getSkillsByCategory,
 } from '@/lib/supabase-queries';
-import {
-  Download,
-  Code2,
-  GraduationCap,
-  Briefcase,
-  Sparkles,
-} from 'lucide-react';
+import { formatExperiencesToTimeline } from '@/lib/experience-formatter';
+import { Download, Code2, Sparkles } from 'lucide-react';
 import ProfileImg from '@/assets/images/profile-photos/surinder_profile_photo.png';
 
 export const metadata: Metadata = {
@@ -43,6 +37,15 @@ export default async function ResumePage() {
   const resumeUrl =
     settings.resume_pdf_url || '/assets/Surinder-Singh-Resume.pdf';
 
+  const workTimelineItems = formatExperiencesToTimeline(
+    workExperiences,
+    'WORK'
+  );
+  const educationTimelineItems = formatExperiencesToTimeline(
+    educationExperiences,
+    'EDUCATION'
+  );
+
   return (
     <div className="w-full max-w-4xl mx-auto font-mono py-4">
       <FadeIn staggerChildren={0.15}>
@@ -55,7 +58,7 @@ export default async function ResumePage() {
         </FadeInItem>
 
         {/* Profile Card Header */}
-        <FadeInItem className="mb-10">
+        <FadeInItem className="mb-12">
           <div className="rounded-2xl border border-border/80 bg-card p-6 sm:p-8 flex flex-col-reverse sm:flex-row items-center justify-between gap-6">
             <div className="space-y-4 text-center sm:text-left flex-1">
               <div>
@@ -108,7 +111,7 @@ export default async function ResumePage() {
         </FadeInItem>
 
         {/* Technical Skills Matrix */}
-        <FadeInItem className="mb-10 space-y-4">
+        <FadeInItem className="mb-14 space-y-4">
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-primary" />
             <h2 className="text-lg font-bold text-foreground tracking-tight">
@@ -135,51 +138,23 @@ export default async function ResumePage() {
           </div>
         </FadeInItem>
 
-        {/* Work & Education Timeline */}
-        <ScrollReveal yOffset={20} delay={0.15} className="space-y-10 mb-12">
-          {/* Work Experience */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Briefcase className="h-4 w-4 text-primary" />
-              <h2 className="text-lg font-bold text-foreground tracking-tight">
-                Work Experience
-              </h2>
-            </div>
+        {/* Work Experience Timeline */}
+        <FadeInItem>
+          <TimelineExperience
+            title="Experience"
+            items={workTimelineItems}
+            type="WORK"
+          />
+        </FadeInItem>
 
-            <div className="grid grid-cols-1 gap-4">
-              {workExperiences.map((item) => (
-                <DetailCard
-                  key={item.id}
-                  date={item.date_range}
-                  title={item.title}
-                  place={item.place}
-                  description="Leading frontend architecture, implementing micro-frontends and reusable UI systems with high performance and accessibility."
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Education */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <GraduationCap className="h-4 w-4 text-primary" />
-              <h2 className="text-lg font-bold text-foreground tracking-tight">
-                Education
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4">
-              {educationExperiences.map((item) => (
-                <DetailCard
-                  key={item.id}
-                  date={item.date_range}
-                  title={item.title}
-                  place={item.place}
-                />
-              ))}
-            </div>
-          </div>
-        </ScrollReveal>
+        {/* Education Timeline */}
+        <FadeInItem>
+          <TimelineExperience
+            title="Education"
+            items={educationTimelineItems}
+            type="EDUCATION"
+          />
+        </FadeInItem>
       </FadeIn>
     </div>
   );
