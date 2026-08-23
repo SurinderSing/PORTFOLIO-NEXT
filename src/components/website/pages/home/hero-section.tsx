@@ -2,7 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { SiteSettings, SocialLink } from '@/types/database';
-import { Download, Code2, Mail, MapPin } from 'lucide-react';
+import { Download, Code2, Mail } from 'lucide-react';
 import ProfileImg from '@/assets/images/profile-photos/surinder_profile_photo.png';
 import parse from 'html-react-parser';
 
@@ -51,11 +51,10 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             {headingContent}
           </h1>
 
-          {/* Location & Summary Description */}
-          <div className="flex items-start gap-2 text-xs text-muted-foreground font-mono leading-relaxed max-w-2xl">
-            <MapPin className="h-3.5 w-3.5 text-primary shrink-0 mt-0.5" />
-            <span>{descriptionContent}</span>
-          </div>
+          {/* Summary Description */}
+          <p className="text-xs sm:text-sm text-muted-foreground font-mono leading-relaxed max-w-2xl">
+            {descriptionContent}
+          </p>
 
           {/* Action Buttons & Social Icons */}
           <div className="flex flex-wrap items-center gap-3 pt-2">
