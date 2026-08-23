@@ -152,17 +152,43 @@ export default function ProjectsTable({
                         {project.sort_order}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-right">
-                      <div className="inline-flex items-center gap-2">
+                    <td
+                      className="py-3 px-4 text-right"
+                      draggable={false}
+                      onDragStart={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                      }}
+                    >
+                      <div
+                        className="inline-flex items-center gap-2"
+                        draggable={false}
+                        onDragStart={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                        }}
+                      >
                         <button
-                          onClick={() => onEdit(project)}
+                          type="button"
+                          draggable={false}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEdit(project);
+                          }}
+                          onMouseDown={(e) => e.stopPropagation()}
                           className="p-1.5 rounded-lg text-primary hover:bg-primary/10 transition-colors"
                           title="Edit"
                         >
                           <Edit2 size={14} />
                         </button>
                         <button
-                          onClick={() => onDelete(project.id)}
+                          type="button"
+                          draggable={false}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(project.id);
+                          }}
+                          onMouseDown={(e) => e.stopPropagation()}
                           className="p-1.5 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors"
                           title="Delete"
                         >

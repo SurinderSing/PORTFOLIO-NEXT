@@ -130,12 +130,6 @@ export default function SkillsManager({
   };
 
   const handleDeleteCategory = async (id: number) => {
-    if (
-      !confirm(
-        'Are you sure you want to delete this category and all its skills?'
-      )
-    )
-      return;
     setLoading(true);
     try {
       const res = await deleteSkillCategoryAction(id);

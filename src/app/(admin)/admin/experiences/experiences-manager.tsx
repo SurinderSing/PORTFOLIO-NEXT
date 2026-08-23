@@ -144,8 +144,6 @@ export default function ExperiencesManager({
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this experience record?'))
-      return;
     setLoading(true);
     try {
       const res = await deleteExperienceAction(id);

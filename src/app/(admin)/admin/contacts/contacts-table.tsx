@@ -111,14 +111,24 @@ export default function ContactsTable({
                     <td className="py-3 px-4 text-right">
                       <div className="inline-flex items-center gap-2">
                         <button
-                          onClick={() => onEdit(contact)}
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEdit(contact);
+                          }}
+                          onMouseDown={(e) => e.stopPropagation()}
                           className="p-1.5 rounded-lg text-primary hover:bg-primary/10 transition-colors"
                           title="Edit"
                         >
                           <Edit2 size={14} />
                         </button>
                         <button
-                          onClick={() => onDelete(contact.id)}
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(contact.id);
+                          }}
+                          onMouseDown={(e) => e.stopPropagation()}
                           className="p-1.5 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors"
                           title="Delete"
                         >

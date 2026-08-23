@@ -433,6 +433,8 @@ export async function createProjectAction(
   if (error) return { success: false, error: error.message };
 
   revalidatePath('/work');
+  revalidatePath('/admin/projects');
+  revalidatePath('/', 'layout');
   return { success: true, message: 'Project created successfully.' };
 }
 
@@ -452,6 +454,8 @@ export async function updateProjectAction(
   if (error) return { success: false, error: error.message };
 
   revalidatePath('/work');
+  revalidatePath('/admin/projects');
+  revalidatePath('/', 'layout');
   return { success: true, message: 'Project updated successfully.' };
 }
 
@@ -465,6 +469,8 @@ export async function deleteProjectAction(id: number): Promise<ActionResult> {
   if (error) return { success: false, error: error.message };
 
   revalidatePath('/work');
+  revalidatePath('/admin/projects');
+  revalidatePath('/', 'layout');
   return { success: true, message: 'Project deleted successfully.' };
 }
 

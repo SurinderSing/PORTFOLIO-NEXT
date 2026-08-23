@@ -168,8 +168,8 @@ export default function ProjectsManager({
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this project?')) return;
     setLoading(true);
+    setStatus({ type: null, message: '' });
     try {
       const res = await deleteProjectAction(id);
       if (res.success) {

@@ -130,14 +130,24 @@ export default function ExperiencesTable({
                     <td className="py-3 px-4 text-right">
                       <div className="inline-flex items-center gap-2">
                         <button
-                          onClick={() => onEdit(item)}
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEdit(item);
+                          }}
+                          onMouseDown={(e) => e.stopPropagation()}
                           className="p-1.5 rounded-lg text-primary hover:bg-primary/10 transition-colors"
                           title="Edit"
                         >
                           <Edit2 size={14} />
                         </button>
                         <button
-                          onClick={() => onDelete(item.id)}
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(item.id);
+                          }}
+                          onMouseDown={(e) => e.stopPropagation()}
                           className="p-1.5 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors"
                           title="Delete"
                         >
