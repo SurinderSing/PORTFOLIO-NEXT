@@ -62,8 +62,8 @@ export default async function ContactPage() {
           </h1>
 
           <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl leading-relaxed">
-            Execute a secure transmission to my inbox. Response typically
-            generated within 24 standard hours.
+            {settings.contact_description ||
+              'Execute a secure transmission to my inbox. Response typically generated within 24 standard hours.'}
           </p>
         </FadeInItem>
 
