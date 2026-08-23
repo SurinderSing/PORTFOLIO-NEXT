@@ -9,7 +9,6 @@ import { ThemeProvider } from '@/components/utils/theme-provider';
 import ToggleDarkModeBtn from '@/components/website/toggle-dark-mode-btn';
 import RouteLoader from '@/components/ui/route-loader';
 import CustomCursor from '@/components/animations/custom-cursor';
-import AntigravityBackground from '@/components/animations/antigravity-background';
 import AdminSidebar, { AdminMobileNav } from '@/components/admin/admin-sidebar';
 import { ExternalLink, LogOut, Lock, ArrowLeft, Terminal } from 'lucide-react';
 import Providers from '../provider';
@@ -110,8 +109,7 @@ export default async function AdminLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <div className="min-h-screen flex flex-col relative">
-              <AntigravityBackground />
+            <div className="min-h-screen flex flex-col">
               <CustomCursor />
               {/* Top Navigation Bar */}
               <header className="sticky top-0 z-40 w-full h-14 border-b border-border bg-card/85 backdrop-blur-md px-6 flex items-center justify-between shadow-xs">
