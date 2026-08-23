@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/utils/theme-provider';
 import ToggleDarkModeBtn from '@/components/website/toggle-dark-mode-btn';
 import RouteLoader from '@/components/ui/route-loader';
+import CustomCursor from '@/components/animations/custom-cursor';
 import {
   LayoutDashboard,
   Settings,
@@ -73,6 +74,7 @@ export default async function AdminLayout({
         className={cn(jetbrainsMono.variable, inter.variable)}
       >
         <body className="antialiased min-h-screen bg-background text-foreground font-mono flex items-center justify-center p-6">
+          <CustomCursor />
           <div className="max-w-md w-full p-8 rounded-2xl bg-card border border-border shadow-md space-y-6 text-center">
             <div className="w-14 h-14 rounded-xl bg-destructive/10 text-destructive flex items-center justify-center mx-auto shadow-inner">
               <Lock size={26} />
@@ -132,6 +134,7 @@ export default async function AdminLayout({
             disableTransitionOnChange
           >
             <div className="min-h-screen flex flex-col">
+              <CustomCursor />
               {/* Top Navigation Bar */}
               <header className="sticky top-0 z-40 w-full border-b border-border bg-card/85 backdrop-blur-md px-6 py-3 flex items-center justify-between shadow-xs">
                 <div className="flex items-center gap-3">
