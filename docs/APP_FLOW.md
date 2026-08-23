@@ -8,17 +8,17 @@ The application utilizes Next.js 14 App Router organized into separated route gr
 
 ```
 src/app/
-├── (website)/               # Publicly viewable portfolio pages (SSR / RSC)
-│   ├── contact/             # Dynamic contacts + Formspree form
-│   ├── resume/              # Dynamic education, work timeline & skills matrix
-│   ├── work/                # Dynamic projects showcase cards
-│   ├── layout.tsx           # Global website frame (Header, Navbar, Profile card)
-│   └── page.tsx             # Root home screen ("About me" overview & about cards)
+├── (website)/               # Publicly viewable portfolio pages (SSR / Static Prerendered)
+│   ├── contact/             # Terminal contact form + System Status & Network Nodes
+│   ├── resume/              # Profile summary, categorized skills matrix & timelines
+│   ├── work/                # Systems & Architecture project showcase cards
+│   ├── layout.tsx           # Global website frame (TopNavbar, Main Container, Footer)
+│   └── page.tsx             # Root home screen (Hero, Skills, Experience, Work, Contact Teaser)
 │
 ├── (admin)/                 # Administrative management control center (Protected)
 │   ├── layout.tsx           # Admin shell (Navigation sidebar, header, role guard)
 │   └── admin/
-│       ├── page.tsx         # Dashboard overview with metrics & quick navigation
+│       ├── page.tsx         # Dashboard overview with sync metrics & quick navigation
 │       ├── site-settings/   # Edit global texts, owner info, resume PDF URL
 │       ├── contacts/        # CRUD phone, email, and location entries
 │       ├── social-links/    # CRUD LinkedIn, GitHub, Instagram links
@@ -28,14 +28,16 @@ src/app/
 │       └── projects/        # CRUD portfolio projects & tech chips
 │
 ├── (auth)/                  # Session registration routes (Supabase Auth)
-│   ├── sign-in/             # Sign-in login panel
-│   ├── sign-up/             # Create user account form
+│   ├── sign-in/             # Terminal sign-in login panel
+│   ├── sign-up/             # Create admin account form
 │   ├── verification-success/# Verified status landing page
-│   └── layout.tsx           # Minimalistic authentication layout frame
+│   └── layout.tsx           # Minimalistic authentication layout with theme toggle
 │
 ├── api/                     # Backend API endpoints
 │   ├── auth/
-│   │   └── confirm/         # Supabase OTP token verification callback
+│   │   ├── confirm/         # Supabase OTP token verification callback
+│   │   └── sign-out/        # Supabase sign out route
+│   ├── preview-check/       # Iframe embedding header validation endpoint
 │   └── route.ts             # Health check HEAD test endpoint
 │
 ├── provider.tsx             # Redux Store wrapper provider

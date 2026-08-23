@@ -100,14 +100,24 @@ export default function SkillCategoryCard({
 
         <div className="flex items-center gap-1">
           <button
-            onClick={() => onEditCategory(category)}
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEditCategory(category);
+            }}
+            onMouseDown={(e) => e.stopPropagation()}
             className="p-1.5 rounded-lg text-primary hover:bg-primary/10 transition-colors"
             title="Edit Category"
           >
             <Edit2 size={14} />
           </button>
           <button
-            onClick={() => onDeleteCategory(category.id)}
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDeleteCategory(category.id);
+            }}
+            onMouseDown={(e) => e.stopPropagation()}
             className="p-1.5 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors"
             title="Delete Category"
           >
@@ -153,6 +163,7 @@ export default function SkillCategoryCard({
                   e.stopPropagation();
                   onDeleteSkill(skill.id, category.id);
                 }}
+                onMouseDown={(e) => e.stopPropagation()}
                 className="opacity-40 group-hover:opacity-100 text-red-500 hover:text-red-600 transition-opacity ml-1"
                 title="Remove skill"
               >

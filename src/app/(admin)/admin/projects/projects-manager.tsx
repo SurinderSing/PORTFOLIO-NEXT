@@ -14,6 +14,7 @@ import AdminStatusBanner, {
   AdminStatusState,
 } from '@/components/admin/admin-status-banner';
 import AdminPageHeader from '@/components/admin/admin-page-header';
+import AdminDeleteModal from '@/components/admin/admin-delete-modal';
 import ProjectForm, { ProjectFormData } from './project-form';
 import ProjectsTable from './projects-table';
 
@@ -26,6 +27,7 @@ export default function ProjectsManager({
 }: ProjectsManagerProps) {
   const [projects, setProjects] = useState<Project[]>(initialProjects);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [deletingProject, setDeletingProject] = useState<Project | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<AdminStatusState>({
@@ -167,17 +169,23 @@ export default function ProjectsManager({
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this project?')) return;
+  const handleStartDelete = (project: Project) => {
+    setDeletingProject(project);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingProject) return;
     setLoading(true);
+    setStatus({ type: null, message: '' });
     try {
-      const res = await deleteProjectAction(id);
+      const res = await deleteProjectAction(deletingProject.id);
       if (res.success) {
-        setProjects((prev) => prev.filter((p) => p.id !== id));
+        setProjects((prev) => prev.filter((p) => p.id !== deletingProject.id));
         setStatus({
           type: 'success',
-          message: 'Project deleted successfully.',
+          message: `Project "${deletingProject.title}" deleted successfully.`,
         });
+        setDeletingProject(null);
       } else {
         setStatus({
           type: 'error',
@@ -237,7 +245,18 @@ export default function ProjectsManager({
         onDragEnd={handleDragEnd}
         onDrop={handleDrop}
         onEdit={handleStartEdit}
-        onDelete={handleDelete}
+        onDelete={handleStartDelete}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <AdminDeleteModal
+        isOpen={deletingProject !== null}
+        title="Delete Portfolio Project"
+        description="Are you sure you want to permanently delete this project? This will remove it from your live showcase."
+        itemName={deletingProject?.title}
+        loading={loading}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeletingProject(null)}
       />
     </div>
   );

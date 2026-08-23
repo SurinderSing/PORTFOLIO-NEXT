@@ -146,7 +146,6 @@ export default function AboutCardsManager({
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this about card?')) return;
     setLoading(true);
     try {
       const res = await deleteAboutCardAction(id);

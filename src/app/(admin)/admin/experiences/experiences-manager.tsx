@@ -14,6 +14,7 @@ import AdminStatusBanner, {
   AdminStatusState,
 } from '@/components/admin/admin-status-banner';
 import AdminPageHeader from '@/components/admin/admin-page-header';
+import AdminDeleteModal from '@/components/admin/admin-delete-modal';
 import ExperienceForm, { ExperienceFormData } from './experience-form';
 import ExperiencesTable from './experiences-table';
 
@@ -27,6 +28,7 @@ export default function ExperiencesManager({
   const [experiences, setExperiences] =
     useState<Experience[]>(initialExperiences);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [deletingItem, setDeletingItem] = useState<Experience | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [loading, setLoading] = useState(false);
   const [draggedItem, setDraggedItem] = useState<{
@@ -47,6 +49,8 @@ export default function ExperiencesManager({
     title: '',
     place: '',
     type: 'WORK',
+    description: '',
+    technologies: '',
     sort_order: 0,
   });
 
@@ -58,6 +62,8 @@ export default function ExperiencesManager({
       title: '',
       place: '',
       type,
+      description: '',
+      technologies: '',
       sort_order: experiences.filter((e) => e.type === type).length + 1,
     });
   };
@@ -70,6 +76,10 @@ export default function ExperiencesManager({
       title: item.title,
       place: item.place,
       type: item.type,
+      description: item.description || '',
+      technologies: Array.isArray(item.technologies)
+        ? item.technologies.join(', ')
+        : (item.technologies as any) || '',
       sort_order: item.sort_order,
     });
   };
@@ -84,9 +94,24 @@ export default function ExperiencesManager({
     setLoading(true);
     setStatus({ type: null, message: '' });
 
+    const techArray = formData.technologies
+      .split(',')
+      .map((t) => t.trim())
+      .filter(Boolean);
+
+    const payload = {
+      date_range: formData.date_range,
+      title: formData.title,
+      place: formData.place,
+      type: formData.type,
+      description: formData.description || null,
+      technologies: techArray,
+      sort_order: Number(formData.sort_order),
+    };
+
     try {
       if (isCreating) {
-        const res = await createExperienceAction(formData);
+        const res = await createExperienceAction(payload);
         if (res.success) {
           setStatus({
             type: 'success',
@@ -96,9 +121,8 @@ export default function ExperiencesManager({
           setExperiences((prev) => [
             ...prev,
             {
-              ...formData,
+              ...payload,
               id: Date.now(),
-              sort_order: Number(formData.sort_order),
             },
           ]);
         } else {
@@ -108,7 +132,7 @@ export default function ExperiencesManager({
           });
         }
       } else if (editingId !== null) {
-        const res = await updateExperienceAction(editingId, formData);
+        const res = await updateExperienceAction(editingId, payload);
         if (res.success) {
           setStatus({
             type: 'success',
@@ -120,8 +144,7 @@ export default function ExperiencesManager({
               item.id === editingId
                 ? {
                     ...item,
-                    ...formData,
-                    sort_order: Number(formData.sort_order),
+                    ...payload,
                   }
                 : item
             )
@@ -143,18 +166,24 @@ export default function ExperiencesManager({
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this experience record?'))
-      return;
+  const handleStartDelete = (item: Experience) => {
+    setDeletingItem(item);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingItem) return;
     setLoading(true);
     try {
-      const res = await deleteExperienceAction(id);
+      const res = await deleteExperienceAction(deletingItem.id);
       if (res.success) {
-        setExperiences((prev) => prev.filter((item) => item.id !== id));
+        setExperiences((prev) =>
+          prev.filter((item) => item.id !== deletingItem.id)
+        );
         setStatus({
           type: 'success',
-          message: 'Experience deleted successfully.',
+          message: `Experience "${deletingItem.title}" deleted successfully.`,
         });
+        setDeletingItem(null);
       } else {
         setStatus({ type: 'error', message: res.error || 'Failed to delete.' });
       }
@@ -295,7 +324,7 @@ export default function ExperiencesManager({
         onDragEnd={handleDragEnd}
         onDrop={handleDrop}
         onEdit={handleStartEdit}
-        onDelete={handleDelete}
+        onDelete={handleStartDelete}
       />
 
       {/* Education Experiences Table */}
@@ -312,7 +341,22 @@ export default function ExperiencesManager({
         onDragEnd={handleDragEnd}
         onDrop={handleDrop}
         onEdit={handleStartEdit}
-        onDelete={handleDelete}
+        onDelete={handleStartDelete}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <AdminDeleteModal
+        isOpen={deletingItem !== null}
+        title="Delete Experience Record"
+        description="Are you sure you want to permanently delete this experience / education record? This action will remove it from your live resume."
+        itemName={
+          deletingItem
+            ? `${deletingItem.title} (${deletingItem.place})`
+            : undefined
+        }
+        loading={loading}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeletingItem(null)}
       />
     </div>
   );

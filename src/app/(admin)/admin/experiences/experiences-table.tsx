@@ -26,7 +26,7 @@ interface ExperiencesTableProps {
   onDragEnd: () => void;
   onDrop: (_e: React.DragEvent, _type: ExperienceType, _index: number) => void;
   onEdit: (_item: Experience) => void;
-  onDelete: (_id: number) => void;
+  onDelete: (_item: Experience) => void;
 }
 
 export default function ExperiencesTable({
@@ -127,17 +127,43 @@ export default function ExperiencesTable({
                         {item.sort_order}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-right">
-                      <div className="inline-flex items-center gap-2">
+                    <td
+                      className="py-3 px-4 text-right"
+                      draggable={false}
+                      onDragStart={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                      }}
+                    >
+                      <div
+                        className="inline-flex items-center gap-2"
+                        draggable={false}
+                        onDragStart={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                        }}
+                      >
                         <button
-                          onClick={() => onEdit(item)}
+                          type="button"
+                          draggable={false}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEdit(item);
+                          }}
+                          onMouseDown={(e) => e.stopPropagation()}
                           className="p-1.5 rounded-lg text-primary hover:bg-primary/10 transition-colors"
                           title="Edit"
                         >
                           <Edit2 size={14} />
                         </button>
                         <button
-                          onClick={() => onDelete(item.id)}
+                          type="button"
+                          draggable={false}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(item);
+                          }}
+                          onMouseDown={(e) => e.stopPropagation()}
                           className="p-1.5 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors"
                           title="Delete"
                         >

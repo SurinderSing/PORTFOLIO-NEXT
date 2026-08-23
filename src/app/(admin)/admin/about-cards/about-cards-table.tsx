@@ -109,14 +109,24 @@ export default function AboutCardsTable({
                     <td className="py-3 px-4 text-right">
                       <div className="inline-flex items-center gap-2">
                         <button
-                          onClick={() => onEdit(card)}
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEdit(card);
+                          }}
+                          onMouseDown={(e) => e.stopPropagation()}
                           className="p-1.5 rounded-lg text-primary hover:bg-primary/10 transition-colors"
                           title="Edit"
                         >
                           <Edit2 size={14} />
                         </button>
                         <button
-                          onClick={() => onDelete(card.id)}
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete(card.id);
+                          }}
+                          onMouseDown={(e) => e.stopPropagation()}
                           className="p-1.5 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors"
                           title="Delete"
                         >

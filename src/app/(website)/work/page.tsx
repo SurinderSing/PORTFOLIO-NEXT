@@ -1,6 +1,5 @@
 import React from 'react';
 import { Metadata } from 'next';
-import PageProvider from '@/components/website/pages/page-provider';
 import ProjectCard from '@/components/website/pages/work/porject-card';
 import { FadeIn, FadeInItem } from '@/components/animations/fade-in';
 import { ScrollReveal } from '@/components/animations/scroll-reveal';
@@ -9,26 +8,29 @@ import GimmefyImage from '@/assets/images/projects/gimmefy-ai.png';
 import DialmantraImage from '@/assets/images/projects/dialmantra.png';
 import AmotusImage from '@/assets/images/projects/amotus-online.png';
 import DrishtiImage from '@/assets/images/projects/drishti-ias.png';
+import { Code2, Github } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Projects | React & Next.js Development Work | Surinder Singh',
+  title: 'Projects | Systems & Architecture | Surinder Singh',
   description:
-    'Explore a collection of my recent projects, including AI-enhanced marketing platforms, remote screen sharing tools, and more.',
+    'Explore a collection of technical deployments and scalable frontend systems built using React, Next.js, and TypeScript.',
   alternates: {
     canonical: '/work',
   },
 };
 
-const staticImageMap: Record<string, any> = {
-  'Gimmefy AI': GimmefyImage,
-  'Dialmantra Dialer': DialmantraImage,
-  'Amotus Online': AmotusImage,
-  'Drishti IAS Website': DrishtiImage,
+const getProjectFallbackImage = (title: string) => {
+  const normalized = title.toLowerCase();
+  if (normalized.includes('gimmefy')) return GimmefyImage;
+  if (normalized.includes('dialmantra')) return DialmantraImage;
+  if (normalized.includes('amotus')) return AmotusImage;
+  if (normalized.includes('drishti')) return DrishtiImage;
+  return undefined;
 };
 
 export const revalidate = 3600;
 
-export default async function Work() {
+export default async function WorkPage() {
   const [settings, dbProjects] = await Promise.all([
     getSiteSettings(),
     getProjects(),
@@ -40,27 +42,44 @@ export default async function Work() {
     description: proj.description,
     technologies: proj.technologies,
     link: proj.link,
-    image: proj.image_url || staticImageMap[proj.title] || undefined,
+    image: proj.image_url || getProjectFallbackImage(proj.title) || undefined,
     previewUrl: proj.preview_url,
     previewMode: proj.preview_mode,
   }));
 
   return (
-    <main className="w-full">
-      <PageProvider title="Portfolio">
-        <FadeIn>
-          <FadeInItem className="mb-4">
-            <p className="para-2 text-muted whitespace-pre-line">
-              {settings.work_description}
-            </p>
-          </FadeInItem>
-          <ScrollReveal
-            staggerChildren={0.1}
-            yOffset={20}
-            delay={0.15}
-            className="flex flex-wrap gap-4 justify-evenly mb-6"
-          >
-            {projectsData.map((project) => (
+    <div className="w-full max-w-4xl mx-auto font-mono py-4">
+      <FadeIn staggerChildren={0.15}>
+        {/* Page Header with Terminal Breadcrumb */}
+        <FadeInItem className="mb-8 space-y-3">
+          <div className="inline-flex items-center gap-2 rounded-md bg-tertiary-2 px-2.5 py-1 text-xs text-muted-foreground border border-border/60">
+            <span className="text-primary font-bold">$</span>
+            <span>ls -la ./projects</span>
+          </div>
+
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight">
+            Systems & Architecture
+          </h1>
+
+          <p className="text-xs sm:text-sm text-muted-foreground max-w-2xl leading-relaxed">
+            {settings.work_description ||
+              'A gallery of technical deployments. These projects represent deep structural work in frontend architecture, data visualization, and specialized UI engineering.'}
+          </p>
+        </FadeInItem>
+
+        {/* Projects Grid */}
+        <ScrollReveal
+          staggerChildren={0.1}
+          yOffset={20}
+          delay={0.15}
+          className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12"
+        >
+          {projectsData.map((project, index) => {
+            const isLastItem = index === projectsData.length - 1;
+            const isOddTotal = projectsData.length % 2 !== 0;
+            const isWide = isLastItem && isOddTotal;
+
+            return (
               <ProjectCard
                 key={project.id}
                 title={project.title}
@@ -70,71 +89,64 @@ export default async function Work() {
                 description={project.description}
                 previewUrl={project.previewUrl}
                 previewMode={project.previewMode}
+                isWide={isWide}
               />
-            ))}
-          </ScrollReveal>
+            );
+          })}
+        </ScrollReveal>
 
-          {/* GitHub Section */}
-          <ScrollReveal
-            yOffset={20}
-            className="mt-8 p-6 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-lg border border-gray-200 dark:border-gray-700"
-          >
-            <div className="text-center">
-              <h3 className="text-xl font-semibold mb-3 text-gray-800 dark:text-gray-200">
-                Want to see more projects?
-              </h3>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
-                Explore my GitHub profile to discover more projects,
-                contributions, and code samples.
-              </p>
+        {/* GitHub Section Callout */}
+        <FadeInItem>
+          <div className="rounded-xl border border-border/80 bg-card p-6 text-center space-y-3">
+            <div className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary mx-auto">
+              <Github className="h-5 w-5" />
+            </div>
+            <h3 className="text-sm sm:text-base font-bold text-foreground">
+              Looking for more codebases & open-source tools?
+            </h3>
+            <p className="text-xs text-muted-foreground max-w-md mx-auto">
+              Explore my GitHub repository to discover more repositories,
+              architectures, and experiments.
+            </p>
+            <div className="pt-2">
               <a
                 href="https://github.com/SurinderSing"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors duration-200 font-medium"
+                className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground hover:opacity-90 transition-opacity"
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
-                  />
-                </svg>
-                Visit My GitHub Profile
+                <Code2 className="h-3.5 w-3.5" />
+                <span>Visit GitHub Profile</span>
               </a>
             </div>
-          </ScrollReveal>
-        </FadeIn>
+          </div>
+        </FadeInItem>
+      </FadeIn>
 
-        {/* CreativeWork Structured Data for Projects */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'ItemList',
-              itemListElement: projectsData.map((project, index) => ({
-                '@type': 'ListItem',
-                position: index + 1,
-                item: {
-                  '@type': 'CreativeWork',
-                  name: project.title,
-                  description: project.description,
-                  url: project.link,
-                  creator: {
-                    '@type': 'Person',
-                    name: settings.owner_name,
-                  },
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'ItemList',
+            itemListElement: projectsData.map((project, index) => ({
+              '@type': 'ListItem',
+              position: index + 1,
+              item: {
+                '@type': 'CreativeWork',
+                name: project.title,
+                description: project.description,
+                url: project.link,
+                creator: {
+                  '@type': 'Person',
+                  name: settings.owner_name,
                 },
-              })),
-            }),
-          }}
-        />
-      </PageProvider>
-    </main>
+              },
+            })),
+          }),
+        }}
+      />
+    </div>
   );
 }

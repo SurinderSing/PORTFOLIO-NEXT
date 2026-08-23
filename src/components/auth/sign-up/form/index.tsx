@@ -8,7 +8,7 @@ import { createClient } from '@/utils/supabase/client';
 
 const formSchema = z
   .object({
-    username: z.string().min(1, 'User name is required'),
+    username: z.string().min(1, 'Username is required'),
     firstName: z.string().min(1, 'First name is required'),
     lastName: z.string().min(1, 'Last name is required'),
     email: z.string().email('Invalid email'),
@@ -83,107 +83,127 @@ const SignUpForm: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-4 font-mono text-xs"
+    >
       {errorMsg && (
-        <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-lg border border-destructive/20 text-center font-raleway">
+        <div className="bg-destructive/10 text-destructive text-xs p-3 rounded-lg border border-destructive/20 text-center">
           {errorMsg}
         </div>
       )}
 
       {successMsg && (
-        <div className="bg-green-500/10 text-green-500 text-sm p-3 rounded-lg border border-green-500/20 text-center font-raleway">
+        <div className="bg-emerald-500/10 text-emerald-500 text-xs p-3 rounded-lg border border-emerald-500/20 text-center">
           {successMsg}
         </div>
       )}
 
-      <div className="mb-4">
-        <label htmlFor="user-name">User name</label>
+      <div className="space-y-1">
+        <label htmlFor="user-name">Username</label>
         <input
           type="text"
           id="user-name"
+          placeholder="admin_user"
           {...register('username')}
-          className="w-full px-3 py-2 border-b-2 border-b-tertiary-2 focus:border-b-primary bg-background text-foreground"
+          className="text-xs bg-background/80"
         />
         {errors.username && (
           <FormErrorMsg>{errors.username.message}</FormErrorMsg>
         )}
       </div>
-      <div className="mb-4">
-        <label htmlFor="first-name">First name</label>
-        <input
-          type="text"
-          id="first-name"
-          {...register('firstName')}
-          className="w-full px-3 py-2 border-b-2 border-b-tertiary-2 focus:border-b-primary bg-background text-foreground"
-        />
-        {errors.firstName && (
-          <FormErrorMsg>{errors.firstName.message}</FormErrorMsg>
-        )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <label htmlFor="first-name">First Name</label>
+          <input
+            type="text"
+            id="first-name"
+            placeholder="Surinder"
+            {...register('firstName')}
+            className="text-xs bg-background/80"
+          />
+          {errors.firstName && (
+            <FormErrorMsg>{errors.firstName.message}</FormErrorMsg>
+          )}
+        </div>
+        <div className="space-y-1">
+          <label htmlFor="last-name">Last Name</label>
+          <input
+            type="text"
+            id="last-name"
+            placeholder="Singh"
+            {...register('lastName')}
+            className="text-xs bg-background/80"
+          />
+          {errors.lastName && (
+            <FormErrorMsg>{errors.lastName.message}</FormErrorMsg>
+          )}
+        </div>
       </div>
-      <div className="mb-4">
-        <label htmlFor="last-name">Last name</label>
-        <input
-          type="text"
-          id="last-name"
-          {...register('lastName')}
-          className="w-full px-3 py-2 border-b-2 border-b-tertiary-2 focus:border-b-primary bg-background text-foreground"
-        />
-        {errors.lastName && (
-          <FormErrorMsg>{errors.lastName.message}</FormErrorMsg>
-        )}
-      </div>
-      <div className="mb-4">
+
+      <div className="space-y-1">
         <label htmlFor="email">Email</label>
         <input
           type="email"
           id="email"
+          placeholder="admin@surinder.dev"
           {...register('email')}
-          className="w-full px-3 py-2 border-b-2 border-b-tertiary-2 focus:border-b-primary bg-background text-foreground"
+          className="text-xs bg-background/80"
         />
         {errors.email && <FormErrorMsg>{errors.email.message}</FormErrorMsg>}
       </div>
-      <div className="mb-4">
+
+      <div className="space-y-1">
         <label htmlFor="phone">Phone</label>
         <input
           type="tel"
           id="phone"
+          placeholder="+91 9876543210"
           {...register('phone')}
-          className="w-full px-3 py-2 border-b-2 border-b-tertiary-2 focus:border-b-primary bg-background text-foreground"
+          className="text-xs bg-background/80"
         />
         {errors.phone && <FormErrorMsg>{errors.phone.message}</FormErrorMsg>}
       </div>
-      <div className="mb-4">
-        <label htmlFor="password">Password</label>
-        <input
-          type="password"
-          id="password"
-          {...register('password')}
-          className="w-full px-3 py-2 border-b-2 border-b-tertiary-2 focus:border-b-primary bg-background text-foreground"
-        />
-        {errors.password && (
-          <FormErrorMsg>{errors.password.message}</FormErrorMsg>
-        )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="space-y-1">
+          <label htmlFor="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            placeholder="••••••••"
+            {...register('password')}
+            className="text-xs bg-background/80"
+          />
+          {errors.password && (
+            <FormErrorMsg>{errors.password.message}</FormErrorMsg>
+          )}
+        </div>
+
+        <div className="space-y-1">
+          <label htmlFor="confirm-password">Confirm Password</label>
+          <input
+            type="password"
+            id="confirm-password"
+            placeholder="••••••••"
+            {...register('confirmPassword')}
+            className="text-xs bg-background/80"
+          />
+          {errors.confirmPassword && (
+            <FormErrorMsg>{errors.confirmPassword.message}</FormErrorMsg>
+          )}
+        </div>
       </div>
-      <div className="mb-4">
-        <label htmlFor="confirm-password">Confirm Password</label>
-        <input
-          type="password"
-          id="confirm-password"
-          {...register('confirmPassword')}
-          className="w-full px-3 py-2 border-b-2 border-b-tertiary-2 focus:border-b-primary bg-background text-foreground"
-        />
-        {errors.confirmPassword && (
-          <FormErrorMsg>{errors.confirmPassword.message}</FormErrorMsg>
-        )}
-      </div>
-      <div className="flex justify-end">
+
+      <div className="pt-2">
         <button
           type="submit"
-          className="main-gradient-1 px-6 py-2 rounded-full mt-4 hover:opacity-90 transition duration-300 disabled:opacity-50 text-sm font-semibold"
+          className="w-full flex items-center justify-center gap-2 rounded-lg bg-primary py-2.5 px-4 text-xs font-bold text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50"
           disabled={loading}
           aria-label="Sign up"
         >
-          {loading ? 'Signing up...' : 'Sign up'}
+          {loading ? 'CREATING ACCOUNT...' : 'Create Account'}
         </button>
       </div>
     </form>

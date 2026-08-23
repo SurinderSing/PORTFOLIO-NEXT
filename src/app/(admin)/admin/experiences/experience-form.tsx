@@ -9,6 +9,8 @@ export interface ExperienceFormData {
   title: string;
   place: string;
   type: ExperienceType;
+  description: string;
+  technologies: string;
   sort_order: number;
 }
 
@@ -114,6 +116,36 @@ export default function ExperienceForm({
               setFormData({ ...formData, place: e.target.value })
             }
             className="w-full px-3.5 py-2 rounded-xl bg-tertiary border border-border text-sm outline-none focus:border-primary"
+          />
+        </div>
+
+        <div className="space-y-1.5 md:col-span-2">
+          <label className="text-xs font-medium text-muted-foreground">
+            Technologies / Core Modules (Comma Separated)
+          </label>
+          <input
+            type="text"
+            placeholder="e.g. React, TypeScript, Next.js, Redux, Webpack, Mantine"
+            value={formData.technologies}
+            onChange={(e) =>
+              setFormData({ ...formData, technologies: e.target.value })
+            }
+            className="w-full px-3.5 py-2 rounded-xl bg-tertiary border border-border text-sm outline-none focus:border-primary font-mono text-xs"
+          />
+        </div>
+
+        <div className="space-y-1.5 md:col-span-2">
+          <label className="text-xs font-medium text-muted-foreground">
+            Description & Key Achievements (Bullet points - one per line)
+          </label>
+          <textarea
+            rows={4}
+            placeholder={`e.g.\nLead frontend engineering for core AI SaaS platforms serving 50k+ active users.\nArchitected micro-frontend component systems and automated workflows.\nOptimized rendering latency and reduced bundle size by 30%.`}
+            value={formData.description}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
+            className="w-full px-3.5 py-2.5 rounded-xl bg-tertiary border border-border text-xs outline-none focus:border-primary leading-relaxed font-mono resize-y"
           />
         </div>
 
