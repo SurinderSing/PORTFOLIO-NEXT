@@ -106,6 +106,17 @@
     @apply border-border outline-ring/50;
   }
 
+  /* Custom theme text selection */
+  ::selection {
+    background-color: hsl(var(--primary) / 0.28);
+    color: hsl(var(--foreground));
+  }
+
+  ::-moz-selection {
+    background-color: hsl(var(--primary) / 0.28);
+    color: hsl(var(--foreground));
+  }
+
   /* Set core body defaults */
   body {
     @apply bg-background text-foreground;
