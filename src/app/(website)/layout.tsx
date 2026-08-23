@@ -2,12 +2,11 @@ import React, { Suspense } from 'react';
 import type { Metadata, Viewport } from 'next';
 import '@/styles/globals.css';
 import '@/styles/main.css';
-import { raleway, poppins, pacifico } from '@/styles/fonts';
+import { jetbrainsMono, inter } from '@/styles/fonts';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/utils/theme-provider';
-import Header from '@/features/website/header';
-import Navbar from '@/features/website/navbar';
-import ProfileSideSection from '@/features/website/profile-side-section';
+import TopNavbar from '@/features/website/top-navbar';
+import Footer from '@/features/website/footer';
 import GlobalLoader from '@/components/ui/global-loader';
 import RouteLoader from '@/components/ui/route-loader';
 import Providers from '../provider';
@@ -82,11 +81,11 @@ export default async function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn(raleway.variable, poppins.variable, pacifico.variable)}
+      className={cn(jetbrainsMono.variable, inter.variable)}
     >
       <body
         className={cn(
-          'antialiased h-screen bg-background overflow-hidden sm:overflow-auto font-raleway'
+          'antialiased min-h-screen bg-background text-foreground font-mono transition-colors'
         )}
       >
         <Suspense>
@@ -118,13 +117,14 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <Header />
-            <div className="section-container pt-[.5rem] sm:pb-4">
-              <Navbar />
-              <div className="flex gap-3 sm:flex-col sm:items-center sm:mt-20">
-                <ProfileSideSection />
-                {children}
+            <div className="min-h-screen flex flex-col justify-between">
+              <div>
+                <TopNavbar settings={settings} />
+                <main className="section-container py-8 sm:py-6">
+                  {children}
+                </main>
               </div>
+              <Footer settings={settings} socialLinks={socialLinks} />
             </div>
           </ThemeProvider>
         </Providers>

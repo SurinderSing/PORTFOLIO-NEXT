@@ -1,21 +1,13 @@
-import { Raleway, Poppins, Pacifico } from 'next/font/google';
+import { JetBrains_Mono, Inter } from 'next/font/google';
 
-export const raleway = Raleway({
+export const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
-  variable: '--font-raleway',
+  variable: '--font-mono',
   display: 'swap',
 });
 
-export const poppins = Poppins({
-  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+export const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-poppins',
-  display: 'swap',
-});
-
-export const pacifico = Pacifico({
-  weight: ['400'],
-  subsets: ['latin'],
-  variable: '--font-pacifico',
+  variable: '--font-sans',
   display: 'swap',
 });

@@ -29,9 +29,11 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        raleway: ['var(--font-raleway)'],
-        poppins: ['var(--font-poppins)'],
-        pacifico: ['var(--font-pacifico)'],
+        mono: ['var(--font-mono)', 'monospace'],
+        sans: ['var(--font-sans)', 'sans-serif'],
+        raleway: ['var(--font-mono)', 'monospace'],
+        poppins: ['var(--font-mono)', 'monospace'],
+        pacifico: ['var(--font-mono)', 'monospace'],
       },
       boxShadow: {
         'custom-1': 'var(--custom-box-shadow-1)',

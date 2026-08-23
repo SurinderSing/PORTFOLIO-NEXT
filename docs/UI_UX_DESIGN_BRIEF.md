@@ -1,56 +1,69 @@
-# UI/UX Design Brief - PORTFOLIO-NEXT
+# UI/UX Design Brief - PORTFOLIO-NEXT (Redesign)
 
 ## Design Aesthetic
-A sleek, modern developer portfolio featuring curated gradients, dark mode support, fluid responsiveness, and premium micro-animations that engage visitors, paired with a clean, functional administrative control center.
+A sleek, modern developer portfolio featuring an engineered terminal aesthetic, developer-focused monospace typography, Emerald Green (`#22C55E`) primary accents, dark/light theme switching via `next-themes`, and clean single-page flowing layouts paired with an intuitive administrative control center.
 
 ## Design Tokens & Typography
 
 ### Fonts
-The site uses custom Google fonts configured via `next/font` (mapped to CSS variables in `src/styles/fonts.ts`):
-- **Raleway (`--font-raleway`):** Principal body typeface. Clean, geometric, and highly readable.
-- **Poppins (`--font-poppins`):** Headings typeface. Offers modern and structured hierarchy.
-- **Pacifico (`--font-pacifico`):** Highlight/Accent brand font. Used for cursive signatures or logo branding.
+The site uses Google fonts configured via `next/font/google` (mapped to CSS variables in `src/styles/fonts.ts`):
+- **JetBrains Mono (`--font-mono`):** Primary typeface used across all headings, code blocks, terminals, navigation items, cards, badges, and body content. High legibility and developer-engineered feel.
+- **Inter (`--font-sans`):** Clean fallback interface typeface.
 
 ### Typography Hierarchy
 
 | Style | Element/Class | Size | Font Family | Properties |
 |:---|:---|:---|:---|:---|
-| **Heading 1** | `h1` | `28px` | Poppins | `font-medium`, `scroll-mt-48` |
-| **Heading 2** | `h2` | `26px` | Poppins | `font-medium`, `scroll-mt-48` |
-| **Heading 3** | `h3` | `20px` | Poppins | `font-medium` |
-| **Heading 4** | `h4` | `18px` | Poppins | `font-semibold` |
-| **Body Large** | `.para-1` | `14px` | Raleway | `line-height: 24px` |
-| **Body Small** | `.para-2` | `12px` | Raleway | `line-height: 20px` |
-| **Caption Bold**| `.para-3` | `10px` | Raleway | `line-height: 20px`, `font-semibold` |
+| **Heading 1** | `h1` | `26px` (sm: `22px`) | JetBrains Mono | `font-semibold`, `tracking-tight` |
+| **Heading 2** | `h2` | `22px` (sm: `18px`) | JetBrains Mono | `font-semibold`, `tracking-tight` |
+| **Heading 3** | `h3` | `17px` | JetBrains Mono | `font-semibold` |
+| **Heading 4** | `h4` | `15px` | JetBrains Mono | `font-medium` |
+| **Body Large** | `.para-1` | `14px` | JetBrains Mono | `line-height: 24px` |
+| **Body Small** | `.para-2` | `12px` | JetBrains Mono | `line-height: 20px` |
+| **Caption Mono**| `.para-3` | `11px` | JetBrains Mono | `line-height: 16px`, `font-medium` |
 
 ---
 
 ## Brand Theme & Color System
 
-The application leverages HSL variables mapped dynamically for light/dark themes:
+The application leverages HSL variables mapped dynamically for light and dark themes:
 
 | Token Name | Light Theme Value (HSL) | Dark Theme Value (HSL) | CSS Variable |
 |:---|:---|:---|:---|
-| **Primary** | `5, 93%, 48%` (Crimson) | `5, 93%, 48%` (Crimson) | `var(--primary)` |
-| **Secondary**| `34, 100%, 55%` (Orange) | `34, 100%, 55%` (Orange) | `var(--secondary)` |
-| **Background**| `214, 37%, 96%` (Light Gray-Blue)| `0, 0%, 3.9%` (Jet Black) | `var(--background)` |
-| **Foreground**| `0, 0%, 3.9%` (Dark Gray) | `0, 0%, 98%` (Off-White) | `var(--foreground)` |
-| **Card** | `33, 100%, 93%` (Soft Peach) | `0, 0%, 3.9%` (Jet Black) | `var(--card)` |
-| **Tertiary** | `0, 0%, 100%` (White) | `0, 0%, 9%` (Deep Gray) | `var(--tertiary)` |
-| **Tertiary-2**| `210, 30%, 91%` (Muted Blue-Gray) | `0, 0%, 9%` (Deep Gray) | `var(--tertiary-2)` |
+| **Primary** | `142, 71%, 45%` (#22C55E Emerald) | `142, 71%, 45%` (#22C55E Emerald) | `var(--primary)` |
+| **Secondary**| `142, 60%, 35%` (Deep Forest) | `142, 60%, 35%` (Deep Forest) | `var(--secondary)` |
+| **Background**| `0, 0%, 100%` (Pure White)| `0, 0%, 4%` (Jet Black #0A0A0A) | `var(--background)` |
+| **Foreground**| `0, 0%, 9%` (Dark Gray #171717) | `0, 0%, 98%` (Off-White #FAFAFA) | `var(--foreground)` |
+| **Card** | `0, 0%, 98%` (Subtle Zinc #FAFAFA) | `0, 0%, 7%` (Charcoal #121212) | `var(--card)` |
+| **Tertiary** | `0, 0%, 98%` | `0, 0%, 9%` (#171717) | `var(--tertiary)` |
+| **Tertiary-2**| `0, 0%, 94%` (Muted Zinc) | `0, 0%, 13%` (Deep Zinc) | `var(--tertiary-2)` |
+| **Border** | `0, 0%, 89.8%` | `0, 0%, 16%` (#262626) | `var(--border)` |
 
-### Theme Gradients
-- **Main Action/Buttons:** `.main-gradient-1` (`bg-gradient-to-r from-secondary to-primary`)
-- **Text Highlights:** `.main-text-gradient` (`bg-gradient-to-b from-primary to-secondary text-transparent bg-clip-text`)
-
----
-
-## Dynamic Icon Resolution Ecosystem
-All icon strings stored in the database (e.g. `code-xml`, `brain`, `phone`, `mail`, `github`, `linkedin`) are dynamically resolved into Lucide React components using `src/utils/icon-resolver.tsx`. This avoids storing raw JSX or HTML in database tables while maintaining full type safety and styling customizability.
+### Theme Accents & Buttons
+- **Primary Actions:** `bg-primary text-primary-foreground` (`#22C55E` emerald with dark text/white contrast)
+- **Text Accents:** `text-primary font-mono`
+- **Badges:** `border-border bg-tertiary-2 text-muted-foreground`
 
 ---
 
-## Admin Dashboard Interface Design
-- **Layout:** Sticky header with website link & sign-out + collapsible sidebar navigation.
-- **Card-Based Form Blocks:** Grouped inputs with validation feedback and toast alerts.
-- **Data Tables:** Interactive rows with hover highlights, badge previews, and edit/delete action triggers.
+## Layout Architecture
+
+1. **Top Navigation Bar (`TopNavbar`):**
+   - Left: Dynamic logo title (`{owner_name}.dev` / `DevEngine v1.0`) with green pulsating status dot.
+   - Center/Right: Navigation links (`Home`, `Resume`, `Work`, `Contact`).
+   - Right: Minimalist theme toggle + mobile hamburger menu.
+2. **Footer (`Footer`):**
+   - Dynamic branding: `DevEngine v1.0 — © {year} {owner_name}. All rights reserved.`
+   - Social links integration (`GitHub`, `LinkedIn`, etc.).
+3. **Home Page (`/`):**
+   - Single-page scrollable architecture featuring: Hero Section (`$ whoami`), Technical Skills 4-column matrix, Experience preview with "View Full Resume →", Featured Work 2-column cards with "View All Projects →", and Contact Teaser CTA.
+4. **Work Page (`/work`):**
+   - Terminal breadcrumb (`$ ls -la ./projects`), Systems & Architecture heading, 2-column project deployment cards with Live Demo and View Source triggers, GitHub callout banner.
+5. **Resume Page (`/resume`):**
+   - Terminal breadcrumb (`$ cat resume.md`), Profile summary card with photo & PDF download, Categorized Technical Skills cards, Work Experience timeline, and Education timeline.
+6. **Contact Page (`/contact`):**
+   - Terminal breadcrumb (`$ init --contact`), Two-column layout: Left interactive code terminal contact form (`~/contact/transmission.sh`), Right System Status panel (`● ONLINE`, `~12ms`, location) and Network Nodes panel with coordinate radar target (`NODE: DELHI, IN`).
+7. **Auth Pages (`/sign-in`, `/sign-up`):**
+   - Monospace terminal authentication cards with green action buttons and full theme toggle support.
+8. **Admin Control Center (`/admin/*`):**
+   - Dark/Light responsive dashboard shell with icon-based navigation sidebar, Supabase synchronization status banner, and content management cards.
