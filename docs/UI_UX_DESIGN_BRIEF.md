@@ -49,11 +49,11 @@ The application leverages HSL variables mapped dynamically for light and dark th
 ## Layout Architecture
 
 1. **Top Navigation Bar (`TopNavbar`):**
-   - Left: Dynamic logo title (`{owner_name}.dev` / `DevEngine v1.0`) with green pulsating status dot.
+   - Left: Dynamic logo title (`{owner_name}.dev` / `InderDevEngine v1.0`) with green pulsating status dot.
    - Center/Right: Navigation links (`Home`, `Resume`, `Work`, `Contact`).
    - Right: Minimalist theme toggle + mobile hamburger menu.
 2. **Footer (`Footer`):**
-   - Dynamic branding: `DevEngine v1.0 — © {year} {owner_name}. All rights reserved.`
+   - Dynamic branding: `InderDevEngine v1.0 — © {year} {owner_name}. All rights reserved.`
    - Social links integration (`GitHub`, `LinkedIn`, etc.).
 3. **Home Page (`/`):**
    - Single-page scrollable architecture featuring: Hero Section (`$ whoami`), Technical Skills 4-column matrix, Experience preview with "View Full Resume →", Featured Work 2-column cards with "View All Projects →", and Contact Teaser CTA.

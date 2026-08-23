@@ -16,7 +16,7 @@ const Footer: React.FC<FooterProps> = ({ settings, socialLinks = [] }) => {
       <div className="section-container flex flex-col md:flex-row items-center justify-between gap-4">
         {/* Left branding / copyright */}
         <div className="flex items-center gap-2 text-center md:text-left">
-          <span>DevEngine v1.0</span>
+          <span>InderDevEngine v1.0</span>
           <span>•</span>
           <span>
             © {currentYear} {ownerName}. All rights reserved.

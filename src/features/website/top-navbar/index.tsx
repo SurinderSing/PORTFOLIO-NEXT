@@ -26,7 +26,7 @@ const TopNavbar: React.FC<TopNavbarProps> = ({ settings }) => {
   // Dynamic brand title fallback
   const brandName = settings?.owner_name
     ? `${settings.owner_name.toLowerCase().replace(/\s+/g, '')}.dev`
-    : 'DevEngine v1.0';
+    : 'InderDevEngine v1.0';
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/85 backdrop-blur-md transition-colors">
