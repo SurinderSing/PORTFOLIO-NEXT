@@ -47,7 +47,7 @@ export default async function ResumePage() {
   );
 
   return (
-    <div className="w-full max-w-4xl mx-auto font-mono py-4">
+    <div className="w-full font-mono py-4">
       <FadeIn staggerChildren={0.15}>
         {/* Terminal Breadcrumb */}
         <FadeInItem className="mb-6">

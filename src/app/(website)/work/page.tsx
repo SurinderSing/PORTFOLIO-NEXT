@@ -48,7 +48,7 @@ export default async function WorkPage() {
   }));
 
   return (
-    <div className="w-full max-w-4xl mx-auto font-mono py-4">
+    <div className="w-full font-mono py-4">
       <FadeIn staggerChildren={0.15}>
         {/* Page Header with Terminal Breadcrumb */}
         <FadeInItem className="mb-8 space-y-3">
