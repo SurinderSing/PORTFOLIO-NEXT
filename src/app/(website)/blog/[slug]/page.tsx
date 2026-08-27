@@ -89,18 +89,19 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       <FadeIn staggerChildren={0.08} className="flex flex-col space-y-5">
         {/* Navigation & Breadcrumb */}
         <FadeInItem>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3 font-mono text-xs">
             <Link
               href="/blog"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-tertiary-2 transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-muted-foreground hover:text-foreground hover:bg-tertiary-2 transition-colors whitespace-nowrap shrink-0"
             >
-              <ArrowLeft className="h-3.5 w-3.5" />
-              <span>Back to all articles</span>
+              <ArrowLeft className="h-3.5 w-3.5 shrink-0" />
+              <span className="hidden sm:inline">Back to all articles</span>
+              <span className="sm:hidden">Back</span>
             </Link>
 
-            <div className="inline-flex items-center gap-2 rounded-md bg-tertiary-2 px-2.5 py-1 text-xs text-muted-foreground border border-border/60">
-              <span className="text-primary font-bold">$</span>
-              <span>cat ./{post.slug}.md</span>
+            <div className="inline-flex items-center gap-2 rounded-md bg-tertiary-2 px-2.5 py-1 text-muted-foreground border border-border/60 max-w-[200px] sm:max-w-xs md:max-w-none overflow-hidden">
+              <span className="text-primary font-bold shrink-0">$</span>
+              <span className="truncate">cat ./{post.slug}.md</span>
             </div>
           </div>
         </FadeInItem>
