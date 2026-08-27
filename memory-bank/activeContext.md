@@ -15,6 +15,7 @@ The current focus is **Phase 15: Dynamic Blog, REST API Layer, Interactive Comme
      - [`src/services/authApi.ts`](file:///c:/Users/ssuri/OneDrive/Documents/projects/PORTFOLIO-NEXT/src/services/authApi.ts) with centralized `signIn`, `signUp`, `signOut`, and `getUser`.
    - **Component Decoupling Across Entire Codebase:** Eliminated all direct inline database/client calls from all UI components (`LikeButton`, `CommentsSection`, `SignUpForm`, `SignInPage`). All components now interact strictly through the unified service layer.
    - **Like & Comment Count Synchronization:** Fixed PostgREST relational array mapping (`post_likes(id)` and `comments(id)`) in `getBlogPosts()` and `getBlogPostBySlug()` to accurately aggregate live counts across both the main `/blog` feed and individual `/blog/[slug]` article cards. Added instant `revalidatePath('/blog')` on like toggle.
+   - **Comment Reactions Synchronization (`GET /api/blog/reaction` & `fetchCommentReactions`):** Created `GET` handler in `/api/blog/reaction` to pre-load the authenticated user's reaction statuses (`like`, `dislike`, or `null`) and accurate live counts for all comments upon page load/refresh. Fixed thumbs-up / thumbs-down toggle logic and active filled states.
 
 2. **Session & Profile Fetch Deduplication (Global React Context):**
    - Transformed `useClientAuth` into a shared React Context (`AuthProvider`) mounted once in `src/app/provider.tsx`.

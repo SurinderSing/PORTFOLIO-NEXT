@@ -134,6 +134,58 @@ export const blogApi = {
   },
 
   /**
+   * Fetch user reaction states and live like counts for all comments in a post
+   */
+  async fetchCommentReactions(
+    postId: string
+  ): Promise<
+    Record<
+      string,
+      { userReaction: 'like' | 'dislike' | null; likesCount: number }
+    >
+  > {
+    const key = `comments-rx-${postId}`;
+    if (inFlightRequests.has(key)) {
+      return inFlightRequests.get(key);
+    }
+
+    const promise = (async () => {
+      try {
+        const res = await fetch(
+          `/api/blog/reaction?postId=${encodeURIComponent(postId)}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (!res.ok) {
+          throw new Error(
+            `Failed to fetch comment reactions: ${res.statusText}`
+          );
+        }
+
+        const data = await res.json();
+        return (data.reactions || {}) as Record<
+          string,
+          { userReaction: 'like' | 'dislike' | null; likesCount: number }
+        >;
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error('blogApi.fetchCommentReactions error:', err);
+        return {};
+      } finally {
+        inFlightRequests.delete(key);
+      }
+    })();
+
+    inFlightRequests.set(key, promise);
+    return promise;
+  },
+
+  /**
    * Toggle comment reaction (like/dislike)
    */
   async toggleCommentReaction(

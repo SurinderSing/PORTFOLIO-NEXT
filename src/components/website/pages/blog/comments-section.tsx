@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Comment, Profile } from '@/types/database';
@@ -53,10 +53,50 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  // Comment reaction state
+  // Comment reaction state: commentId -> { type: 'like' | 'dislike' | null, count: number }
   const [reactions, setReactions] = useState<
     Record<string, { type: 'like' | 'dislike' | null; count: number }>
-  >({});
+  >(() => {
+    const initMap: Record<
+      string,
+      { type: 'like' | 'dislike' | null; count: number }
+    > = {};
+    initialComments.forEach((c) => {
+      initMap[c.id] = { type: null, count: c.likes_count || 0 };
+    });
+    return initMap;
+  });
+
+  // Fetch current user's reaction status and live like counts for this post's comments
+  useEffect(() => {
+    if (!postId) return;
+
+    let isMounted = true;
+    const fetchReactions = async () => {
+      const res = await blogApi.fetchCommentReactions(postId);
+      if (isMounted && res) {
+        const nextMap: Record<
+          string,
+          { type: 'like' | 'dislike' | null; count: number }
+        > = {};
+        Object.entries(res).forEach(([cId, val]) => {
+          nextMap[cId] = {
+            type: val.userReaction,
+            count: val.likesCount ?? 0,
+          };
+        });
+        setReactions((prev) => ({
+          ...prev,
+          ...nextMap,
+        }));
+      }
+    };
+
+    fetchReactions();
+    return () => {
+      isMounted = false;
+    };
+  }, [postId, effectiveUser]);
 
   const handleToggleReaction = async (
     commentId: string,
@@ -71,12 +111,17 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
 
     const current = reactions[commentId] || { type: null, count: 0 };
     const isRemoving = current.type === type;
-    const nextType = isRemoving ? null : type;
-    const nextCount = isRemoving
-      ? Math.max(0, current.count - 1)
-      : current.type === 'like'
-        ? current.count
+    const nextType: 'like' | 'dislike' | null = isRemoving ? null : type;
+
+    // Accurate optimistic like count calculation
+    let nextCount = current.count;
+    if (type === 'like') {
+      nextCount = isRemoving
+        ? Math.max(0, current.count - 1)
         : current.count + 1;
+    } else if (type === 'dislike' && current.type === 'like') {
+      nextCount = Math.max(0, current.count - 1);
+    }
 
     // Optimistic UI update
     setReactions((prev) => ({
@@ -94,10 +139,21 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
             count: res.likesCount ?? 0,
           },
         }));
+      } else {
+        // Rollback on failure
+        setReactions((prev) => ({
+          ...prev,
+          [commentId]: current,
+        }));
       }
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('Failed to persist comment reaction:', err);
+      // Rollback on error
+      setReactions((prev) => ({
+        ...prev,
+        [commentId]: current,
+      }));
     }
   };
 
@@ -340,18 +396,30 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
                 </p>
 
                 {/* Reaction Buttons Row */}
-                <div className="flex items-center gap-3 pl-9 pt-1 text-[11px] text-muted-foreground">
+                <div className="flex items-center gap-2 pl-9 pt-1 text-xs text-muted-foreground">
                   <button
                     type="button"
                     onClick={() => handleToggleReaction(comment.id, 'like')}
                     className={cn(
-                      'inline-flex items-center gap-1 rounded px-2 py-0.5 transition-colors',
+                      'inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs transition-all select-none border',
                       reaction.type === 'like'
-                        ? 'text-primary bg-primary/10 font-bold'
-                        : 'hover:text-foreground hover:bg-tertiary-2'
+                        ? 'bg-emerald-500/15 text-emerald-500 border-emerald-500/30 font-bold'
+                        : 'bg-card border-border/60 text-muted-foreground hover:text-foreground hover:bg-tertiary-2'
                     )}
+                    title={
+                      effectiveUser
+                        ? reaction.type === 'like'
+                          ? 'Remove thumbs up'
+                          : 'Thumbs up'
+                        : 'Sign in to react'
+                    }
                   >
-                    <ThumbsUp className="h-3 w-3" />
+                    <ThumbsUp
+                      className={cn(
+                        'h-3.5 w-3.5',
+                        reaction.type === 'like' && 'fill-current'
+                      )}
+                    />
                     <span>{reaction.count}</span>
                   </button>
 
@@ -359,13 +427,25 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
                     type="button"
                     onClick={() => handleToggleReaction(comment.id, 'dislike')}
                     className={cn(
-                      'inline-flex items-center gap-1 rounded px-2 py-0.5 transition-colors',
+                      'inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs transition-all select-none border',
                       reaction.type === 'dislike'
-                        ? 'text-rose-500 bg-rose-500/10 font-bold'
-                        : 'hover:text-foreground hover:bg-tertiary-2'
+                        ? 'bg-rose-500/15 text-rose-500 border-rose-500/30 font-bold'
+                        : 'bg-card border-border/60 text-muted-foreground hover:text-foreground hover:bg-tertiary-2'
                     )}
+                    title={
+                      effectiveUser
+                        ? reaction.type === 'dislike'
+                          ? 'Remove thumbs down'
+                          : 'Thumbs down'
+                        : 'Sign in to react'
+                    }
                   >
-                    <ThumbsDown className="h-3 w-3" />
+                    <ThumbsDown
+                      className={cn(
+                        'h-3.5 w-3.5',
+                        reaction.type === 'dislike' && 'fill-current'
+                      )}
+                    />
                   </button>
                 </div>
               </div>
