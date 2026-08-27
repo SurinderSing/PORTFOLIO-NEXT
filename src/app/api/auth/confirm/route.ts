@@ -4,12 +4,23 @@ import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const token_hash = searchParams.get('token_hash');
-  const type = searchParams.get('type') as EmailOtpType | null;
-  const next = searchParams.get('next') ?? '/verification-success';
+  const requestUrl = new URL(request.url);
+  const token_hash = requestUrl.searchParams.get('token_hash');
+  const type = requestUrl.searchParams.get('type') as EmailOtpType | null;
+  const next = requestUrl.searchParams.get('next') ?? '/verification-success';
 
-  const redirectTo = new URL(next, request.url);
+  // Support reverse proxies (Vercel, Cloudflare, etc.)
+  const forwardedHost = request.headers.get('x-forwarded-host');
+  const forwardedProto = request.headers.get('x-forwarded-proto') || 'https';
+  const isLocalhost =
+    requestUrl.hostname === 'localhost' || requestUrl.hostname === '127.0.0.1';
+
+  let baseOrigin = requestUrl.origin;
+  if (forwardedHost && !isLocalhost) {
+    baseOrigin = `${forwardedProto}://${forwardedHost}`;
+  }
+
+  const redirectTo = new URL(next, baseOrigin);
 
   if (token_hash && type) {
     const cookieStore = cookies();
@@ -46,6 +57,6 @@ export async function GET(request: Request) {
 
   // Handle case where link is expired/invalid
   return NextResponse.redirect(
-    new URL('/sign-in?error=verification_failed', request.url)
+    new URL('/sign-in?error=verification_failed', baseOrigin)
   );
 }

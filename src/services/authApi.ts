@@ -15,6 +15,17 @@ export interface SignInParams {
   password: string;
 }
 
+function getRedirectUrl(): string {
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    return `${window.location.origin}/api/auth/confirm`;
+  }
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    'https://surinder-singh-portfolio.vercel.app';
+  return `${baseUrl.replace(/\/$/, '')}/api/auth/confirm`;
+}
+
 export const authApi = {
   async signIn(params: SignInParams): Promise<{
     user: User | null;
@@ -49,7 +60,7 @@ export const authApi = {
           firstName: params.firstName,
           lastName: params.lastName,
         },
-        emailRedirectTo: `${typeof window !== 'undefined' ? window.location.origin : ''}/api/auth/confirm`,
+        emailRedirectTo: getRedirectUrl(),
       },
     });
     return {
