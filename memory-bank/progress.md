@@ -167,6 +167,16 @@
 - [x] Interlink all existing markdown documentation across `memory-bank/*.md`, `docs/*.md`, and `README.md`.
 - [x] Verify production build and compilation with `npm run build`.
 
+### Phase 15: Dynamic Blog, Interactive Comments Engine & Admin Blog Manager (100% Completed)
+- [x] Implement cookieless queries (`getBlogPosts`, `getBlogPostBySlug`, `getCommentsByPostId`) and rich seed fallback articles in `src/lib/supabase-queries.ts`.
+- [x] Implement Server Actions (`createBlogPostAction`, `updateBlogPostAction`, `deleteBlogPostAction`, `addCommentAction`, `deleteCommentAction`) in `src/lib/admin-actions.ts`.
+- [x] Build public blog feed (`/blog`) with live search, tag filtering pills, featured hero card, and article card grid (`BlogCard`, `BlogFeedClient`).
+- [x] Build article reading view (`/blog/[slug]`) with markdown content renderer (`ArticleContent`), like button, metadata, and author card.
+- [x] Build interactive comments engine (`CommentsSection`) with unauthenticated sign-in prompt, live commenting, deletion, and upvote/downvote reactions.
+- [x] Build admin blogs management dashboard (`/admin/blogs`) with table, status badges (`DRAFT`, `PUBLISHED`, `ARCHIVED`), Markdown editor form (`BlogForm`), and delete modal.
+- [x] Integrate "Blog" into `TopNavbar`, "Blog Posts" into `AdminSidebar`, and `/blog` into `sitemap.ts`.
+- [x] Full build verification with `npm run build`.
+
 ---
 
 ## 🔗 Related Knowledge & System Links

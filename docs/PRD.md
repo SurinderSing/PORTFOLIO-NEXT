@@ -22,7 +22,8 @@ The application serves as a dynamic resume, a projects gallery, an interactive c
 | **Auth System** | Sign-up, Sign-in credentials, verification emails via Supabase Auth. | Completed | Role-based RBAC permissions |
 | **Admin Dashboard**| Administrative control center for updating all portfolio data. | Completed | File uploads via Supabase Storage |
 | **Theme Toggle** | System/Light/Dark mode transition via next-themes. | Completed | Custom theme accents |
-| **Blog Module** | Shared technical articles and career logs. | Database Schema Ready | Rich text editor UI |
+| **Blog Module** | Shared technical articles, tag filters, and reading layout. | Completed | Rich text editor UI & RSS feed |
+| **Comments Engine**| Authenticated discussions with user avatars & reaction metrics. | Completed | Nested reply threads |
 | **Stories Module** | Short stories and updates with user commenting. | Database Schema Ready | Social interactions |
 
 ## User Experience Goals

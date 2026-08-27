@@ -140,7 +140,9 @@ export interface BlogPost {
   published_at: string | null;
   created_at: string;
   updated_at: string;
-  author?: Profile;
+  author?: Partial<Profile> | null;
+  likes_count?: number;
+  comments_count?: number;
 }
 
 export interface Story {
@@ -153,7 +155,7 @@ export interface Story {
   published_at: string | null;
   created_at: string;
   updated_at: string;
-  author?: Profile;
+  author?: Partial<Profile> | null;
 }
 
 export interface Comment {
@@ -164,5 +166,6 @@ export interface Comment {
   content: string;
   created_at: string;
   updated_at: string;
-  user?: Profile;
+  user?: Partial<Profile> | null;
+  likes_count?: number;
 }

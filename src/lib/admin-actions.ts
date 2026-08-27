@@ -11,6 +11,8 @@ import {
   Skill,
   Experience,
   Project,
+  BlogPost,
+  Comment,
 } from '@/types/database';
 
 export interface ActionResult {
@@ -580,4 +582,194 @@ export async function reorderProjectsAction(
     { path: '/work' },
     { path: '/admin/projects' },
   ]);
+}
+
+// ============================================================================
+// 9. Blog Posts Actions
+// ============================================================================
+
+export async function createBlogPostAction(
+  data: Partial<BlogPost>
+): Promise<ActionResult & { post?: BlogPost }> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const slug =
+    data.slug?.trim() ||
+    data.title
+      ?.toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '') ||
+    `post-${Date.now()}`;
+
+  const payload = {
+    author_id: user?.id,
+    title: data.title || 'Untitled Post',
+    slug,
+    content: data.content || '',
+    excerpt: data.excerpt || null,
+    cover_image_url: data.cover_image_url || null,
+    tags: data.tags || [],
+    status: data.status || 'DRAFT',
+    published_at:
+      data.status === 'PUBLISHED'
+        ? data.published_at || new Date().toISOString()
+        : null,
+  };
+
+  const { data: created, error } = await supabase
+    .from('blog_posts')
+    .insert(payload)
+    .select()
+    .single();
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/blog');
+  revalidatePath('/admin/blogs');
+  return {
+    success: true,
+    message: 'Blog post created successfully.',
+    post: created as BlogPost,
+  };
+}
+
+export async function updateBlogPostAction(
+  id: string,
+  data: Partial<BlogPost>
+): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const payload: any = {
+    ...data,
+    updated_at: new Date().toISOString(),
+  };
+
+  if (data.status === 'PUBLISHED' && !data.published_at) {
+    payload.published_at = new Date().toISOString();
+  }
+
+  // Remove relation properties if passed
+  delete payload.author;
+  delete payload.likes_count;
+  delete payload.comments_count;
+
+  const { error } = await supabase
+    .from('blog_posts')
+    .update(payload)
+    .eq('id', id);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/blog');
+  if (data.slug) {
+    revalidatePath(`/blog/${data.slug}`);
+  }
+  revalidatePath('/admin/blogs');
+  return { success: true, message: 'Blog post updated successfully.' };
+}
+
+export async function deleteBlogPostAction(id: string): Promise<ActionResult> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase.from('blog_posts').delete().eq('id', id);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/blog');
+  revalidatePath('/admin/blogs');
+  return { success: true, message: 'Blog post deleted successfully.' };
+}
+
+// ============================================================================
+// 10. Comments Actions
+// ============================================================================
+
+export async function addCommentAction(data: {
+  post_id: string;
+  content: string;
+}): Promise<ActionResult & { comment?: Comment }> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return {
+      success: false,
+      error: 'Please sign in to post a comment.',
+    };
+  }
+
+  const trimmed = data.content.trim();
+  if (!trimmed) {
+    return { success: false, error: 'Comment content cannot be empty.' };
+  }
+
+  const { data: created, error } = await supabase
+    .from('comments')
+    .insert({
+      user_id: user.id,
+      post_id: data.post_id,
+      content: trimmed,
+    })
+    .select(
+      '*, user:profiles(id, first_name, last_name, username, role, profile_picture)'
+    )
+    .single();
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath(`/blog`);
+  return {
+    success: true,
+    message: 'Comment posted successfully.',
+    comment: created as Comment,
+  };
+}
+
+export async function deleteCommentAction(
+  commentId: string,
+  slug?: string
+): Promise<ActionResult> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { success: false, error: 'Unauthorized: Please sign in.' };
+  }
+
+  // Check if caller is author or admin
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+
+  const isAdmin = profile?.role === 'ADMIN';
+
+  let deleteQuery = supabase.from('comments').delete().eq('id', commentId);
+  if (!isAdmin) {
+    deleteQuery = deleteQuery.eq('user_id', user.id);
+  }
+
+  const { error } = await deleteQuery;
+  if (error) return { success: false, error: error.message };
+
+  if (slug) {
+    revalidatePath(`/blog/${slug}`);
+  }
+  revalidatePath('/blog');
+  return { success: true, message: 'Comment deleted successfully.' };
 }
