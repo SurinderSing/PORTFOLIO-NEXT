@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# PORTFOLIO-NEXT — Developer Portfolio & Admin Control Center
 
-## Getting Started
+This is a Next.js 14 Web Portfolio and Admin Dashboard for **Surinder Singh**, built with React Server Components, Tailwind CSS, Framer Motion, Redux Toolkit, and Supabase PostgreSQL.
 
-First, run the development server:
+---
 
+## 🌐 Knowledge Hub & Obsidian Vault
+
+This repository is configured as a connected **Obsidian Vault** with cross-linked documentation, Memory Bank, and Canvas diagrams:
+
+- **Central Map of Content (MOC):** [`PORTFOLIO_GRAPH.md`](file:///c:/Users/ssuri/OneDrive/Documents/projects/PORTFOLIO-NEXT/PORTFOLIO_GRAPH.md)
+- **Interactive Canvas Board:** [`PORTFOLIO_GRAPH.canvas`](file:///c:/Users/ssuri/OneDrive/Documents/projects/PORTFOLIO-NEXT/PORTFOLIO_GRAPH.canvas)
+- **Direct Obsidian URI Link:** [Open in Obsidian](obsidian://open?path=c%3A%2FUsers%2Fssuri%2FOneDrive%2FDocuments%2Fprojects%2FPORTFOLIO-NEXT)
+
+---
+
+## 📚 Documentation & Specifications
+
+- **[[docs/PRD|Product Requirements Document (PRD)]]** — Features, roadmap, and scope.
+- **[[docs/TRD|Technical Requirements Document (TRD)]]** — Architecture, security, and drag-and-drop mechanics.
+- **[[docs/APP_FLOW|Application Flow]]** — Routing hierarchy and middleware sequences.
+- **[[docs/BACKEND_SCHEMA|Backend Schema]]** — 11 Supabase PostgreSQL tables and RLS policies.
+- **[[docs/UI_UX_DESIGN_BRIEF|UI/UX Design Brief]]** — Visual styling, theme tokens, and motion guidelines.
+- **[[AGENTS|AGENTS.md]]** — Operational instructions for AI coding assistants.
+
+---
+
+## 🚀 Getting Started
+
+### 1. Install Dependencies
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Configure Environment Variables
+Copy `.env.example` to `.env.local` and supply your Supabase and Formspree credentials:
+```bash
+NEXT_PUBLIC_SUPABASE_URL="https://your-project-id.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-public-key"
+NEXT_PUBLIC_BASE_URL="http://localhost:3000"
+NEXT_PUBLIC_FORMSPREE_FORM_ID="xrgwgbye"
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Run Development Server
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) with your browser to view the application.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+---
 
-## Learn More
+## 🛠️ Scripts & Tooling
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- `npm run dev` — Start Next.js development server
+- `npm run build` — Build production bundle
+- `npm run lint` — Run ESLint check
+- `npm run watch` — TypeScript compiler dry-run watcher

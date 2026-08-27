@@ -236,3 +236,13 @@ create table public.comments (
 ### Storage RLS Policies
 - **Read:** `SELECT` allowed on `bucket_id = 'media'` for all public/anonymous traffic.
 - **Write/Update/Delete:** `INSERT`, `UPDATE`, `DELETE` permitted only for authenticated users where `profiles.role = 'ADMIN'`.
+
+---
+
+## 🔗 Related Specifications & Knowledge Nodes
+- Central Hub: [[PORTFOLIO_GRAPH|Knowledge Hub (MOC)]]
+- Application Flow: [[docs/APP_FLOW|App Flow]]
+- Technical Requirements: [[docs/TRD|TRD]]
+- System Patterns: [[memory-bank/systemPatterns|System Patterns]]
+- Agent Rules: [[AGENTS|AGENTS.md]]
+

@@ -67,3 +67,12 @@ The application leverages HSL variables mapped dynamically for light and dark th
    - Monospace terminal authentication cards with green action buttons and full theme toggle support.
 8. **Admin Control Center (`/admin/*`):**
    - Dark/Light responsive dashboard shell with zero-scroll sticky sidebar navigation (`h-14` header match, active tab emerald highlights/dots, permanently pinned bottom user profile), Supabase synchronization status banner, in-app delete confirmation modals, and drag-and-drop reordering panels.
+
+---
+
+## 🔗 Related Specifications & Knowledge Nodes
+- Central Hub: [[PORTFOLIO_GRAPH|Knowledge Hub (MOC)]]
+- Product Requirements: [[docs/PRD|PRD]]
+- Application Flow: [[docs/APP_FLOW|App Flow]]
+- Product Context: [[memory-bank/productContext|Product Context]]
+

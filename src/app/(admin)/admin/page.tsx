@@ -8,6 +8,7 @@ import {
   getSkillsByCategory,
   getExperiences,
   getProjects,
+  getBlogPosts,
 } from '@/lib/supabase-queries';
 import {
   Settings,
@@ -17,6 +18,7 @@ import {
   Code2,
   Briefcase,
   FolderGit2,
+  BookOpen,
   ArrowRight,
   CheckCircle2,
   Terminal,
@@ -33,6 +35,7 @@ export default async function AdminOverviewPage() {
     skillCategories,
     experiences,
     projects,
+    blogPosts,
   ] = await Promise.all([
     getSiteSettings(),
     getContacts(),
@@ -41,6 +44,7 @@ export default async function AdminOverviewPage() {
     getSkillsByCategory(),
     getExperiences(),
     getProjects(),
+    getBlogPosts({ status: undefined }),
   ]);
 
   const totalSkills = skillCategories.reduce(
@@ -55,6 +59,14 @@ export default async function AdminOverviewPage() {
       count: 'Global Config',
       href: '/admin/site-settings',
       icon: Settings,
+    },
+    {
+      title: 'Blog Posts',
+      description:
+        'Draft, publish, and manage engineering articles and discussions',
+      count: `${blogPosts.length} articles`,
+      href: '/admin/blogs',
+      icon: BookOpen,
     },
     {
       title: 'Contacts',

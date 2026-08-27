@@ -20,10 +20,21 @@
 - [x] Navigation Performance Optimization & Route Transition Polish
 - [x] Complete Portfolio UI/UX Redesign Aligned with Figma Specifications
 - [x] Custom Cursor, In-App Confirmation Modals, Dynamic HTML Heading & Experience Achievements
+- [x] Phase 15: Dynamic Blog, REST API Layer, Interactive Comments Engine & Admin Blog Manager
 
 ---
 
 ## Detailed Task Checklist
+
+### Phase 15: Dynamic Blog, REST API Layer, Interactive Comments Engine & Admin Blog Manager (100% Completed)
+- [x] Build dedicated REST API endpoints (`/api/blog/like`, `/api/blog/reaction`) with server-side auth validation.
+- [x] Create centralized client API service (`src/services/blogApi.ts`) with in-flight request deduplication and caching.
+- [x] Decouple UI components (`LikeButton`, `CommentsSection`) from inline database queries into clean service calls.
+- [x] Optimize `useClientAuth` hook to eliminate duplicate session and profile queries.
+- [x] Create public blog feed (`/blog`) with search, tag filtering, reading time estimates, and engagement stats.
+- [x] Create article reader (`/blog/[slug]`) with normalized markdown, code copying, bullet lists, and cover images.
+- [x] Create admin blog management dashboard (`/admin/blogs`) with interactive editor and live preview.
+- [x] Run `npm run lint` (0 warnings/errors) and `npm run build` (28/28 routes compiled).
 
 ### Phase 12: Custom Cursor, In-App Modals, Dynamic HTML Heading & Experience Achievements (100% Completed)
 - [x] Build reusable in-app delete confirmation modal (`AdminDeleteModal`) with monospace styling and loading indicators.
@@ -157,5 +168,32 @@
 - [x] Synchronize defaults in `src/lib/supabase-queries.ts` and `supabase/schema.sql`.
 - [x] Synchronize all specifications in `/docs/` (`PRD.md`, `TRD.md`, `APP_FLOW.md`, `UI_UX_DESIGN_BRIEF.md`, `BACKEND_SCHEMA.md`) and `/memory-bank/`.
 - [x] Full validation with `npm run lint` (0 errors), `npx tsc --noEmit` (0 errors), and `npm run build` (23/23 routes compiled).
+
+### Phase 14: Obsidian Vault Integration & Interactive Knowledge Graph View (100% Completed)
+- [x] Configure `.obsidian/app.json` with ignore filters for `node_modules`, `.next`, `.git`, `.vscode`, `dist`, `build`, and scratch assets.
+- [x] Configure `.obsidian/graph.json` with physics forces, arrow vectors, and color-coded node clusters (Memory Bank, Specs, Rules, Hubs).
+- [x] Enable core plugins (`graph`, `canvas`, `backlink`, `outgoing-link`, `switcher`, `global-search`) in `.obsidian/core-plugins.json`.
+- [x] Create central Map of Content (MOC): `PORTFOLIO_GRAPH.md` with full bi-directional wikilinks.
+- [x] Create native Obsidian Canvas board: `PORTFOLIO_GRAPH.canvas` for visual exploration.
+- [x] Interlink all existing markdown documentation across `memory-bank/*.md`, `docs/*.md`, and `README.md`.
+- [x] Verify production build and compilation with `npm run build`.
+
+### Phase 15: Dynamic Blog, Interactive Comments Engine & Admin Blog Manager (100% Completed)
+- [x] Implement cookieless queries (`getBlogPosts`, `getBlogPostBySlug`, `getCommentsByPostId`) and rich seed fallback articles in `src/lib/supabase-queries.ts`.
+- [x] Implement Server Actions (`createBlogPostAction`, `updateBlogPostAction`, `deleteBlogPostAction`, `addCommentAction`, `deleteCommentAction`) in `src/lib/admin-actions.ts`.
+- [x] Build public blog feed (`/blog`) with live search, tag filtering pills, featured hero card, and article card grid (`BlogCard`, `BlogFeedClient`).
+- [x] Build article reading view (`/blog/[slug]`) with markdown content renderer (`ArticleContent`), like button, metadata, and author card.
+- [x] Build interactive comments engine (`CommentsSection`) with unauthenticated sign-in prompt, live commenting, deletion, and upvote/downvote reactions.
+- [x] Build admin blogs management dashboard (`/admin/blogs`) with table, status badges (`DRAFT`, `PUBLISHED`, `ARCHIVED`), Markdown editor form (`BlogForm`), and delete modal.
+- [x] Integrate "Blog" into `TopNavbar`, "Blog Posts" into `AdminSidebar`, and `/blog` into `sitemap.ts`.
+- [x] Full build verification with `npm run build`.
+
+---
+
+## 🔗 Related Knowledge & System Links
+- Central Hub: [[PORTFOLIO_GRAPH|Knowledge Hub (MOC)]]
+- Visual Board: [[PORTFOLIO_GRAPH.canvas|Canvas Board]]
+- Active Context: [[memory-bank/activeContext|Active Context]]
+
 
 

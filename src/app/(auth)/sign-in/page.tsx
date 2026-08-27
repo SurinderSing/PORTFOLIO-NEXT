@@ -1,7 +1,7 @@
 'use client';
 
 import React, { Suspense, useState, useEffect } from 'react';
-import { createClient } from '@/utils/supabase/client';
+import { authApi } from '@/services/authApi';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -25,7 +25,6 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 function SignInContent() {
-  const supabase = createClient();
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTarget = searchParams.get('redirect') || '/admin';
@@ -36,11 +35,11 @@ function SignInContent() {
   const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    authApi.getUser().then(({ user }) => {
       setCurrentUser(user);
       setCheckingAuth(false);
     });
-  }, [supabase]);
+  }, []);
 
   const {
     register,
@@ -58,7 +57,7 @@ function SignInContent() {
     setLoading(true);
     setErrorMsg(null);
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { user, error } = await authApi.signIn({
       email: values.email,
       password: values.password,
     });
@@ -66,14 +65,14 @@ function SignInContent() {
     if (error) {
       setErrorMsg(error.message);
       setLoading(false);
-    } else if (data.user) {
+    } else if (user) {
       router.push(redirectTarget);
       router.refresh();
     }
   };
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
+    await authApi.signOut();
     setCurrentUser(null);
     router.refresh();
   };

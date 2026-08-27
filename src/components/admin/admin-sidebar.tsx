@@ -13,12 +13,14 @@ import {
   Code2,
   Briefcase,
   FolderGit2,
+  BookOpen,
 } from 'lucide-react';
 import { Profile } from '@/types/database';
 
 export const navItems = [
   { href: '/admin', label: 'Overview', icon: LayoutDashboard },
   { href: '/admin/site-settings', label: 'Site Settings', icon: Settings },
+  { href: '/admin/blogs', label: 'Blog Posts', icon: BookOpen },
   { href: '/admin/contacts', label: 'Contacts', icon: Phone },
   { href: '/admin/social-links', label: 'Social Links', icon: Share2 },
   { href: '/admin/about-cards', label: 'About Cards', icon: Sparkles },

@@ -1,38 +1,62 @@
 # Memory Bank - Active Context
 
 ## Active Focus
-The current focus is **Phase 13: Resume Content Synchronization, Zero-Scroll Admin Sidebar, Full Dynamic Data Audit & UI Polishing (Completed)**.
+The current focus is **Phase 15: Dynamic Blog, REST API Layer, Interactive Comments Engine & Admin Blog Manager (Completed)**.
 
 ---
 
 ## Recently Completed
 
-1. **Admin Sidebar Active Route & Fixed Viewport Optimization:**
-   - Extracted client sidebar component (`AdminSidebar` / `AdminMobileNav`) in `src/components/admin/admin-sidebar.tsx`.
-   - Added active tab highlighting with emerald badges (`bg-primary/10`, `border-primary/25`, indicator dot).
-   - Fixed the aside to the viewport (`sticky top-14 h-[calc(100vh-3.5rem)] overflow-hidden`) with fixed header (`h-14`) and compact item padding, completely eliminating sidebar scrollbars while keeping the user avatar/name/email permanently pinned at the bottom.
+1. **REST API Routes & Dedicated Services (`/api/...` & `src/services/`):**
+   - **Post Likes Route (`/api/blog/like`):** Dedicated Next.js Route Handler for fetching and toggling post likes with session authentication and count aggregation.
+   - **Comment Reactions Route (`/api/blog/reaction`):** Dedicated route for toggling upvotes/downvotes per comment.
+   - **Centralized Services:**
+     - [`src/services/blogApi.ts`](file:///c:/Users/ssuri/OneDrive/Documents/projects/PORTFOLIO-NEXT/src/services/blogApi.ts) with in-flight request deduplication and caching.
+     - [`src/services/authApi.ts`](file:///c:/Users/ssuri/OneDrive/Documents/projects/PORTFOLIO-NEXT/src/services/authApi.ts) with centralized `signIn`, `signUp`, `signOut`, and `getUser`.
+   - **Component Decoupling Across Entire Codebase:** Eliminated all direct inline database/client calls from all UI components (`LikeButton`, `CommentsSection`, `SignUpForm`, `SignInPage`). All components now interact strictly through the unified service layer.
+   - **Blog Article Top Navigation Responsive Optimization:** Optimized the top navigation bar in `src/app/(website)/blog/[slug]/page.tsx` (`Back to all articles` and `cat ./[slug].md` badge). Prevented awkward multiline wrapping on mobile viewports using `whitespace-nowrap`, compact `Back` text for mobile (`hidden sm:inline` for full text), and CSS ellipsis `truncate` on the terminal slug badge.
+   - **Custom Developer-Themed Email Templates:** Created modern dark/terminal-themed responsive HTML templates in `supabase/templates/confirm-signup.html` and `supabase/templates/reset-password.html` featuring Mac-style terminal headers, emerald badges, gradient CTA buttons, fallback URLs, and security disclosures compatible across all email clients (Gmail, Apple Mail, Outlook).
+   - **Dynamic Auth Redirects & Reverse Proxy Support:** Configured `emailRedirectTo` in `src/services/authApi.ts` and `src/app/api/auth/confirm/route.ts` with multi-environment origin detection (`x-forwarded-host`, `window.location.origin`) ensuring seamless verification redirects to `https://surinder-singh-portfolio.vercel.app/verification-success`.
+   - **Like & Comment Count Synchronization:** Fixed PostgREST relational array mapping (`post_likes(id)` and `comments(id)`) in `getBlogPosts()` and `getBlogPostBySlug()` to accurately aggregate live counts across both the main `/blog` feed and individual `/blog/[slug]` article cards. Added instant `revalidatePath('/blog')` on like toggle.
+   - **Comment Reactions Synchronization (`GET /api/blog/reaction` & `fetchCommentReactions`):** Created `GET` handler in `/api/blog/reaction` to pre-load the authenticated user's reaction statuses (`like`, `dislike`, or `null`) and accurate live counts for all comments upon page load/refresh. Fixed thumbs-up / thumbs-down toggle logic and active filled states.
+   - **DRY Request Debouncing & Cancellation Utility (`src/utils/request-debouncer.ts`):** Created a generic `RequestDebouncer<T>` utility that centralizes per-key timer management and `AbortController` cancellation, eliminating ~200 lines of duplicate boilerplate in `src/services/blogApi.ts`.
+   - **Single-Responsibility Comments Refactor:** Decomposed the 461-line monolithic `comments-section.tsx` into modular subcomponents (`CommentsHeader`, `CommentForm`, `CommentItem`) under `src/components/website/pages/blog/comments/`.
+   - **Purged Dead Server Actions:** Removed obsolete duplicate actions (`togglePostLikeAction`, `getPostLikeStatusAction`, `toggleCommentReactionAction`) from `src/lib/admin-actions.ts`.
 
-2. **Resume Analysis & 100% Dynamic Supabase Migration:**
-   - Extracted latest Senior Software Engineer credentials from user's official resume.
-   - **`site_settings`**: Upgraded owner title to *Senior Software Engineer*, refined professional summary, home heading/descriptions, and work/contact blurbs.
-   - **`experiences`**: Seeded Paytm (*Senior Software Engineer*), Teemuno/Gimmefy AI (*Frontend Engineer*), Collaberus Technologies (*Frontend Engineer*), Drishti IAS (*Frontend & Technical Associate*), and Academic degrees (BCA & Diploma in CSE) with precise bullet points and technologies in Supabase.
-   - **`projects`**: Enhanced Gimmefy AI, Dialmantra Dialer, Amotus Online, and Drishti IAS Platform with production-grade descriptions, technologies, links, and iframe preview modes.
-   - **`skill_categories` & `skills`**: Re-categorized into 6 specialized groups (Frontend, Build & DevOps, UI & Component Libraries, Backend & APIs, Testing & Performance, AI & Developer Tools) with exact skill entries matching the resume.
-   - Synchronized static fallbacks in `src/lib/supabase-queries.ts` and `supabase/schema.sql`.
+2. **Session & Profile Fetch Deduplication (Global React Context):**
+   - Transformed `useClientAuth` into a shared React Context (`AuthProvider`) mounted once in `src/app/provider.tsx`.
+   - Replaced multiple component-level `useEffect` instantiations with a single centralized `onAuthStateChange` listener.
+   - Added module-level singleton in-memory caching (`cachedProfile` & `profileFetchPromise`) so that profile fetching occurs **exactly once** across all components on page mount, reducing network calls to `profiles` from 3+ down to 1.
 
-3. **Complete Dynamic Audit & Legacy Map Removal:**
-   - Removed legacy `workDetailsMap` and `educationDetailsMap` overrides from `src/lib/experience-formatter.ts` to allow live database descriptions, places, and titles to stream directly to the Resume timeline.
-   - Updated `src/components/website/pages/home/featured-work.tsx` and `src/app/(website)/work/page.tsx` with flexible project thumbnail fallback matching (`getProjectFallbackImage`).
-   - Removed regex stripping in `src/components/website/pages/home/skills-grid.tsx` so custom category names render untruncated.
+3. **Public Blog Architecture (`/blog` & `/blog/[slug]`):**
+   - **Feed View (`/blog`):** Live search filter, topic tag chips, featured post hero card, responsive article grid with reading time calculations, author avatar, and engagement counters.
+   - **Article Reading View (`/blog/[slug]`):** Deep reading layout with normalized markdown renderer (`ArticleContent`) supporting code blocks with copy-to-clipboard, headings, bullet lists, and like button.
+   - **Static Generation & ISR:** Built with cookieless `createAnonClient()` in `src/lib/supabase-queries.ts` and `export const revalidate = 3600;`.
 
-4. **UI Polishing & Cleanup:**
-   - Removed misplaced location `MapPin` icon from the Hero Section bio paragraph in `src/components/website/pages/home/hero-section.tsx`.
-   - Fixed duplicate open/close brackets (`&lt;&gt;`) in the "View Source" button in `src/components/website/pages/work/porject-card/index.tsx`.
+4. **Interactive Comments & Discussion Engine:**
+   - Client-side auth integration via reusable `useClientAuth` hook.
+   - Interactive comment thread with user avatar, name, and timestamp.
+   - Dynamic form unlocking: Active members and admins see their commenter name with live input textarea, while unauthenticated visitors see a clear sign-in CTA with redirect back to the article.
+   - Optimistic comment submission via `addCommentAction()` and deletion via `deleteCommentAction()`.
+
+5. **Admin Control Center (`/admin/blogs`):**
+   - Management dashboard with filterable table of all articles (Drafts, Published, Archived).
+   - Interactive form editor (`BlogForm`) with title, auto-slug generator, tags, excerpt, markdown body, cover image, and live preview toggle.
+   - In-app delete confirmation modal and quick status changer.
 
 ---
 
 ## Verification Status
 
-- **ESLint Validation:** `npm run lint` -> 0 warnings, 0 errors.
-- **TypeScript Compiler:** `npx tsc --noEmit` -> 0 errors.
-- **Production Build:** `npm run build` -> Passed with 0 errors (23/23 routes compiled).
+- **ESLint Validation:** `npm run lint` -> Passed (0 errors, 0 warnings).
+- **TypeScript Compiler:** `npx tsc --noEmit` -> Passed.
+- **Production Build:** `npm run build` -> Passed with 0 errors across 28 routes.
+
+---
+
+## 🔗 Related Knowledge & System Links
+- Central Hub: [[PORTFOLIO_GRAPH|Knowledge Hub (MOC)]]
+- Visual Board: [[PORTFOLIO_GRAPH.canvas|Canvas Board]]
+- Routing Specs: [[docs/APP_FLOW|App Flow]]
+- Database Models: [[docs/BACKEND_SCHEMA|Backend Schema]]
+- System Patterns: [[memory-bank/systemPatterns|System Patterns]]
