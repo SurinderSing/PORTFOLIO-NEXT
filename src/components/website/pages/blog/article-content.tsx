@@ -8,33 +8,44 @@ interface ArticleContentProps {
 }
 
 export const ArticleContent: React.FC<ArticleContentProps> = ({ content }) => {
+  // Normalize escaped newlines if any exist in raw database string
+  const normalizedContent = (content || '')
+    .replace(/\\r\\n/g, '\n')
+    .replace(/\\n/g, '\n')
+    .replace(/\\t/g, '  ');
+
   // Simple markdown renderer for clean paragraph & code block formatting
-  const sections = content.split(/(```[\s\S]*?```)/g);
+  const sections = normalizedContent.split(/(```[\s\S]*?```)/g);
 
   return (
     <div className="prose prose-invert max-w-none font-sans text-foreground/90 leading-relaxed space-y-6">
       {sections.map((section, idx) => {
         if (section.startsWith('```')) {
           const firstLineEnd = section.indexOf('\n');
-          const language = section.slice(3, firstLineEnd).trim() || 'code';
-          const code = section.slice(firstLineEnd + 1, -3);
+          const language =
+            firstLineEnd > 3 ? section.slice(3, firstLineEnd).trim() : 'code';
+          const code =
+            firstLineEnd > 3
+              ? section.slice(firstLineEnd + 1, -3)
+              : section.slice(3, -3);
 
           return <CodeBlock key={idx} language={language} code={code} />;
         }
 
-        // Parse markdown headers and paragraphs
-        const paragraphs = section.split('\n\n').filter(Boolean);
+        // Parse markdown blocks separated by double newlines
+        const blocks = section.split('\n\n').filter(Boolean);
 
         return (
           <React.Fragment key={idx}>
-            {paragraphs.map((p, pIdx) => {
-              const trimmed = p.trim();
+            {blocks.map((block, bIdx) => {
+              const trimmed = block.trim();
 
+              // Heading 2
               if (trimmed.startsWith('## ')) {
                 return (
                   <h2
-                    key={pIdx}
-                    className="font-mono text-xl md:text-2xl font-bold tracking-tight text-foreground mt-8 mb-3 flex items-center gap-2 border-b border-border/40 pb-2"
+                    key={bIdx}
+                    className="font-mono text-xl md:text-2xl font-bold tracking-tight text-foreground mt-8 mb-4 flex items-center gap-2 border-b border-border/40 pb-2"
                   >
                     <span className="text-primary font-bold text-base">##</span>
                     {trimmed.replace('## ', '')}
@@ -42,11 +53,12 @@ export const ArticleContent: React.FC<ArticleContentProps> = ({ content }) => {
                 );
               }
 
+              // Heading 3
               if (trimmed.startsWith('### ')) {
                 return (
                   <h3
-                    key={pIdx}
-                    className="font-mono text-lg font-bold text-foreground mt-6 mb-2 flex items-center gap-2"
+                    key={bIdx}
+                    className="font-mono text-lg font-bold text-foreground mt-6 mb-3 flex items-center gap-2"
                   >
                     <span className="text-primary font-bold text-sm">###</span>
                     {trimmed.replace('### ', '')}
@@ -54,38 +66,83 @@ export const ArticleContent: React.FC<ArticleContentProps> = ({ content }) => {
                 );
               }
 
+              // Divider
               if (trimmed === '---') {
-                return <hr key={pIdx} className="my-8 border-border/60" />;
+                return <hr key={bIdx} className="my-8 border-border/60" />;
               }
 
-              if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
-                const items = trimmed
-                  .split('\n')
-                  .filter(
-                    (line) => line.startsWith('- ') || line.startsWith('* ')
-                  );
+              // Blockquotes
+              if (trimmed.startsWith('> ')) {
+                const quoteText = trimmed.replace(/^>\s*/gm, '');
                 return (
-                  <ul key={pIdx} className="list-none space-y-2 pl-2 my-4">
-                    {items.map((item, iIdx) => (
-                      <li
-                        key={iIdx}
-                        className="flex items-start gap-2.5 text-sm md:text-base text-muted-foreground"
-                      >
-                        <span className="h-1.5 w-1.5 rounded-full bg-primary mt-2 shrink-0" />
-                        <span
-                          dangerouslySetInnerHTML={{
-                            __html: formatInlineMarkdown(item.slice(2)),
-                          }}
-                        />
-                      </li>
-                    ))}
-                  </ul>
+                  <blockquote
+                    key={bIdx}
+                    className="border-l-2 border-primary pl-4 py-1 italic text-muted-foreground text-sm md:text-base my-4 bg-primary/5 rounded-r-lg"
+                    dangerouslySetInnerHTML={{
+                      __html: formatInlineMarkdown(quoteText),
+                    }}
+                  />
+                );
+              }
+
+              // Check if block contains list items (either standalone or with a lead-in sentence)
+              const lines = trimmed.split('\n');
+              const hasListItems = lines.some(
+                (l) => l.trim().startsWith('- ') || l.trim().startsWith('* ')
+              );
+
+              if (hasListItems) {
+                const leadInLines: string[] = [];
+                const listLines: string[] = [];
+                let isListMode = false;
+
+                lines.forEach((line) => {
+                  const lineTrimmed = line.trim();
+                  if (
+                    lineTrimmed.startsWith('- ') ||
+                    lineTrimmed.startsWith('* ')
+                  ) {
+                    isListMode = true;
+                    listLines.push(lineTrimmed.slice(2));
+                  } else if (isListMode) {
+                    listLines.push(lineTrimmed);
+                  } else {
+                    leadInLines.push(lineTrimmed);
+                  }
+                });
+
+                return (
+                  <div key={bIdx} className="space-y-3 my-4">
+                    {leadInLines.length > 0 && (
+                      <p
+                        className="text-sm md:text-base leading-relaxed text-muted-foreground"
+                        dangerouslySetInnerHTML={{
+                          __html: formatInlineMarkdown(leadInLines.join(' ')),
+                        }}
+                      />
+                    )}
+                    <ul className="list-none space-y-2.5 pl-2">
+                      {listLines.map((item, iIdx) => (
+                        <li
+                          key={iIdx}
+                          className="flex items-start gap-2.5 text-sm md:text-base text-muted-foreground"
+                        >
+                          <span className="h-1.5 w-1.5 rounded-full bg-primary mt-2 shrink-0" />
+                          <span
+                            dangerouslySetInnerHTML={{
+                              __html: formatInlineMarkdown(item),
+                            }}
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 );
               }
 
               return (
                 <p
-                  key={pIdx}
+                  key={bIdx}
                   className="text-sm md:text-base leading-relaxed text-muted-foreground"
                   dangerouslySetInnerHTML={{
                     __html: formatInlineMarkdown(trimmed),
@@ -115,7 +172,7 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ language, code }) => {
   };
 
   return (
-    <div className="rounded-lg border border-border bg-card/80 overflow-hidden my-6 font-mono text-xs shadow-xs">
+    <div className="rounded-xl border border-border bg-card/80 overflow-hidden my-6 font-mono text-xs shadow-xs">
       <div className="flex items-center justify-between px-3.5 py-2 border-b border-border/60 bg-tertiary-2 text-muted-foreground">
         <div className="flex items-center gap-2">
           <Terminal className="h-3.5 w-3.5 text-primary" />

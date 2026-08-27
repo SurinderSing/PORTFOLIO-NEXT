@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { BlogPost, Profile } from '@/types/database';
 import BlogCard from '@/components/website/pages/blog/blog-card';
 import { ScrollReveal } from '@/components/animations/scroll-reveal';
@@ -17,6 +18,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useClientAuth } from '@/hooks/use-client-auth';
+import { blogApi } from '@/services/blogApi';
 
 interface BlogFeedClientProps {
   initialPosts: BlogPost[];
@@ -29,6 +31,7 @@ export const BlogFeedClient: React.FC<BlogFeedClientProps> = ({
   currentUser: initialUser,
   currentProfile: initialProfile,
 }) => {
+  const router = useRouter();
   const {
     user: clientUser,
     profile: clientProfile,
@@ -41,21 +44,59 @@ export const BlogFeedClient: React.FC<BlogFeedClientProps> = ({
   const effectiveUser = clientUser || initialUser || null;
   const effectiveProfile = clientProfile || initialProfile || null;
 
+  // Reactive posts state initialized with cached live likes
+  const [posts, setPosts] = useState<BlogPost[]>(() =>
+    initialPosts.map((post) => {
+      const cachedLikes = blogApi.getCachedLikes(post.id);
+      return cachedLikes !== undefined
+        ? { ...post, likes_count: cachedLikes }
+        : post;
+    })
+  );
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+
+  // Sync state if initialPosts prop updates
+  useEffect(() => {
+    setPosts(
+      initialPosts.map((post) => {
+        const cachedLikes = blogApi.getCachedLikes(post.id);
+        return cachedLikes !== undefined
+          ? { ...post, likes_count: cachedLikes }
+          : post;
+      })
+    );
+  }, [initialPosts]);
+
+  // Subscribe to live like updates from any component/page
+  useEffect(() => {
+    const unsubscribe = blogApi.subscribeToLikes((postId, likesCount) => {
+      setPosts((prev) =>
+        prev.map((post) =>
+          post.id === postId ? { ...post, likes_count: likesCount } : post
+        )
+      );
+    });
+
+    // Refresh router in background to purge stale client router cache
+    router.refresh();
+
+    return unsubscribe;
+  }, [router]);
 
   // Extract all unique tags
   const allTags = useMemo(() => {
     const tagsSet = new Set<string>();
-    initialPosts.forEach((post) => {
+    posts.forEach((post) => {
       post.tags?.forEach((t) => tagsSet.add(t));
     });
     return Array.from(tagsSet);
-  }, [initialPosts]);
+  }, [posts]);
 
   // Filter posts based on search query and selected tag
   const filteredPosts = useMemo(() => {
-    return initialPosts.filter((post) => {
+    return posts.filter((post) => {
       const matchesSearch =
         searchQuery === '' ||
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -69,7 +110,7 @@ export const BlogFeedClient: React.FC<BlogFeedClientProps> = ({
 
       return matchesSearch && matchesTag;
     });
-  }, [initialPosts, searchQuery, selectedTag]);
+  }, [posts, searchQuery, selectedTag]);
 
   const featuredPost = filteredPosts.length > 0 ? filteredPosts[0] : null;
   const remainingPosts = filteredPosts.length > 1 ? filteredPosts.slice(1) : [];

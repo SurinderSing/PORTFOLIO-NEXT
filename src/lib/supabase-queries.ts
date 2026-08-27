@@ -623,8 +623,8 @@ export const defaultBlogPosts: BlogPost[] = [
     created_at: '2026-08-15T09:00:00.000Z',
     updated_at: '2026-08-15T10:00:00.000Z',
     author: defaultAuthor,
-    likes_count: 42,
-    comments_count: 3,
+    likes_count: 0,
+    comments_count: 0,
     content: `## The Monolithic Challenge
 
 As modern frontend engineering teams scale, monolithic web applications often face severe architectural bottlenecks:
@@ -682,8 +682,8 @@ By decoupling dependencies and executing independent chunk loading:
     created_at: '2026-08-20T14:00:00.000Z',
     updated_at: '2026-08-20T14:30:00.000Z',
     author: defaultAuthor,
-    likes_count: 58,
-    comments_count: 5,
+    likes_count: 0,
+    comments_count: 0,
     content: `## The Paradigm Shift of Server Components
 
 React Server Components (RSC) fundamentally redefine the client-server boundary by executing component logic exclusively on the server at request or build time, streaming zero JavaScript to the browser for static UI elements.
@@ -743,8 +743,8 @@ Combining React Server Components with optimized database query layers yields th
     created_at: '2026-08-25T08:00:00.000Z',
     updated_at: '2026-08-25T09:15:00.000Z',
     author: defaultAuthor,
-    likes_count: 36,
-    comments_count: 2,
+    likes_count: 0,
+    comments_count: 0,
     content: `## The Token Economy in Modern Web Engineering
 
 Integrating generative AI models into modern web platforms requires careful attention to **token consumption**, latency, and prompt reliability.
@@ -849,7 +849,7 @@ export async function getBlogPosts(options?: {
     let query = supabase
       .from('blog_posts')
       .select(
-        '*, author:profiles(id, first_name, last_name, username, role, profile_picture)'
+        '*, author:profiles(id, first_name, last_name, username, role, profile_picture), post_likes(id), comments(id)'
       )
       .order('published_at', { ascending: false, nullsFirst: false });
 
@@ -865,7 +865,13 @@ export async function getBlogPosts(options?: {
 
     const { data, error } = await query;
     if (!error && data && data.length > 0) {
-      return data as BlogPost[];
+      return data.map((post: any) => ({
+        ...post,
+        likes_count: Array.isArray(post.post_likes)
+          ? post.post_likes.length
+          : 0,
+        comments_count: Array.isArray(post.comments) ? post.comments.length : 0,
+      })) as BlogPost[];
     }
   } catch (err) {
     // eslint-disable-next-line no-console
@@ -891,13 +897,21 @@ export async function getBlogPostBySlug(
     const { data, error } = await supabase
       .from('blog_posts')
       .select(
-        '*, author:profiles(id, first_name, last_name, username, role, profile_picture)'
+        '*, author:profiles(id, first_name, last_name, username, role, profile_picture), post_likes(id), comments(id)'
       )
       .eq('slug', slug)
       .single();
 
     if (!error && data) {
-      return data as BlogPost;
+      return {
+        ...data,
+        likes_count: Array.isArray((data as any).post_likes)
+          ? (data as any).post_likes.length
+          : 0,
+        comments_count: Array.isArray((data as any).comments)
+          ? (data as any).comments.length
+          : 0,
+      } as BlogPost;
     }
   } catch (err) {
     // eslint-disable-next-line no-console
@@ -915,13 +929,22 @@ export async function getCommentsByPostId(postId: string): Promise<Comment[]> {
     const { data, error } = await supabase
       .from('comments')
       .select(
-        '*, user:profiles(id, first_name, last_name, username, role, profile_picture)'
+        '*, user:profiles(id, first_name, last_name, username, role, profile_picture), comment_reactions(type)'
       )
       .eq('post_id', postId)
       .order('created_at', { ascending: true });
 
-    if (!error && data && data.length > 0) {
-      return data as Comment[];
+    if (!error && data) {
+      return data.map((comment: any) => {
+        const reactions = comment.comment_reactions || [];
+        const likesCount = reactions.filter(
+          (r: any) => r.type === 'like'
+        ).length;
+        return {
+          ...comment,
+          likes_count: likesCount,
+        };
+      }) as Comment[];
     }
   } catch (err) {
     // eslint-disable-next-line no-console

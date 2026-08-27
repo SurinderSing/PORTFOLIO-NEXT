@@ -12,7 +12,7 @@ import ArticleContent from '@/components/website/pages/blog/article-content';
 import CommentsSection from '@/components/website/pages/blog/comments-section';
 import LikeButton from '@/components/website/pages/blog/like-button';
 import { FadeIn, FadeInItem } from '@/components/animations/fade-in';
-import { ArrowLeft, Calendar, Clock, Tag } from 'lucide-react';
+import { ArrowLeft, Tag } from 'lucide-react';
 
 interface BlogPostPageProps {
   params: {
@@ -85,10 +85,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     : 'Surinder Singh';
 
   return (
-    <article className="w-full font-mono py-4 max-w-4xl mx-auto space-y-8">
-      <FadeIn staggerChildren={0.1}>
+    <article className="w-full font-mono py-2 max-w-4xl mx-auto">
+      <FadeIn staggerChildren={0.08} className="flex flex-col space-y-5">
         {/* Navigation & Breadcrumb */}
-        <FadeInItem className="space-y-4">
+        <FadeInItem>
           <div className="flex items-center justify-between">
             <Link
               href="/blog"
@@ -106,67 +106,50 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </FadeInItem>
 
         {/* Article Header */}
-        <FadeInItem className="space-y-4 pt-2">
-          {/* Metadata Row */}
-          <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-            <span className="inline-flex items-center gap-1.5 text-primary font-bold">
-              <Calendar className="h-3.5 w-3.5" />
-              {formattedDate}
-            </span>
-            <span>•</span>
-            <span className="inline-flex items-center gap-1.5">
-              <Clock className="h-3.5 w-3.5 text-primary" />
-              {readingTime} min read
-            </span>
-          </div>
-
+        <FadeInItem className="space-y-3">
           {/* Title */}
           <h1 className="font-sans text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-foreground leading-tight">
             {post.title}
           </h1>
 
-          {/* Tags */}
-          <div className="flex flex-wrap gap-1.5 pt-1">
-            {post.tags.map((tag) => (
-              <span
-                key={tag}
-                className="inline-flex items-center gap-1 rounded-md bg-tertiary-2 border border-border/60 px-2.5 py-1 text-xs text-muted-foreground"
-              >
-                <Tag className="h-3 w-3 text-primary" />
-                {tag}
+          {/* Author, Date & Reading Time Meta Bar */}
+          <div className="flex items-center gap-3 p-3 rounded-xl border border-border/60 bg-card/60 backdrop-blur-xs">
+            <div className="flex h-8 w-8 rounded-full bg-primary/15 text-primary items-center justify-center text-xs font-bold border border-primary/20 shrink-0">
+              {authorName[0]}
+            </div>
+            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs">
+              <span className="font-sans font-bold text-foreground">
+                {authorName}
               </span>
-            ))}
-          </div>
-
-          {/* Author Card & Engagement Bar */}
-          <div className="flex items-center justify-between p-4 rounded-xl border border-border/70 bg-card/60 backdrop-blur-xs">
-            <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 rounded-full bg-primary/15 text-primary items-center justify-center text-xs font-bold border border-primary/20">
-                {authorName[0]}
-              </div>
-              <div>
-                <p className="font-sans text-xs font-bold text-foreground">
-                  {authorName}
-                </p>
-                <p className="text-[11px] text-muted-foreground">
-                  Senior Software Engineer & Frontend Architect
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <LikeButton
-                postId={post.id}
-                initialLikes={post.likes_count || 0}
-              />
+              <span className="text-muted-foreground/60">•</span>
+              <span className="text-muted-foreground">{formattedDate}</span>
+              <span className="text-muted-foreground/60">•</span>
+              <span className="text-muted-foreground">
+                {readingTime} min read
+              </span>
             </div>
           </div>
+
+          {/* Tags */}
+          {post.tags && post.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 pt-0.5">
+              {post.tags.map((tag) => (
+                <span
+                  key={tag}
+                  className="inline-flex items-center gap-1 rounded-md bg-tertiary-2 border border-border/60 px-2.5 py-0.5 text-xs text-muted-foreground"
+                >
+                  <Tag className="h-3 w-3 text-primary" />
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
         </FadeInItem>
 
         {/* Cover Image */}
         {post.cover_image_url && (
           <FadeInItem>
-            <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-border bg-tertiary-2 shadow-md">
+            <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-border bg-tertiary-2 shadow-xs">
               <Image
                 src={post.cover_image_url}
                 alt={post.title}
@@ -179,29 +162,31 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </FadeInItem>
         )}
 
-        {/* Main Article Body */}
-        <FadeInItem className="pt-4">
-          <div className="rounded-xl border border-border/70 bg-card p-6 md:p-10 shadow-xs">
-            <ArticleContent content={post.content} />
-          </div>
-        </FadeInItem>
-
-        {/* Article Footer Action Bar */}
+        {/* Main Article Body & Integrated Action Footer */}
         <FadeInItem>
-          <div className="flex items-center justify-between p-4 rounded-xl border border-border/70 bg-card/60">
-            <div className="flex items-center gap-2">
-              <LikeButton
-                postId={post.id}
-                initialLikes={post.likes_count || 0}
-              />
-            </div>
+          <div className="rounded-2xl border border-border/70 bg-card p-6 md:p-8 shadow-xs space-y-8">
+            <ArticleContent content={post.content} />
 
-            <Link
-              href="/blog"
-              className="text-xs text-muted-foreground hover:text-primary transition-colors"
-            >
-              Explore more articles →
-            </Link>
+            {/* Bottom Divider & Engagement Bar */}
+            <div className="pt-5 border-t border-border/60 flex items-center justify-between gap-4 flex-wrap">
+              <div className="flex items-center gap-3">
+                <LikeButton
+                  postId={post.id}
+                  initialLikes={post.likes_count || 0}
+                />
+                <span className="text-xs text-muted-foreground font-mono hidden sm:inline">
+                  Enjoyed this writeup? Leave a like!
+                </span>
+              </div>
+
+              <Link
+                href="/blog"
+                className="text-xs text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 font-mono font-medium"
+              >
+                <span>Explore more articles</span>
+                <span>→</span>
+              </Link>
+            </div>
           </div>
         </FadeInItem>
 

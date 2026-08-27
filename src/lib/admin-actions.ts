@@ -697,6 +697,7 @@ export async function deleteBlogPostAction(id: string): Promise<ActionResult> {
 export async function addCommentAction(data: {
   post_id: string;
   content: string;
+  slug?: string;
 }): Promise<ActionResult & { comment?: Comment }> {
   const supabase = createClient();
   const {
@@ -729,6 +730,9 @@ export async function addCommentAction(data: {
 
   if (error) return { success: false, error: error.message };
 
+  if (data.slug) {
+    revalidatePath(`/blog/${data.slug}`);
+  }
   revalidatePath(`/blog`);
   return {
     success: true,
@@ -772,4 +776,154 @@ export async function deleteCommentAction(
   }
   revalidatePath('/blog');
   return { success: true, message: 'Comment deleted successfully.' };
+}
+
+// ============================================================================
+// 11. Likes & Reactions Actions
+// ============================================================================
+
+export async function togglePostLikeAction(postId: string): Promise<{
+  success: boolean;
+  liked?: boolean;
+  likes_count?: number;
+  error?: string;
+}> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { success: false, error: 'Please sign in to like this post.' };
+  }
+
+  // Check if like exists
+  const { data: existing } = await supabase
+    .from('post_likes')
+    .select('id')
+    .eq('post_id', postId)
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  let liked = false;
+  if (existing) {
+    // Delete like
+    await supabase.from('post_likes').delete().eq('id', existing.id);
+    liked = false;
+  } else {
+    // Insert like
+    await supabase.from('post_likes').insert({
+      post_id: postId,
+      user_id: user.id,
+    });
+    liked = true;
+  }
+
+  // Count total likes
+  const { count } = await supabase
+    .from('post_likes')
+    .select('*', { count: 'exact', head: true })
+    .eq('post_id', postId);
+
+  revalidatePath('/blog');
+  return {
+    success: true,
+    liked,
+    likes_count: count ?? 0,
+  };
+}
+
+export async function getPostLikeStatusAction(postId: string): Promise<{
+  liked: boolean;
+  likes_count: number;
+}> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { count } = await supabase
+    .from('post_likes')
+    .select('*', { count: 'exact', head: true })
+    .eq('post_id', postId);
+
+  let liked = false;
+  if (user) {
+    const { data: existing } = await supabase
+      .from('post_likes')
+      .select('id')
+      .eq('post_id', postId)
+      .eq('user_id', user.id)
+      .maybeSingle();
+    liked = !!existing;
+  }
+
+  return {
+    liked,
+    likes_count: count ?? 0,
+  };
+}
+
+export async function toggleCommentReactionAction(
+  commentId: string,
+  type: 'like' | 'dislike'
+): Promise<{
+  success: boolean;
+  userReaction?: 'like' | 'dislike' | null;
+  likesCount?: number;
+  error?: string;
+}> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { success: false, error: 'Please sign in to react.' };
+  }
+
+  const { data: existing } = await supabase
+    .from('comment_reactions')
+    .select('id, type')
+    .eq('comment_id', commentId)
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  let userReaction: 'like' | 'dislike' | null = type;
+
+  if (existing) {
+    if (existing.type === type) {
+      // Toggle off
+      await supabase.from('comment_reactions').delete().eq('id', existing.id);
+      userReaction = null;
+    } else {
+      // Switch type
+      await supabase
+        .from('comment_reactions')
+        .update({ type })
+        .eq('id', existing.id);
+      userReaction = type;
+    }
+  } else {
+    // Insert new reaction
+    await supabase.from('comment_reactions').insert({
+      comment_id: commentId,
+      user_id: user.id,
+      type,
+    });
+    userReaction = type;
+  }
+
+  // Count total likes
+  const { count: likesCount } = await supabase
+    .from('comment_reactions')
+    .select('*', { count: 'exact', head: true })
+    .eq('comment_id', commentId)
+    .eq('type', 'like');
+
+  return {
+    success: true,
+    userReaction,
+    likesCount: likesCount ?? 0,
+  };
 }

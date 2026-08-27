@@ -2,9 +2,11 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Comment, Profile } from '@/types/database';
 import { addCommentAction, deleteCommentAction } from '@/lib/admin-actions';
 import { useClientAuth } from '@/hooks/use-client-auth';
+import { blogApi } from '@/services/blogApi';
 import {
   MessageSquare,
   Send,
@@ -34,6 +36,7 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
   currentUser: initialUser,
   currentProfile: initialProfile,
 }) => {
+  const router = useRouter();
   const {
     user: clientUser,
     profile: clientProfile,
@@ -55,27 +58,47 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
     Record<string, { type: 'like' | 'dislike' | null; count: number }>
   >({});
 
-  const handleToggleReaction = (
+  const handleToggleReaction = async (
     commentId: string,
     type: 'like' | 'dislike'
   ) => {
-    setReactions((prev) => {
-      const current = prev[commentId] || { type: null, count: 0 };
-      if (current.type === type) {
-        // Toggle off
-        return {
+    if (!effectiveUser) {
+      router.push(
+        `/sign-in?redirect=${encodeURIComponent(`/blog/${postSlug}`)}`
+      );
+      return;
+    }
+
+    const current = reactions[commentId] || { type: null, count: 0 };
+    const isRemoving = current.type === type;
+    const nextType = isRemoving ? null : type;
+    const nextCount = isRemoving
+      ? Math.max(0, current.count - 1)
+      : current.type === 'like'
+        ? current.count
+        : current.count + 1;
+
+    // Optimistic UI update
+    setReactions((prev) => ({
+      ...prev,
+      [commentId]: { type: nextType, count: nextCount },
+    }));
+
+    try {
+      const res = await blogApi.toggleCommentReaction(commentId, type);
+      if (res.success && res.userReaction !== undefined) {
+        setReactions((prev) => ({
           ...prev,
-          [commentId]: { type: null, count: Math.max(0, current.count - 1) },
-        };
+          [commentId]: {
+            type: res.userReaction ?? null,
+            count: res.likesCount ?? 0,
+          },
+        }));
       }
-      return {
-        ...prev,
-        [commentId]: {
-          type,
-          count: current.type ? current.count : current.count + 1,
-        },
-      };
-    });
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to persist comment reaction:', err);
+    }
   };
 
   const handleAddComment = async (e: React.FormEvent) => {
@@ -88,6 +111,7 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
 
     const res = await addCommentAction({
       post_id: postId,
+      slug: postSlug,
       content: content.trim(),
     });
 
