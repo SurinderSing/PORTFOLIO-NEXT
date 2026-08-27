@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import FormErrorMsg from '@/components/common/form-error-msg';
-import { createClient } from '@/utils/supabase/client';
+import { authApi } from '@/services/authApi';
 
 const formSchema = z
   .object({
@@ -27,7 +27,6 @@ const formSchema = z
 type FormValues = z.infer<typeof formSchema>;
 
 const SignUpForm: React.FC = () => {
-  const supabase = createClient();
   const [loading, setLoading] = useState(false);
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -57,18 +56,13 @@ const SignUpForm: React.FC = () => {
     setErrorMsg(null);
     setSuccessMsg(null);
 
-    const { error } = await supabase.auth.signUp({
+    const { error } = await authApi.signUp({
       email: data.email,
       password: data.password,
+      username: data.username,
+      firstName: data.firstName,
+      lastName: data.lastName,
       phone: data.phone,
-      options: {
-        data: {
-          username: data.username,
-          firstName: data.firstName,
-          lastName: data.lastName,
-        },
-        emailRedirectTo: `${window.location.origin}/api/auth/confirm`,
-      },
     });
 
     if (error) {

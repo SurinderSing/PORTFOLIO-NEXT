@@ -40,11 +40,13 @@ Rules and conventions guiding AI agent pair programming:
 - **Home Portal** (`/`) — Hero section, dynamic "What I do!" cards.
 - **Resume Page** (`/resume`) — Professional timeline cards & categorized skills matrix.
 - **Portfolio Showcase** (`/work`) — Interactive project cards with JSON-LD structured data.
+- **Engineering Blog** (`/blog` & `/blog/[slug]`) — Technical insights, tag filters, and interactive comments.
 - **Contact Terminal** (`/contact`) — Contact cards & Formspree submission engine.
 
 ### 2. Admin Control Center (`src/app/(admin)/admin/`)
 - **Dashboard Overview** (`/admin`) — Sync metrics & status indicators.
 - **Site Settings** (`/admin/site-settings`) — Global texts, headings, owner metadata, resume PDF.
+- **Blog Posts Manager** (`/admin/blogs`) — CRUD technical articles with Markdown editor, tags, and status.
 - **Contacts Management** (`/admin/contacts`) — Phone, email, location CRUD with HTML5 Drag & Drop reordering.
 - **Social Links** (`/admin/social-links`) — Social media platforms CRUD with Drag & Drop reordering.
 - **About Cards** (`/admin/about-cards`) — Homepage expertise cards CRUD with Drag & Drop reordering.

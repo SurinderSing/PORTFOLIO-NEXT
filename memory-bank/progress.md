@@ -20,10 +20,21 @@
 - [x] Navigation Performance Optimization & Route Transition Polish
 - [x] Complete Portfolio UI/UX Redesign Aligned with Figma Specifications
 - [x] Custom Cursor, In-App Confirmation Modals, Dynamic HTML Heading & Experience Achievements
+- [x] Phase 15: Dynamic Blog, REST API Layer, Interactive Comments Engine & Admin Blog Manager
 
 ---
 
 ## Detailed Task Checklist
+
+### Phase 15: Dynamic Blog, REST API Layer, Interactive Comments Engine & Admin Blog Manager (100% Completed)
+- [x] Build dedicated REST API endpoints (`/api/blog/like`, `/api/blog/reaction`) with server-side auth validation.
+- [x] Create centralized client API service (`src/services/blogApi.ts`) with in-flight request deduplication and caching.
+- [x] Decouple UI components (`LikeButton`, `CommentsSection`) from inline database queries into clean service calls.
+- [x] Optimize `useClientAuth` hook to eliminate duplicate session and profile queries.
+- [x] Create public blog feed (`/blog`) with search, tag filtering, reading time estimates, and engagement stats.
+- [x] Create article reader (`/blog/[slug]`) with normalized markdown, code copying, bullet lists, and cover images.
+- [x] Create admin blog management dashboard (`/admin/blogs`) with interactive editor and live preview.
+- [x] Run `npm run lint` (0 warnings/errors) and `npm run build` (28/28 routes compiled).
 
 ### Phase 12: Custom Cursor, In-App Modals, Dynamic HTML Heading & Experience Achievements (100% Completed)
 - [x] Build reusable in-app delete confirmation modal (`AdminDeleteModal`) with monospace styling and loading indicators.
@@ -166,6 +177,16 @@
 - [x] Create native Obsidian Canvas board: `PORTFOLIO_GRAPH.canvas` for visual exploration.
 - [x] Interlink all existing markdown documentation across `memory-bank/*.md`, `docs/*.md`, and `README.md`.
 - [x] Verify production build and compilation with `npm run build`.
+
+### Phase 15: Dynamic Blog, Interactive Comments Engine & Admin Blog Manager (100% Completed)
+- [x] Implement cookieless queries (`getBlogPosts`, `getBlogPostBySlug`, `getCommentsByPostId`) and rich seed fallback articles in `src/lib/supabase-queries.ts`.
+- [x] Implement Server Actions (`createBlogPostAction`, `updateBlogPostAction`, `deleteBlogPostAction`, `addCommentAction`, `deleteCommentAction`) in `src/lib/admin-actions.ts`.
+- [x] Build public blog feed (`/blog`) with live search, tag filtering pills, featured hero card, and article card grid (`BlogCard`, `BlogFeedClient`).
+- [x] Build article reading view (`/blog/[slug]`) with markdown content renderer (`ArticleContent`), like button, metadata, and author card.
+- [x] Build interactive comments engine (`CommentsSection`) with unauthenticated sign-in prompt, live commenting, deletion, and upvote/downvote reactions.
+- [x] Build admin blogs management dashboard (`/admin/blogs`) with table, status badges (`DRAFT`, `PUBLISHED`, `ARCHIVED`), Markdown editor form (`BlogForm`), and delete modal.
+- [x] Integrate "Blog" into `TopNavbar`, "Blog Posts" into `AdminSidebar`, and `/blog` into `sitemap.ts`.
+- [x] Full build verification with `npm run build`.
 
 ---
 

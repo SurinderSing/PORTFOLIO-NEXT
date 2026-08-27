@@ -131,7 +131,9 @@ export default function LivePreview({
           <iframe
             src={previewUrl}
             title={`Live preview of ${title}`}
-            sandbox="allow-scripts allow-same-origin allow-forms"
+            sandbox="allow-scripts"
+            tabIndex={-1}
+            aria-hidden="true"
             loading="lazy"
             onLoad={handleIframeLoad}
             onError={handleIframeError}

@@ -663,3 +663,153 @@ create policy "Admins can delete media" on storage.objects
     )
   );
 
+-- ==============================================================================
+-- 12. Blog Posts, Stories, Comments, and Reactions Tables
+-- ==============================================================================
+
+-- Blog Posts Table
+create table if not exists public.blog_posts (
+  id uuid default gen_random_uuid() primary key,
+  author_id uuid references public.profiles(id) on delete cascade not null,
+  title text not null,
+  slug text not null unique,
+  content text not null,
+  excerpt text,
+  cover_image_url text,
+  tags text[] default '{}',
+  status text not null default 'DRAFT' check (status in ('DRAFT', 'PUBLISHED', 'ARCHIVED')),
+  published_at timestamp with time zone,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+alter table public.blog_posts enable row level security;
+
+drop policy if exists "Published blog posts are viewable by everyone." on public.blog_posts;
+create policy "Published blog posts are viewable by everyone." on public.blog_posts
+  for select using (
+    status = 'PUBLISHED' or
+    auth.uid() = author_id or
+    exists (select 1 from public.profiles where profiles.id = auth.uid() and profiles.role = 'ADMIN')
+  );
+
+drop policy if exists "Authenticated users can create blog posts." on public.blog_posts;
+create policy "Authenticated users can create blog posts." on public.blog_posts
+  for insert with check (auth.uid() = author_id);
+
+drop policy if exists "Authors or admins can update blog posts." on public.blog_posts;
+create policy "Authors or admins can update blog posts." on public.blog_posts
+  for update using (
+    auth.uid() = author_id or
+    exists (select 1 from public.profiles where profiles.id = auth.uid() and profiles.role = 'ADMIN')
+  );
+
+drop policy if exists "Authors or admins can delete blog posts." on public.blog_posts;
+create policy "Authors or admins can delete blog posts." on public.blog_posts
+  for delete using (
+    auth.uid() = author_id or
+    exists (select 1 from public.profiles where profiles.id = auth.uid() and profiles.role = 'ADMIN')
+  );
+
+-- Stories Table
+create table if not exists public.stories (
+  id uuid default gen_random_uuid() primary key,
+  author_id uuid references public.profiles(id) on delete cascade not null,
+  title text not null,
+  content text not null,
+  cover_image_url text,
+  status text not null default 'PUBLISHED' check (status in ('DRAFT', 'PUBLISHED', 'ARCHIVED')),
+  published_at timestamp with time zone,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+alter table public.stories enable row level security;
+
+-- Comments Table
+create table if not exists public.comments (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  post_id uuid references public.blog_posts(id) on delete cascade,
+  story_id uuid references public.stories(id) on delete cascade,
+  content text not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+alter table public.comments enable row level security;
+
+drop policy if exists "Comments are viewable by everyone." on public.comments;
+create policy "Comments are viewable by everyone." on public.comments
+  for select using (true);
+
+drop policy if exists "Authenticated users can create comments." on public.comments;
+create policy "Authenticated users can create comments." on public.comments
+  for insert with check (auth.uid() = user_id);
+
+drop policy if exists "Authors or admins can update comments." on public.comments;
+create policy "Authors or admins can update comments." on public.comments
+  for update using (
+    auth.uid() = user_id or
+    exists (select 1 from public.profiles where profiles.id = auth.uid() and profiles.role = 'ADMIN')
+  );
+
+drop policy if exists "Authors or admins can delete comments." on public.comments;
+create policy "Authors or admins can delete comments." on public.comments
+  for delete using (
+    auth.uid() = user_id or
+    exists (select 1 from public.profiles where profiles.id = auth.uid() and profiles.role = 'ADMIN')
+  );
+
+-- Post Likes Table
+create table if not exists public.post_likes (
+  id uuid default gen_random_uuid() primary key,
+  post_id uuid references public.blog_posts(id) on delete cascade not null,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  unique(post_id, user_id)
+);
+
+alter table public.post_likes enable row level security;
+
+drop policy if exists "Post likes are viewable by everyone." on public.post_likes;
+create policy "Post likes are viewable by everyone." on public.post_likes
+  for select using (true);
+
+drop policy if exists "Authenticated users can create their own likes." on public.post_likes;
+create policy "Authenticated users can create their own likes." on public.post_likes
+  for insert with check (auth.uid() = user_id);
+
+drop policy if exists "Users can delete their own likes." on public.post_likes;
+create policy "Users can delete their own likes." on public.post_likes
+  for delete using (auth.uid() = user_id);
+
+-- Comment Reactions Table
+create table if not exists public.comment_reactions (
+  id uuid default gen_random_uuid() primary key,
+  comment_id uuid references public.comments(id) on delete cascade not null,
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  type text check (type in ('like', 'dislike')) not null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  unique(comment_id, user_id)
+);
+
+alter table public.comment_reactions enable row level security;
+
+drop policy if exists "Comment reactions viewable by everyone." on public.comment_reactions;
+create policy "Comment reactions viewable by everyone." on public.comment_reactions
+  for select using (true);
+
+drop policy if exists "Users can insert their own comment reactions." on public.comment_reactions;
+create policy "Users can insert their own comment reactions." on public.comment_reactions
+  for insert with check (auth.uid() = user_id);
+
+drop policy if exists "Users can update their own comment reactions." on public.comment_reactions;
+create policy "Users can update their own comment reactions." on public.comment_reactions
+  for update using (auth.uid() = user_id);
+
+drop policy if exists "Users can delete their own comment reactions." on public.comment_reactions;
+create policy "Users can delete their own comment reactions." on public.comment_reactions
+  for delete using (auth.uid() = user_id);
+
+

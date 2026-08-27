@@ -7,6 +7,9 @@ import {
   SkillCategoryWithSkills,
   Experience,
   Project,
+  BlogPost,
+  Comment,
+  Profile,
 } from '@/types/database';
 
 // ============================================================================
@@ -584,4 +587,369 @@ export async function getProjects(): Promise<Project[]> {
     console.error('getProjects query error:', err);
   }
   return defaultProjects;
+}
+
+// ============================================================================
+// Default Blog Posts & Comments Fallback Datasets
+// ============================================================================
+
+export const defaultAuthor: Profile = {
+  id: '00000000-0000-0000-0000-000000000001',
+  first_name: 'Surinder',
+  last_name: 'Singh',
+  username: 'surindersingh',
+  phone: '+91 6386202678',
+  bio: 'Senior Software Engineer & Frontend Architect',
+  role: 'ADMIN' as const,
+  status: 'ACTIVE' as const,
+  profile_picture: null,
+  created_at: '2026-01-01T00:00:00.000Z',
+  updated_at: '2026-01-01T00:00:00.000Z',
+};
+
+export const defaultBlogPosts: BlogPost[] = [
+  {
+    id: 'b1111111-1111-1111-1111-111111111111',
+    author_id: defaultAuthor.id,
+    title: 'Architecting Scalable Micro-Frontends with Module Federation',
+    slug: 'architecting-scalable-micro-frontends',
+    excerpt:
+      'How we decoupled a monolithic React dashboard into independently deployable micro-frontends serving 100K+ daily active users while reducing bundle sizes by 30%.',
+    cover_image_url:
+      'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=1200&auto=format&fit=crop',
+    tags: ['Micro-Frontends', 'Webpack', 'Architecture', 'React'],
+    status: 'PUBLISHED',
+    published_at: '2026-08-15T10:00:00.000Z',
+    created_at: '2026-08-15T09:00:00.000Z',
+    updated_at: '2026-08-15T10:00:00.000Z',
+    author: defaultAuthor,
+    likes_count: 0,
+    comments_count: 0,
+    content: `## The Monolithic Challenge
+
+As modern frontend engineering teams scale, monolithic web applications often face severe architectural bottlenecks:
+- Bloated JavaScript bundles exceeding 2MB initial parse time.
+- Slow CI/CD build queues where a single change re-tests the whole codebase.
+- Inter-team deployment collisions and code ownership ambiguity.
+
+To solve this for high-scale enterprise applications handling **100K+ Daily Active Users (DAU)**, we implemented a decoupled **Micro-Frontend Architecture** powered by Webpack 5 Module Federation.
+
+---
+
+## Architectural Strategy: Host & Remotes
+
+Instead of a single monolithic deployment, we broke the application into dedicated, isolated domains:
+1. **Shell Container (Host):** Manages global authentication, layout shell, routing coordinator, and the shared theme provider.
+2. **Analytics Remote:** Independently versioned micro-app rendering dynamic chart engines and telemetry streams.
+3. **Billing & Subscriptions Remote:** Isolated payment workflows with specialized security sandboxing.
+
+\`\`\`javascript
+// Host Module Federation Config
+new ModuleFederationPlugin({
+  name: 'app_shell',
+  remotes: {
+    analyticsApp: 'analyticsApp@https://cdn.example.com/analytics/remoteEntry.js',
+    billingApp: 'billingApp@https://cdn.example.com/billing/remoteEntry.js',
+  },
+  shared: {
+    react: { singleton: true, requiredVersion: '^18.2.0' },
+    'react-dom': { singleton: true, requiredVersion: '^18.2.0' },
+  },
+});
+\`\`\`
+
+---
+
+## Key Performance Results
+
+By decoupling dependencies and executing independent chunk loading:
+- **30% Initial Bundle Reduction:** Only the host container code is fetched initially; remote domains stream on demand.
+- **Independent CI/CD Pipelines:** Domain teams deploy updates in under 2 minutes without re-bundling other modules.
+- **95+ Lighthouse Score:** Zero blocking runtime scripts on critical first-paint rendering.`,
+  },
+  {
+    id: 'b2222222-2222-2222-2222-222222222222',
+    author_id: defaultAuthor.id,
+    title: 'Mastering Next.js 14 App Router & React Server Components',
+    slug: 'mastering-nextjs-14-rsc-architecture',
+    excerpt:
+      'A comprehensive guide to leveraging Server Components, Server Actions, cookieless static prerendering, and Suspense streaming for sub-second page loads.',
+    cover_image_url:
+      'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop',
+    tags: ['Next.js', 'React', 'RSC', 'Performance'],
+    status: 'PUBLISHED',
+    published_at: '2026-08-20T14:30:00.000Z',
+    created_at: '2026-08-20T14:00:00.000Z',
+    updated_at: '2026-08-20T14:30:00.000Z',
+    author: defaultAuthor,
+    likes_count: 0,
+    comments_count: 0,
+    content: `## The Paradigm Shift of Server Components
+
+React Server Components (RSC) fundamentally redefine the client-server boundary by executing component logic exclusively on the server at request or build time, streaming zero JavaScript to the browser for static UI elements.
+
+---
+
+## Three Fundamental Rules for RSC Success
+
+### 1. Separate Read Operations from Interactive Mutations
+Use cookieless anonymous queries for all public, read-only content to allow Next.js to prerender static HTML (SSG) and apply Incremental Static Regeneration (ISR):
+
+\`\`\`typescript
+// Server Component (RSC)
+import { getBlogPosts } from '@/lib/supabase-queries';
+
+export default async function BlogFeedPage() {
+  const posts = await getBlogPosts();
+  return <BlogGrid posts={posts} />;
+}
+\`\`\`
+
+### 2. Isolate Interactivity to Leaf Components
+Keep your main page wrappers as Server Components, and push \`'use client'\` down to specific interactive components (like search inputs, like buttons, or comment forms).
+
+### 3. Leverage Server Actions for Mutations
+Server Actions provide type-safe, endpoint-free mutation workflows with built-in cache revalidation:
+
+\`\`\`typescript
+'use server';
+
+export async function addCommentAction(postId: string, content: string) {
+  const supabase = createClient();
+  const { data, error } = await supabase.from('comments').insert({ post_id: postId, content });
+  revalidatePath('/blog/[slug]');
+  return { success: !error };
+}
+\`\`\`
+
+---
+
+## Conclusion
+
+Combining React Server Components with optimized database query layers yields the best of both worlds: ultra-fast initial HTML rendering and rich client-side interactivity when needed.`,
+  },
+  {
+    id: 'b3333333-3333-3333-3333-333333333333',
+    author_id: defaultAuthor.id,
+    title: 'Building Resilient AI Workflows & Token Economy in Web Platforms',
+    slug: 'building-resilient-ai-workflows-token-economy',
+    excerpt:
+      'Practical patterns for integrating Large Language Models into modern web platforms with deterministic graph traversal, context pruning, and token optimization.',
+    cover_image_url:
+      'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1200&auto=format&fit=crop',
+    tags: ['AI', 'LLM', 'System Design', 'Frontend'],
+    status: 'PUBLISHED',
+    published_at: '2026-08-25T09:15:00.000Z',
+    created_at: '2026-08-25T08:00:00.000Z',
+    updated_at: '2026-08-25T09:15:00.000Z',
+    author: defaultAuthor,
+    likes_count: 0,
+    comments_count: 0,
+    content: `## The Token Economy in Modern Web Engineering
+
+Integrating generative AI models into modern web platforms requires careful attention to **token consumption**, latency, and prompt reliability.
+
+---
+
+## 1. Deterministic Knowledge Graphs vs Raw Prompting
+
+Instead of passing thousands of lines of raw repository code into a prompt, architecting knowledge into structured, linked nodes (like Obsidian Maps of Content or Memory Banks) allows AI agents to traverse directly to relevant slices of context:
+
+- **Reduces token footprint by 70–90%**
+- **Eliminates hallucinated API interfaces**
+- **Accelerates model inference latency**
+
+---
+
+## 2. Streaming Responses with UI Fallbacks
+
+Always stream token output using Server-Sent Events (SSE) or WebSockets with fallback buffering to guarantee responsive user feedback even during high-load API queueing.
+
+\`\`\`typescript
+const response = await fetch('/api/ai/stream', { method: 'POST' });
+const reader = response.body?.getReader();
+// Stream chunks dynamically into UI state
+\`\`\`
+
+---
+
+## Key Takeaway
+
+Treating AI context as a structured, cacheable graph transforms slow, expensive prompts into high-speed, predictable developer experiences.`,
+  },
+];
+
+export const defaultComments: Record<string, Comment[]> = {
+  'b1111111-1111-1111-1111-111111111111': [
+    {
+      id: 'c1111111-1111-1111-1111-111111111111',
+      user_id: '00000000-0000-0000-0000-000000000002',
+      post_id: 'b1111111-1111-1111-1111-111111111111',
+      story_id: null,
+      content:
+        'Great breakdown of Webpack Module Federation! How did you handle shared CSS tokens between the host and remote containers?',
+      created_at: '2026-08-16T11:20:00.000Z',
+      updated_at: '2026-08-16T11:20:00.000Z',
+      likes_count: 6,
+      user: {
+        id: '00000000-0000-0000-0000-000000000002',
+        first_name: 'Alex',
+        last_name: 'Chen',
+        username: 'alexchen',
+        role: 'USER',
+        profile_picture: null,
+      },
+    },
+    {
+      id: 'c1111111-1111-1111-1111-111111111112',
+      user_id: defaultAuthor.id,
+      post_id: 'b1111111-1111-1111-1111-111111111111',
+      story_id: null,
+      content:
+        'Thanks Alex! We exposed a shared design token package via npm and injected CSS custom properties at the root layout of the Host shell, so remotes inherit theme variables automatically.',
+      created_at: '2026-08-16T14:45:00.000Z',
+      updated_at: '2026-08-16T14:45:00.000Z',
+      likes_count: 12,
+      user: defaultAuthor,
+    },
+  ],
+  'b2222222-2222-2222-2222-222222222222': [
+    {
+      id: 'c2222222-2222-2222-2222-222222222221',
+      user_id: '00000000-0000-0000-0000-000000000003',
+      post_id: 'b2222222-2222-2222-2222-222222222222',
+      story_id: null,
+      content:
+        'The tip about cookieless client queries for static prerendering is super critical. Solved an ISR caching issue on our production deployment.',
+      created_at: '2026-08-21T09:00:00.000Z',
+      updated_at: '2026-08-21T09:00:00.000Z',
+      likes_count: 8,
+      user: {
+        id: '00000000-0000-0000-0000-000000000003',
+        first_name: 'Priya',
+        last_name: 'Sharma',
+        username: 'priyasharma',
+        role: 'USER',
+        profile_picture: null,
+      },
+    },
+  ],
+};
+
+// ============================================================================
+// Blog & Comments Queries
+// ============================================================================
+
+export async function getBlogPosts(options?: {
+  status?: string;
+  tag?: string;
+}): Promise<BlogPost[]> {
+  try {
+    const supabase = createAnonClient();
+    let query = supabase
+      .from('blog_posts')
+      .select(
+        '*, author:profiles(id, first_name, last_name, username, role, profile_picture), post_likes(id), comments(id)'
+      )
+      .order('published_at', { ascending: false, nullsFirst: false });
+
+    if (options?.status) {
+      query = query.eq('status', options.status);
+    } else {
+      query = query.eq('status', 'PUBLISHED');
+    }
+
+    if (options?.tag) {
+      query = query.contains('tags', [options.tag]);
+    }
+
+    const { data, error } = await query;
+    if (!error && data && data.length > 0) {
+      return data.map((post: any) => ({
+        ...post,
+        likes_count: Array.isArray(post.post_likes)
+          ? post.post_likes.length
+          : 0,
+        comments_count: Array.isArray(post.comments) ? post.comments.length : 0,
+      })) as BlogPost[];
+    }
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('getBlogPosts query error:', err);
+  }
+
+  // Fallback
+  let filtered = defaultBlogPosts;
+  if (options?.status) {
+    filtered = filtered.filter((p) => p.status === options.status);
+  }
+  if (options?.tag) {
+    filtered = filtered.filter((p) => p.tags.includes(options.tag!));
+  }
+  return filtered;
+}
+
+export async function getBlogPostBySlug(
+  slug: string
+): Promise<BlogPost | null> {
+  try {
+    const supabase = createAnonClient();
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select(
+        '*, author:profiles(id, first_name, last_name, username, role, profile_picture), post_likes(id), comments(id)'
+      )
+      .eq('slug', slug)
+      .single();
+
+    if (!error && data) {
+      return {
+        ...data,
+        likes_count: Array.isArray((data as any).post_likes)
+          ? (data as any).post_likes.length
+          : 0,
+        comments_count: Array.isArray((data as any).comments)
+          ? (data as any).comments.length
+          : 0,
+      } as BlogPost;
+    }
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('getBlogPostBySlug query error:', err);
+  }
+
+  // Fallback
+  const found = defaultBlogPosts.find((p) => p.slug === slug);
+  return found || null;
+}
+
+export async function getCommentsByPostId(postId: string): Promise<Comment[]> {
+  try {
+    const supabase = createAnonClient();
+    const { data, error } = await supabase
+      .from('comments')
+      .select(
+        '*, user:profiles(id, first_name, last_name, username, role, profile_picture), comment_reactions(type)'
+      )
+      .eq('post_id', postId)
+      .order('created_at', { ascending: true });
+
+    if (!error && data) {
+      return data.map((comment: any) => {
+        const reactions = comment.comment_reactions || [];
+        const likesCount = reactions.filter(
+          (r: any) => r.type === 'like'
+        ).length;
+        return {
+          ...comment,
+          likes_count: likesCount,
+        };
+      }) as Comment[];
+    }
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('getCommentsByPostId query error:', err);
+  }
+
+  return defaultComments[postId] || [];
 }

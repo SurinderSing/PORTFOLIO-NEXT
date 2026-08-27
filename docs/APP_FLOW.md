@@ -9,6 +9,8 @@ The application utilizes Next.js 14 App Router organized into separated route gr
 ```
 src/app/
 ├── (website)/               # Publicly viewable portfolio pages (SSR / Static Prerendered)
+│   ├── blog/                # Engineering articles feed with search & tags
+│   │   └── [slug]/          # Single article reading view with interactive comments
 │   ├── contact/             # Terminal contact form + System Status & Network Nodes
 │   ├── resume/              # Profile summary, categorized skills matrix & timelines
 │   ├── work/                # Systems & Architecture project showcase cards
@@ -20,6 +22,7 @@ src/app/
 │   └── admin/
 │       ├── page.tsx         # Dashboard overview with sync metrics & quick navigation
 │       ├── site-settings/   # Edit global texts, owner info, resume PDF URL
+│       ├── blogs/           # CRUD engineering articles & publication status
 │       ├── contacts/        # CRUD phone, email, and location entries
 │       ├── social-links/    # CRUD LinkedIn, GitHub, Instagram links
 │       ├── about-cards/     # CRUD "What I do!" homepage cards

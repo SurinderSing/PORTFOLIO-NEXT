@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const url = request.nextUrl.searchParams.get('url');
@@ -40,7 +41,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         Accept: 'text/html,application/xhtml+xml',
       },
       signal: controller.signal,
-      cache: 'force-cache',
       next: { revalidate: 86400 }, // Cache response for 24 hours
     });
     clearTimeout(timeout);
