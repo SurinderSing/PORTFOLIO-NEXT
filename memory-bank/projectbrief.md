@@ -13,3 +13,13 @@ The project serves as a dynamic showcase of Surinder's expertise in React, Next.
 ## Project Scope Exclusions
 - **No Unit Tests:** Writing, executing, or configuring unit tests is explicitly out of scope per developer instructions.
 - **No CI/CD Configurations:** Automation pipelines or integration testing check workflows are out of scope.
+
+---
+
+## 🔗 Related Knowledge & System Links
+- Central Hub: [[PORTFOLIO_GRAPH|Knowledge Hub (MOC)]]
+- Product Details: [[memory-bank/productContext|Product Context]]
+- Technical Stack: [[memory-bank/techContext|Tech Context]]
+- System Patterns: [[memory-bank/systemPatterns|System Patterns]]
+- Specifications: [[docs/PRD|PRD]] | [[docs/TRD|TRD]]
+

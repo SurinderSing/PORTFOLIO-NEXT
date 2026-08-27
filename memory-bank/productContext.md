@@ -37,3 +37,13 @@ We want visitors and administrators to experience high performance, clean typogr
 - **Skills & Categories:** CRUD technical categories and skill chips.
 - **Experiences:** CRUD work and education timelines.
 - **Projects:** CRUD portfolio showcase items.
+
+---
+
+## 🔗 Related Knowledge & System Links
+- Central Hub: [[PORTFOLIO_GRAPH|Knowledge Hub (MOC)]]
+- Architecture Patterns: [[memory-bank/systemPatterns|System Patterns]]
+- Routing & Middleware: [[docs/APP_FLOW|App Flow]]
+- Database Models: [[docs/BACKEND_SCHEMA|Backend Schema]]
+- Visual System: [[docs/UI_UX_DESIGN_BRIEF|UI/UX Design Brief]]
+

@@ -45,3 +45,14 @@ export async function updateProjectAction(id: number, data: Partial<Project>): P
 
 ### 3. Styling Token Mappings
 All elements hook styles to classes or CSS variables in `@layer base` (`src/styles/globals.css`). The Tailwind configuration maps standard UI structures (`border-border`, `bg-card`, `bg-background`, `text-primary`, `main-gradient-1`) directly to these variable arrays.
+
+---
+
+## 🔗 Related Knowledge & System Links
+- Central Hub: [[PORTFOLIO_GRAPH|Knowledge Hub (MOC)]]
+- Technical Dependencies: [[memory-bank/techContext|Tech Context]]
+- Technical Specs: [[docs/TRD|TRD]]
+- Flow & Routing: [[docs/APP_FLOW|App Flow]]
+- Database Schema: [[docs/BACKEND_SCHEMA|Backend Schema]]
+- Agent Rules: [[AGENTS|AGENTS.md]]
+

@@ -41,3 +41,12 @@ NEXT_PUBLIC_FORMSPREE_FORM_ID="xrgwgbye"
 - **Production Build:** `npm run build`
 - **Linter Checker:** `npm run lint`
 - **Compiler dry-run watch:** `npm run watch`
+
+---
+
+## 🔗 Related Knowledge & System Links
+- Central Hub: [[PORTFOLIO_GRAPH|Knowledge Hub (MOC)]]
+- System Patterns: [[memory-bank/systemPatterns|System Patterns]]
+- Technical Specifications: [[docs/TRD|TRD]]
+- Active Context: [[memory-bank/activeContext|Active Context]]
+

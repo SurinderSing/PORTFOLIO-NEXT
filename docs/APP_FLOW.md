@@ -101,3 +101,13 @@ sequenceDiagram
     Action-->>Page: Return { success: true, message: 'Saved.' }
     Page-->>Admin: Show success toast notification
 ```
+
+---
+
+## 🔗 Related Specifications & Knowledge Nodes
+- Central Hub: [[PORTFOLIO_GRAPH|Knowledge Hub (MOC)]]
+- Technical Requirements: [[docs/TRD|TRD]]
+- Database Schema: [[docs/BACKEND_SCHEMA|Backend Schema]]
+- System Patterns: [[memory-bank/systemPatterns|System Patterns]]
+- Product Context: [[memory-bank/productContext|Product Context]]
+

@@ -1,0 +1,36 @@
+{
+	"nodes":[
+		{"id":"hub-node","type":"file","file":"PORTFOLIO_GRAPH.md","x":400,"y":-200,"width":360,"height":180,"color":"4"},
+		{"id":"group-memory-bank","type":"group","label":"🧠 Memory Bank (Project Brain)","x":-550,"y":100,"width":650,"height":620,"color":"5"},
+		{"id":"node-pb","type":"file","file":"memory-bank/projectbrief.md","x":-520,"y":160,"width":280,"height":140},
+		{"id":"node-pc","type":"file","file":"memory-bank/productContext.md","x":-210,"y":160,"width":280,"height":140},
+		{"id":"node-sp","type":"file","file":"memory-bank/systemPatterns.md","x":-520,"y":340,"width":280,"height":140},
+		{"id":"node-tc","type":"file","file":"memory-bank/techContext.md","x":-210,"y":340,"width":280,"height":140},
+		{"id":"node-ac","type":"file","file":"memory-bank/activeContext.md","x":-520,"y":520,"width":280,"height":140},
+		{"id":"node-prog","type":"file","file":"memory-bank/progress.md","x":-210,"y":520,"width":280,"height":140},
+		{"id":"group-docs","type":"group","label":"📑 Specifications & Technical Docs","x":200,"y":100,"width":760,"height":620,"color":"3"},
+		{"id":"node-prd","type":"file","file":"docs/PRD.md","x":230,"y":160,"width":320,"height":140},
+		{"id":"node-trd","type":"file","file":"docs/TRD.md","x":600,"y":160,"width":320,"height":140},
+		{"id":"node-appflow","type":"file","file":"docs/APP_FLOW.md","x":230,"y":340,"width":320,"height":140},
+		{"id":"node-schema","type":"file","file":"docs/BACKEND_SCHEMA.md","x":600,"y":340,"width":320,"height":140},
+		{"id":"node-uiux","type":"file","file":"docs/UI_UX_DESIGN_BRIEF.md","x":415,"y":520,"width":330,"height":140},
+		{"id":"group-agents","type":"group","label":"🤖 AI Governance & Rules","x":1050,"y":100,"width":360,"height":440,"color":"2"},
+		{"id":"node-agents","type":"file","file":"AGENTS.md","x":1080,"y":160,"width":300,"height":160},
+		{"id":"node-claude","type":"file","file":"CLAUDE.md","x":1080,"y":350,"width":300,"height":140}
+	],
+	"edges":[
+		{"id":"edge-hub-mb","fromNode":"hub-node","fromSide":"left","toNode":"node-pb","toSide":"top"},
+		{"id":"edge-hub-docs","fromNode":"hub-node","fromSide":"bottom","toNode":"node-prd","toSide":"top"},
+		{"id":"edge-hub-agents","fromNode":"hub-node","fromSide":"right","toNode":"node-agents","toSide":"top"},
+		{"id":"edge-pb-pc","fromNode":"node-pb","fromSide":"right","toNode":"node-pc","toSide":"left"},
+		{"id":"edge-pc-sp","fromNode":"node-pc","fromSide":"bottom","toNode":"node-sp","toSide":"top"},
+		{"id":"edge-sp-tc","fromNode":"node-sp","fromSide":"right","toNode":"node-tc","toSide":"left"},
+		{"id":"edge-tc-ac","fromNode":"node-tc","fromSide":"bottom","toNode":"node-ac","toSide":"top"},
+		{"id":"edge-ac-prog","fromNode":"node-ac","fromSide":"right","toNode":"node-prog","toSide":"left"},
+		{"id":"edge-prd-trd","fromNode":"node-prd","fromSide":"right","toNode":"node-trd","toSide":"left"},
+		{"id":"edge-trd-appflow","fromNode":"node-trd","fromSide":"bottom","toNode":"node-appflow","toSide":"top"},
+		{"id":"edge-appflow-schema","fromNode":"node-appflow","fromSide":"right","toNode":"node-schema","toSide":"left"},
+		{"id":"edge-schema-uiux","fromNode":"node-schema","fromSide":"bottom","toNode":"node-uiux","toSide":"right"},
+		{"id":"edge-agents-sp","fromNode":"node-agents","fromSide":"left","toNode":"node-trd","toSide":"right"}
+	]
+}

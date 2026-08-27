@@ -35,3 +35,14 @@ The application serves as a dynamic resume, a projects gallery, an interactive c
 ## Constraints & Assumptions
 - **No Test Requirement:** Explicitly requested to proceed without unit or integration test suites.
 - **Supabase Backend:** All data, authentication, and security policies are hosted on Supabase PostgreSQL.
+
+---
+
+## 🔗 Related Specifications & Knowledge Nodes
+- Central Hub: [[PORTFOLIO_GRAPH|Knowledge Hub (MOC)]]
+- Technical Requirements: [[docs/TRD|TRD]]
+- Application Flow: [[docs/APP_FLOW|App Flow]]
+- Database Schema: [[docs/BACKEND_SCHEMA|Backend Schema]]
+- UI/UX Design Brief: [[docs/UI_UX_DESIGN_BRIEF|UI/UX Design Brief]]
+- Memory Bank Context: [[memory-bank/projectbrief|Project Brief]] | [[memory-bank/productContext|Product Context]]
+

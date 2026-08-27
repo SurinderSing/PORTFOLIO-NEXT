@@ -1,38 +1,42 @@
 # Memory Bank - Active Context
 
 ## Active Focus
-The current focus is **Phase 13: Resume Content Synchronization, Zero-Scroll Admin Sidebar, Full Dynamic Data Audit & UI Polishing (Completed)**.
+The current focus is **Phase 14: Obsidian Vault Integration & Interactive Knowledge Graph View (Completed)**.
 
 ---
 
 ## Recently Completed
 
-1. **Admin Sidebar Active Route & Fixed Viewport Optimization:**
-   - Extracted client sidebar component (`AdminSidebar` / `AdminMobileNav`) in `src/components/admin/admin-sidebar.tsx`.
-   - Added active tab highlighting with emerald badges (`bg-primary/10`, `border-primary/25`, indicator dot).
-   - Fixed the aside to the viewport (`sticky top-14 h-[calc(100vh-3.5rem)] overflow-hidden`) with fixed header (`h-14`) and compact item padding, completely eliminating sidebar scrollbars while keeping the user avatar/name/email permanently pinned at the bottom.
+1. **Obsidian Vault Integration & Ignore Rules:**
+   - Configured `.obsidian/app.json` with comprehensive ignore rules for `node_modules`, `.next`, `.git`, `.vscode`, `dist`, `build`, and scratch artifacts to keep Obsidian fast and responsive.
+   - Enabled live preview, spellcheck, and markdown links compatibility.
 
-2. **Resume Analysis & 100% Dynamic Supabase Migration:**
-   - Extracted latest Senior Software Engineer credentials from user's official resume.
-   - **`site_settings`**: Upgraded owner title to *Senior Software Engineer*, refined professional summary, home heading/descriptions, and work/contact blurbs.
-   - **`experiences`**: Seeded Paytm (*Senior Software Engineer*), Teemuno/Gimmefy AI (*Frontend Engineer*), Collaberus Technologies (*Frontend Engineer*), Drishti IAS (*Frontend & Technical Associate*), and Academic degrees (BCA & Diploma in CSE) with precise bullet points and technologies in Supabase.
-   - **`projects`**: Enhanced Gimmefy AI, Dialmantra Dialer, Amotus Online, and Drishti IAS Platform with production-grade descriptions, technologies, links, and iframe preview modes.
-   - **`skill_categories` & `skills`**: Re-categorized into 6 specialized groups (Frontend, Build & DevOps, UI & Component Libraries, Backend & APIs, Testing & Performance, AI & Developer Tools) with exact skill entries matching the resume.
-   - Synchronized static fallbacks in `src/lib/supabase-queries.ts` and `supabase/schema.sql`.
+2. **Graph View Configuration & Color Groups:**
+   - Configured `.obsidian/graph.json` with customized physics forces, directional arrows, and color-coded node clusters:
+     - 🟢 **Hubs & Roots:** `PORTFOLIO_GRAPH.md`, `README.md`
+     - 🟣 **Memory Bank:** `path:memory-bank` (project brain)
+     - 🔵 **Specifications:** `path:docs` (PRD, TRD, App Flow, Schema, Design)
+     - 🟠 **Agent Governance:** `AGENTS.md`, `CLAUDE.md`, `.cursorrules`
+   - Enabled core plugins (`graph`, `canvas`, `backlink`, `outgoing-link`, `switcher`, `global-search`) in `.obsidian/core-plugins.json`.
 
-3. **Complete Dynamic Audit & Legacy Map Removal:**
-   - Removed legacy `workDetailsMap` and `educationDetailsMap` overrides from `src/lib/experience-formatter.ts` to allow live database descriptions, places, and titles to stream directly to the Resume timeline.
-   - Updated `src/components/website/pages/home/featured-work.tsx` and `src/app/(website)/work/page.tsx` with flexible project thumbnail fallback matching (`getProjectFallbackImage`).
-   - Removed regex stripping in `src/components/website/pages/home/skills-grid.tsx` so custom category names render untruncated.
-
-4. **UI Polishing & Cleanup:**
-   - Removed misplaced location `MapPin` icon from the Hero Section bio paragraph in `src/components/website/pages/home/hero-section.tsx`.
-   - Fixed duplicate open/close brackets (`&lt;&gt;`) in the "View Source" button in `src/components/website/pages/work/porject-card/index.tsx`.
+3. **Knowledge Hub Map of Content (MOC) & Canvas:**
+   - Created `PORTFOLIO_GRAPH.md` with bi-directional wikilinks linking Memory Bank, technical specifications, database architecture, Next.js 14 App Router routes, and agent governance.
+   - Created `PORTFOLIO_GRAPH.canvas` visual board with interactive cards and connector flows.
+   - Enhanced existing documentation files (`memory-bank/*.md`, `docs/*.md`, `README.md`) with bi-directional wikilinks.
 
 ---
 
 ## Verification Status
 
-- **ESLint Validation:** `npm run lint` -> 0 warnings, 0 errors.
-- **TypeScript Compiler:** `npx tsc --noEmit` -> 0 errors.
-- **Production Build:** `npm run build` -> Passed with 0 errors (23/23 routes compiled).
+- **Obsidian Configuration:** Valid JSON files in `.obsidian/`.
+- **ESLint Validation:** `npm run lint` -> Passed.
+- **TypeScript Compiler:** `npx tsc --noEmit` -> Passed.
+- **Production Build:** `npm run build` -> Passed with 0 errors.
+
+---
+
+## 🔗 Related Knowledge & System Links
+- Central Hub: [[PORTFOLIO_GRAPH|Knowledge Hub (MOC)]]
+- Visual Board: [[PORTFOLIO_GRAPH.canvas|Canvas Board]]
+- Technical Specs: [[docs/TRD|TRD]]
+- System Patterns: [[memory-bank/systemPatterns|System Patterns]]

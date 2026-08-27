@@ -158,4 +158,21 @@
 - [x] Synchronize all specifications in `/docs/` (`PRD.md`, `TRD.md`, `APP_FLOW.md`, `UI_UX_DESIGN_BRIEF.md`, `BACKEND_SCHEMA.md`) and `/memory-bank/`.
 - [x] Full validation with `npm run lint` (0 errors), `npx tsc --noEmit` (0 errors), and `npm run build` (23/23 routes compiled).
 
+### Phase 14: Obsidian Vault Integration & Interactive Knowledge Graph View (100% Completed)
+- [x] Configure `.obsidian/app.json` with ignore filters for `node_modules`, `.next`, `.git`, `.vscode`, `dist`, `build`, and scratch assets.
+- [x] Configure `.obsidian/graph.json` with physics forces, arrow vectors, and color-coded node clusters (Memory Bank, Specs, Rules, Hubs).
+- [x] Enable core plugins (`graph`, `canvas`, `backlink`, `outgoing-link`, `switcher`, `global-search`) in `.obsidian/core-plugins.json`.
+- [x] Create central Map of Content (MOC): `PORTFOLIO_GRAPH.md` with full bi-directional wikilinks.
+- [x] Create native Obsidian Canvas board: `PORTFOLIO_GRAPH.canvas` for visual exploration.
+- [x] Interlink all existing markdown documentation across `memory-bank/*.md`, `docs/*.md`, and `README.md`.
+- [x] Verify production build and compilation with `npm run build`.
+
+---
+
+## 🔗 Related Knowledge & System Links
+- Central Hub: [[PORTFOLIO_GRAPH|Knowledge Hub (MOC)]]
+- Visual Board: [[PORTFOLIO_GRAPH.canvas|Canvas Board]]
+- Active Context: [[memory-bank/activeContext|Active Context]]
+
+
 

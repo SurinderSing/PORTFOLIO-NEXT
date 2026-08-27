@@ -1,0 +1,19 @@
+{
+  "userIgnoreFilters": [
+    "node_modules/**",
+    ".next/**",
+    ".git/**",
+    ".vscode/**",
+    "public/**",
+    "dist/**",
+    "build/**",
+    "yarn.lock",
+    "package-lock.json",
+    "scratch/**"
+  ],
+  "useMarkdownLinks": false,
+  "attachmentFolderPath": "public",
+  "showLineNumber": true,
+  "livePreview": true,
+  "spellcheck": true
+}
