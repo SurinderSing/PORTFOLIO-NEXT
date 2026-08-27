@@ -1,22 +1,47 @@
 /**
  * Blog Client API Service
- * Centralized service for all blog-related API requests with deduplication.
+ * Centralized, deduplicated, and debounced client service for blog engagement.
  */
 
-// In-flight request cache to deduplicate simultaneous requests
+import { RequestDebouncer } from '@/utils/request-debouncer';
+
+export interface LikeStatusResponse {
+  liked: boolean;
+  likesCount: number;
+}
+
+export interface ToggleLikeResponse {
+  success: boolean;
+  liked?: boolean;
+  likesCount?: number;
+  error?: string;
+}
+
+export interface CommentReactionsMap {
+  [commentId: string]: {
+    userReaction: 'like' | 'dislike' | null;
+    likesCount: number;
+  };
+}
+
+export interface ToggleReactionResponse {
+  success: boolean;
+  userReaction?: 'like' | 'dislike' | null;
+  likesCount?: number;
+  error?: string;
+}
+
+// In-flight read request cache to prevent duplicate concurrent GETs
 const inFlightRequests = new Map<string, Promise<any>>();
 
-// In-memory known likes map and reactive event listeners
+// In-memory reactive broadcast store for live post likes
 const postLikesState = new Map<string, number>();
 type LikeChangeListener = (postId: string, likesCount: number) => void;
 const likeChangeListeners = new Set<LikeChangeListener>();
 
-// Pending debounce timers and abort controllers for batching & cancelling rapid clicks
-const postLikeTimers = new Map<string, ReturnType<typeof setTimeout>>();
-const postLikeAbortControllers = new Map<string, AbortController>();
-
-const commentReactionTimers = new Map<string, ReturnType<typeof setTimeout>>();
-const commentReactionAbortControllers = new Map<string, AbortController>();
+// Request debouncers for batching rapid clicks and canceling in-flight mutations
+const postLikeDebouncer = new RequestDebouncer<ToggleLikeResponse>();
+const commentReactionDebouncer = new RequestDebouncer<ToggleReactionResponse>();
 
 export const blogApi = {
   /**
@@ -50,26 +75,23 @@ export const blogApi = {
   getCachedLikes(postId: string): number | undefined {
     return postLikesState.get(postId);
   },
+
   /**
-   * Fetch current user's like status and total likes for a post
+   * Fetch current user's like status and total likes for a post (deduplicated)
    */
-  async fetchPostLikeStatus(
-    postId: string
-  ): Promise<{ liked: boolean; likesCount: number }> {
+  async fetchPostLikeStatus(postId: string): Promise<LikeStatusResponse> {
     const key = `like-status-${postId}`;
     if (inFlightRequests.has(key)) {
       return inFlightRequests.get(key);
     }
 
-    const promise = (async () => {
+    const promise = (async (): Promise<LikeStatusResponse> => {
       try {
         const res = await fetch(
           `/api/blog/like?postId=${encodeURIComponent(postId)}`,
           {
             method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
           }
         );
 
@@ -96,161 +118,62 @@ export const blogApi = {
   },
 
   /**
-   * Toggle like for current post (direct/immediate)
-   */
-  async togglePostLike(
-    postId: string,
-    desiredLiked?: boolean
-  ): Promise<{
-    success: boolean;
-    liked?: boolean;
-    likesCount?: number;
-    error?: string;
-  }> {
-    try {
-      const res = await fetch('/api/blog/like', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ postId, desiredLiked }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        return {
-          success: false,
-          error: data.error || 'Failed to toggle like',
-        };
-      }
-
-      if (typeof data.likesCount === 'number') {
-        blogApi.notifyLikesChange(postId, data.likesCount);
-      }
-
-      return {
-        success: true,
-        liked: data.liked,
-        likesCount: data.likesCount,
-      };
-    } catch (err: any) {
-      // eslint-disable-next-line no-console
-      console.error('blogApi.togglePostLike error:', err);
-      return {
-        success: false,
-        error: err.message || 'Network error',
-      };
-    }
-  },
-
-  /**
    * Debounced and cancelable like toggle for rapid user clicks.
    * Cancels in-flight requests and batches rapid clicks into 1 final call.
    */
-  debouncedTogglePostLike(
+  async debouncedTogglePostLike(
     postId: string,
     desiredLiked: boolean,
     delayMs = 350
-  ): Promise<{
-    success: boolean;
-    liked?: boolean;
-    likesCount?: number;
-    error?: string;
-  }> {
-    // Clear any pending debounce timer
-    if (postLikeTimers.has(postId)) {
-      clearTimeout(postLikeTimers.get(postId)!);
-      postLikeTimers.delete(postId);
-    }
+  ): Promise<ToggleLikeResponse | null> {
+    return postLikeDebouncer.dispatch(
+      postId,
+      async (signal) => {
+        const res = await fetch('/api/blog/like', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ postId, desiredLiked }),
+          signal,
+        });
 
-    // Cancel any in-flight fetch request
-    if (postLikeAbortControllers.has(postId)) {
-      postLikeAbortControllers.get(postId)!.abort();
-      postLikeAbortControllers.delete(postId);
-    }
-
-    return new Promise((resolve) => {
-      const timer = setTimeout(async () => {
-        postLikeTimers.delete(postId);
-
-        const abortController = new AbortController();
-        postLikeAbortControllers.set(postId, abortController);
-
-        try {
-          const res = await fetch('/api/blog/like', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ postId, desiredLiked }),
-            signal: abortController.signal,
-          });
-
-          const data = await res.json();
-          if (!res.ok) {
-            resolve({
-              success: false,
-              error: data.error || 'Failed to update like',
-            });
-            return;
-          }
-
-          if (typeof data.likesCount === 'number') {
-            blogApi.notifyLikesChange(postId, data.likesCount);
-          }
-
-          resolve({
-            success: true,
-            liked: data.liked,
-            likesCount: data.likesCount,
-          });
-        } catch (err: any) {
-          if (err.name === 'AbortError') {
-            // Cancelled by a newer click - resolve gracefully
-            return;
-          }
-          // eslint-disable-next-line no-console
-          console.error('blogApi.debouncedTogglePostLike error:', err);
-          resolve({
+        const data = await res.json();
+        if (!res.ok) {
+          return {
             success: false,
-            error: err.message || 'Network error',
-          });
-        } finally {
-          if (postLikeAbortControllers.get(postId) === abortController) {
-            postLikeAbortControllers.delete(postId);
-          }
+            error: data.error || 'Failed to update like',
+          };
         }
-      }, delayMs);
 
-      postLikeTimers.set(postId, timer);
-    });
+        if (typeof data.likesCount === 'number') {
+          blogApi.notifyLikesChange(postId, data.likesCount);
+        }
+
+        return {
+          success: true,
+          liked: data.liked,
+          likesCount: data.likesCount,
+        };
+      },
+      delayMs
+    );
   },
 
   /**
-   * Fetch user reaction states and live like counts for all comments in a post
+   * Fetch user reaction states and live like counts for all comments in a post (deduplicated)
    */
-  async fetchCommentReactions(
-    postId: string
-  ): Promise<
-    Record<
-      string,
-      { userReaction: 'like' | 'dislike' | null; likesCount: number }
-    >
-  > {
+  async fetchCommentReactions(postId: string): Promise<CommentReactionsMap> {
     const key = `comments-rx-${postId}`;
     if (inFlightRequests.has(key)) {
       return inFlightRequests.get(key);
     }
 
-    const promise = (async () => {
+    const promise = (async (): Promise<CommentReactionsMap> => {
       try {
         const res = await fetch(
           `/api/blog/reaction?postId=${encodeURIComponent(postId)}`,
           {
             method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
           }
         );
 
@@ -261,10 +184,7 @@ export const blogApi = {
         }
 
         const data = await res.json();
-        return (data.reactions || {}) as Record<
-          string,
-          { userReaction: 'like' | 'dislike' | null; likesCount: number }
-        >;
+        return (data.reactions || {}) as CommentReactionsMap;
       } catch (err) {
         // eslint-disable-next-line no-console
         console.error('blogApi.fetchCommentReactions error:', err);
@@ -279,129 +199,40 @@ export const blogApi = {
   },
 
   /**
-   * Toggle comment reaction (direct/immediate)
-   */
-  async toggleCommentReaction(
-    commentId: string,
-    type: 'like' | 'dislike',
-    desiredReaction?: 'like' | 'dislike' | null
-  ): Promise<{
-    success: boolean;
-    userReaction?: 'like' | 'dislike' | null;
-    likesCount?: number;
-    error?: string;
-  }> {
-    try {
-      const res = await fetch('/api/blog/reaction', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ commentId, type, desiredReaction }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        return {
-          success: false,
-          error: data.error || 'Failed to react to comment',
-        };
-      }
-
-      return {
-        success: true,
-        userReaction: data.userReaction,
-        likesCount: data.likesCount,
-      };
-    } catch (err: any) {
-      // eslint-disable-next-line no-console
-      console.error('blogApi.toggleCommentReaction error:', err);
-      return {
-        success: false,
-        error: err.message || 'Network error',
-      };
-    }
-  },
-
-  /**
    * Debounced and cancelable comment reaction toggle for rapid clicks.
    * Cancels in-flight requests and batches rapid clicks into 1 final call.
    */
-  debouncedToggleCommentReaction(
+  async debouncedToggleCommentReaction(
     commentId: string,
     desiredReaction: 'like' | 'dislike' | null,
     delayMs = 350
-  ): Promise<{
-    success: boolean;
-    userReaction?: 'like' | 'dislike' | null;
-    likesCount?: number;
-    error?: string;
-  }> {
-    // Clear any pending debounce timer
-    if (commentReactionTimers.has(commentId)) {
-      clearTimeout(commentReactionTimers.get(commentId)!);
-      commentReactionTimers.delete(commentId);
-    }
+  ): Promise<ToggleReactionResponse | null> {
+    return commentReactionDebouncer.dispatch(
+      commentId,
+      async (signal) => {
+        const res = await fetch('/api/blog/reaction', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ commentId, desiredReaction }),
+          signal,
+        });
 
-    // Cancel any in-flight fetch request
-    if (commentReactionAbortControllers.has(commentId)) {
-      commentReactionAbortControllers.get(commentId)!.abort();
-      commentReactionAbortControllers.delete(commentId);
-    }
-
-    return new Promise((resolve) => {
-      const timer = setTimeout(async () => {
-        commentReactionTimers.delete(commentId);
-
-        const abortController = new AbortController();
-        commentReactionAbortControllers.set(commentId, abortController);
-
-        try {
-          const res = await fetch('/api/blog/reaction', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ commentId, desiredReaction }),
-            signal: abortController.signal,
-          });
-
-          const data = await res.json();
-          if (!res.ok) {
-            resolve({
-              success: false,
-              error: data.error || 'Failed to update reaction',
-            });
-            return;
-          }
-
-          resolve({
-            success: true,
-            userReaction: data.userReaction,
-            likesCount: data.likesCount,
-          });
-        } catch (err: any) {
-          if (err.name === 'AbortError') {
-            // Cancelled by a newer click - resolve gracefully
-            return;
-          }
-          // eslint-disable-next-line no-console
-          console.error('blogApi.debouncedToggleCommentReaction error:', err);
-          resolve({
+        const data = await res.json();
+        if (!res.ok) {
+          return {
             success: false,
-            error: err.message || 'Network error',
-          });
-        } finally {
-          if (
-            commentReactionAbortControllers.get(commentId) === abortController
-          ) {
-            commentReactionAbortControllers.delete(commentId);
-          }
+            error: data.error || 'Failed to update reaction',
+          };
         }
-      }, delayMs);
 
-      commentReactionTimers.set(commentId, timer);
-    });
+        return {
+          success: true,
+          userReaction: data.userReaction,
+          likesCount: data.likesCount,
+        };
+      },
+      delayMs
+    );
   },
 };
 
