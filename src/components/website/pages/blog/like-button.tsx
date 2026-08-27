@@ -27,7 +27,6 @@ export const LikeButton: React.FC<LikeButtonProps> = ({
   const [likes, setLikes] = useState(initialLikes);
   const [hasLiked, setHasLiked] = useState(false);
   const [animating, setAnimating] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
 
   // Sync with initialLikes when parent prop changes
   useEffect(() => {
@@ -74,14 +73,12 @@ export const LikeButton: React.FC<LikeButtonProps> = ({
       return;
     }
 
-    if (isProcessing) return;
-    setIsProcessing(true);
     setAnimating(true);
 
     const prevLiked = hasLiked;
     const prevLikes = likes;
 
-    // Optimistic UI update
+    // Instant optimistic UI update
     const nextLiked = !prevLiked;
     const nextLikes = nextLiked ? prevLikes + 1 : Math.max(0, prevLikes - 1);
     setHasLiked(nextLiked);
@@ -90,13 +87,13 @@ export const LikeButton: React.FC<LikeButtonProps> = ({
     setTimeout(() => setAnimating(false), 300);
 
     try {
-      const res = await blogApi.togglePostLike(postId);
-      if (res.success) {
+      const res = await blogApi.debouncedTogglePostLike(postId, nextLiked);
+      if (res && res.success) {
         if (res.liked !== undefined) setHasLiked(res.liked);
-        if (res.likesCount !== undefined) setLikes(res.likesCount);
+        if (typeof res.likesCount === 'number') setLikes(res.likesCount);
         router.refresh();
-      } else {
-        // Rollback on error
+      } else if (res && !res.success) {
+        // Rollback only on actual API failure (not cancellation)
         setHasLiked(prevLiked);
         setLikes(prevLikes);
       }
@@ -106,8 +103,6 @@ export const LikeButton: React.FC<LikeButtonProps> = ({
       // Rollback on error
       setHasLiked(prevLiked);
       setLikes(prevLikes);
-    } finally {
-      setIsProcessing(false);
     }
   };
 
@@ -115,7 +110,6 @@ export const LikeButton: React.FC<LikeButtonProps> = ({
     <button
       type="button"
       onClick={handleToggleLike}
-      disabled={isProcessing}
       aria-label={hasLiked ? 'Unlike post' : 'Like post'}
       title={
         user

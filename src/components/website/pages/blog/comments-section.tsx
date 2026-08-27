@@ -130,8 +130,11 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
     }));
 
     try {
-      const res = await blogApi.toggleCommentReaction(commentId, type);
-      if (res.success && res.userReaction !== undefined) {
+      const res = await blogApi.debouncedToggleCommentReaction(
+        commentId,
+        nextType
+      );
+      if (res && res.success && res.userReaction !== undefined) {
         setReactions((prev) => ({
           ...prev,
           [commentId]: {
@@ -139,8 +142,8 @@ export const CommentsSection: React.FC<CommentsSectionProps> = ({
             count: res.likesCount ?? 0,
           },
         }));
-      } else {
-        // Rollback on failure
+      } else if (res && !res.success) {
+        // Rollback only on actual API failure (not cancellation)
         setReactions((prev) => ({
           ...prev,
           [commentId]: current,

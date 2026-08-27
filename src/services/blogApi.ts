@@ -11,6 +11,13 @@ const postLikesState = new Map<string, number>();
 type LikeChangeListener = (postId: string, likesCount: number) => void;
 const likeChangeListeners = new Set<LikeChangeListener>();
 
+// Pending debounce timers and abort controllers for batching & cancelling rapid clicks
+const postLikeTimers = new Map<string, ReturnType<typeof setTimeout>>();
+const postLikeAbortControllers = new Map<string, AbortController>();
+
+const commentReactionTimers = new Map<string, ReturnType<typeof setTimeout>>();
+const commentReactionAbortControllers = new Map<string, AbortController>();
+
 export const blogApi = {
   /**
    * Subscribe to live like count changes across components/pages
@@ -89,9 +96,12 @@ export const blogApi = {
   },
 
   /**
-   * Toggle like for current post
+   * Toggle like for current post (direct/immediate)
    */
-  async togglePostLike(postId: string): Promise<{
+  async togglePostLike(
+    postId: string,
+    desiredLiked?: boolean
+  ): Promise<{
     success: boolean;
     liked?: boolean;
     likesCount?: number;
@@ -103,7 +113,7 @@ export const blogApi = {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ postId }),
+        body: JSON.stringify({ postId, desiredLiked }),
       });
 
       const data = await res.json();
@@ -131,6 +141,89 @@ export const blogApi = {
         error: err.message || 'Network error',
       };
     }
+  },
+
+  /**
+   * Debounced and cancelable like toggle for rapid user clicks.
+   * Cancels in-flight requests and batches rapid clicks into 1 final call.
+   */
+  debouncedTogglePostLike(
+    postId: string,
+    desiredLiked: boolean,
+    delayMs = 350
+  ): Promise<{
+    success: boolean;
+    liked?: boolean;
+    likesCount?: number;
+    error?: string;
+  }> {
+    // Clear any pending debounce timer
+    if (postLikeTimers.has(postId)) {
+      clearTimeout(postLikeTimers.get(postId)!);
+      postLikeTimers.delete(postId);
+    }
+
+    // Cancel any in-flight fetch request
+    if (postLikeAbortControllers.has(postId)) {
+      postLikeAbortControllers.get(postId)!.abort();
+      postLikeAbortControllers.delete(postId);
+    }
+
+    return new Promise((resolve) => {
+      const timer = setTimeout(async () => {
+        postLikeTimers.delete(postId);
+
+        const abortController = new AbortController();
+        postLikeAbortControllers.set(postId, abortController);
+
+        try {
+          const res = await fetch('/api/blog/like', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ postId, desiredLiked }),
+            signal: abortController.signal,
+          });
+
+          const data = await res.json();
+          if (!res.ok) {
+            resolve({
+              success: false,
+              error: data.error || 'Failed to update like',
+            });
+            return;
+          }
+
+          if (typeof data.likesCount === 'number') {
+            blogApi.notifyLikesChange(postId, data.likesCount);
+          }
+
+          resolve({
+            success: true,
+            liked: data.liked,
+            likesCount: data.likesCount,
+          });
+        } catch (err: any) {
+          if (err.name === 'AbortError') {
+            // Cancelled by a newer click - resolve gracefully
+            return;
+          }
+          // eslint-disable-next-line no-console
+          console.error('blogApi.debouncedTogglePostLike error:', err);
+          resolve({
+            success: false,
+            error: err.message || 'Network error',
+          });
+        } finally {
+          if (postLikeAbortControllers.get(postId) === abortController) {
+            postLikeAbortControllers.delete(postId);
+          }
+        }
+      }, delayMs);
+
+      postLikeTimers.set(postId, timer);
+    });
   },
 
   /**
@@ -186,11 +279,12 @@ export const blogApi = {
   },
 
   /**
-   * Toggle comment reaction (like/dislike)
+   * Toggle comment reaction (direct/immediate)
    */
   async toggleCommentReaction(
     commentId: string,
-    type: 'like' | 'dislike'
+    type: 'like' | 'dislike',
+    desiredReaction?: 'like' | 'dislike' | null
   ): Promise<{
     success: boolean;
     userReaction?: 'like' | 'dislike' | null;
@@ -203,7 +297,7 @@ export const blogApi = {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ commentId, type }),
+        body: JSON.stringify({ commentId, type, desiredReaction }),
       });
 
       const data = await res.json();
@@ -227,6 +321,87 @@ export const blogApi = {
         error: err.message || 'Network error',
       };
     }
+  },
+
+  /**
+   * Debounced and cancelable comment reaction toggle for rapid clicks.
+   * Cancels in-flight requests and batches rapid clicks into 1 final call.
+   */
+  debouncedToggleCommentReaction(
+    commentId: string,
+    desiredReaction: 'like' | 'dislike' | null,
+    delayMs = 350
+  ): Promise<{
+    success: boolean;
+    userReaction?: 'like' | 'dislike' | null;
+    likesCount?: number;
+    error?: string;
+  }> {
+    // Clear any pending debounce timer
+    if (commentReactionTimers.has(commentId)) {
+      clearTimeout(commentReactionTimers.get(commentId)!);
+      commentReactionTimers.delete(commentId);
+    }
+
+    // Cancel any in-flight fetch request
+    if (commentReactionAbortControllers.has(commentId)) {
+      commentReactionAbortControllers.get(commentId)!.abort();
+      commentReactionAbortControllers.delete(commentId);
+    }
+
+    return new Promise((resolve) => {
+      const timer = setTimeout(async () => {
+        commentReactionTimers.delete(commentId);
+
+        const abortController = new AbortController();
+        commentReactionAbortControllers.set(commentId, abortController);
+
+        try {
+          const res = await fetch('/api/blog/reaction', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ commentId, desiredReaction }),
+            signal: abortController.signal,
+          });
+
+          const data = await res.json();
+          if (!res.ok) {
+            resolve({
+              success: false,
+              error: data.error || 'Failed to update reaction',
+            });
+            return;
+          }
+
+          resolve({
+            success: true,
+            userReaction: data.userReaction,
+            likesCount: data.likesCount,
+          });
+        } catch (err: any) {
+          if (err.name === 'AbortError') {
+            // Cancelled by a newer click - resolve gracefully
+            return;
+          }
+          // eslint-disable-next-line no-console
+          console.error('blogApi.debouncedToggleCommentReaction error:', err);
+          resolve({
+            success: false,
+            error: err.message || 'Network error',
+          });
+        } finally {
+          if (
+            commentReactionAbortControllers.get(commentId) === abortController
+          ) {
+            commentReactionAbortControllers.delete(commentId);
+          }
+        }
+      }, delayMs);
+
+      commentReactionTimers.set(commentId, timer);
+    });
   },
 };
 

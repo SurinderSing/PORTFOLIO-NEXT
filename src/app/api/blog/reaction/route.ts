@@ -81,9 +81,15 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const body = await request.json();
-    const { commentId, type } = body;
+    const { commentId, type, desiredReaction } = body;
 
-    if (!commentId || !type || !['like', 'dislike'].includes(type)) {
+    const targetReaction =
+      desiredReaction !== undefined ? desiredReaction : type;
+
+    if (
+      !commentId ||
+      (targetReaction !== null && !['like', 'dislike'].includes(targetReaction))
+    ) {
       return NextResponse.json(
         { error: 'Invalid commentId or reaction type' },
         { status: 400 }
@@ -109,40 +115,78 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       .eq('user_id', user.id)
       .maybeSingle();
 
-    let userReaction: 'like' | 'dislike' | null = type;
+    let userReaction: 'like' | 'dislike' | null = null;
 
-    if (existing) {
-      if (existing.type === type) {
-        // Toggle off
-        const { error: delError } = await supabase
-          .from('comment_reactions')
-          .delete()
-          .eq('id', existing.id);
+    if (desiredReaction !== undefined) {
+      // Idempotent alignment with explicit desired state
+      if (desiredReaction === null) {
+        if (existing) {
+          const { error: delError } = await supabase
+            .from('comment_reactions')
+            .delete()
+            .eq('id', existing.id);
 
-        if (delError) throw delError;
+          if (delError) throw delError;
+        }
         userReaction = null;
       } else {
-        // Switch type
-        const { error: updateError } = await supabase
-          .from('comment_reactions')
-          .update({ type })
-          .eq('id', existing.id);
+        if (existing) {
+          if (existing.type !== desiredReaction) {
+            const { error: updateError } = await supabase
+              .from('comment_reactions')
+              .update({ type: desiredReaction })
+              .eq('id', existing.id);
 
-        if (updateError) throw updateError;
-        userReaction = type;
+            if (updateError) throw updateError;
+          }
+        } else {
+          const { error: insError } = await supabase
+            .from('comment_reactions')
+            .insert({
+              comment_id: commentId,
+              user_id: user.id,
+              type: desiredReaction,
+            });
+
+          if (insError) throw insError;
+        }
+        userReaction = desiredReaction;
       }
     } else {
-      // Insert new
-      const { error: insError } = await supabase
-        .from('comment_reactions')
-        .insert({
-          comment_id: commentId,
-          user_id: user.id,
-          type,
-        });
+      // Fallback relative toggle
+      if (existing) {
+        if (existing.type === type) {
+          // Toggle off
+          const { error: delError } = await supabase
+            .from('comment_reactions')
+            .delete()
+            .eq('id', existing.id);
 
-      if (insError) throw insError;
-      userReaction = type;
+          if (delError) throw delError;
+          userReaction = null;
+        } else {
+          // Switch type
+          const { error: updateError } = await supabase
+            .from('comment_reactions')
+            .update({ type })
+            .eq('id', existing.id);
+
+          if (updateError) throw updateError;
+          userReaction = type;
+        }
+      } else {
+        // Insert new
+        const { error: insError } = await supabase
+          .from('comment_reactions')
+          .insert({
+            comment_id: commentId,
+            user_id: user.id,
+            type,
+          });
+
+        if (insError) throw insError;
+        userReaction = type;
+      }
     }
 
     // Count updated likes

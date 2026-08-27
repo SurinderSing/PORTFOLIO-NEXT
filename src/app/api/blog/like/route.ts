@@ -55,7 +55,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const body = await request.json();
-    const { postId } = body;
+    const { postId, desiredLiked } = body;
 
     if (!postId) {
       return NextResponse.json(
@@ -84,23 +84,50 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       .eq('user_id', user.id)
       .maybeSingle();
 
-    let liked = false;
-    if (existing) {
-      const { error: deleteError } = await supabase
-        .from('post_likes')
-        .delete()
-        .eq('id', existing.id);
+    let liked = !!existing;
 
-      if (deleteError) throw deleteError;
-      liked = false;
+    if (typeof desiredLiked === 'boolean') {
+      // Idempotent alignment with explicit desired state
+      if (desiredLiked && !existing) {
+        const { error: insertError } = await supabase
+          .from('post_likes')
+          .insert({
+            post_id: postId,
+            user_id: user.id,
+          });
+
+        if (insertError) throw insertError;
+        liked = true;
+      } else if (!desiredLiked && existing) {
+        const { error: deleteError } = await supabase
+          .from('post_likes')
+          .delete()
+          .eq('id', existing.id);
+
+        if (deleteError) throw deleteError;
+        liked = false;
+      }
     } else {
-      const { error: insertError } = await supabase.from('post_likes').insert({
-        post_id: postId,
-        user_id: user.id,
-      });
+      // Fallback relative toggle
+      if (existing) {
+        const { error: deleteError } = await supabase
+          .from('post_likes')
+          .delete()
+          .eq('id', existing.id);
 
-      if (insertError) throw insertError;
-      liked = true;
+        if (deleteError) throw deleteError;
+        liked = false;
+      } else {
+        const { error: insertError } = await supabase
+          .from('post_likes')
+          .insert({
+            post_id: postId,
+            user_id: user.id,
+          });
+
+        if (insertError) throw insertError;
+        liked = true;
+      }
     }
 
     // Get updated total count
