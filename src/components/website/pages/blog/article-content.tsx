@@ -40,6 +40,18 @@ export const ArticleContent: React.FC<ArticleContentProps> = ({ content }) => {
             {blocks.map((block, bIdx) => {
               const trimmed = block.trim();
 
+              // Heading 1
+              if (trimmed.startsWith('# ')) {
+                return (
+                  <h1
+                    key={bIdx}
+                    className="font-mono text-2xl md:text-3xl font-bold tracking-tight text-foreground mt-8 mb-4 border-b border-border/40 pb-2"
+                  >
+                    {trimmed.replace('# ', '')}
+                  </h1>
+                );
+              }
+
               // Heading 2
               if (trimmed.startsWith('## ')) {
                 return (
@@ -77,7 +89,7 @@ export const ArticleContent: React.FC<ArticleContentProps> = ({ content }) => {
                 return (
                   <blockquote
                     key={bIdx}
-                    className="border-l-2 border-primary pl-4 py-1 italic text-muted-foreground text-sm md:text-base my-4 bg-primary/5 rounded-r-lg"
+                    className="border-l-4 border-primary pl-4 py-2 italic text-muted-foreground text-sm md:text-base my-4 bg-primary/5 rounded-r-lg"
                     dangerouslySetInnerHTML={{
                       __html: formatInlineMarkdown(quoteText),
                     }}
@@ -85,8 +97,32 @@ export const ArticleContent: React.FC<ArticleContentProps> = ({ content }) => {
                 );
               }
 
-              // Check if block contains list items (either standalone or with a lead-in sentence)
+              // Check for ordered lists (1. item, 2. item)
               const lines = trimmed.split('\n');
+              const hasOrderedItems = lines.some((l) =>
+                /^\d+\.\s+/.test(l.trim())
+              );
+              if (hasOrderedItems) {
+                return (
+                  <ol key={bIdx} className="list-decimal pl-6 space-y-2 my-4">
+                    {lines
+                      .filter((l) => /^\d+\.\s+/.test(l.trim()))
+                      .map((item, oIdx) => (
+                        <li
+                          key={oIdx}
+                          className="text-sm md:text-base text-muted-foreground leading-relaxed"
+                          dangerouslySetInnerHTML={{
+                            __html: formatInlineMarkdown(
+                              item.replace(/^\d+\.\s+/, '')
+                            ),
+                          }}
+                        />
+                      ))}
+                  </ol>
+                );
+              }
+
+              // Check if block contains unordered list items
               const hasListItems = lines.some(
                 (l) => l.trim().startsWith('- ') || l.trim().startsWith('* ')
               );
@@ -172,7 +208,7 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ language, code }) => {
   };
 
   return (
-    <div className="rounded-xl border border-border bg-card/80 overflow-hidden my-6 font-mono text-xs shadow-xs">
+    <div className="rounded-xl border border-border bg-card/80 overflow-hidden my-6 font-mono text-xs shadow-sm">
       <div className="flex items-center justify-between px-3.5 py-2 border-b border-border/60 bg-tertiary-2 text-muted-foreground">
         <div className="flex items-center gap-2">
           <Terminal className="h-3.5 w-3.5 text-primary" />
@@ -209,14 +245,28 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ language, code }) => {
 function formatInlineMarkdown(text: string): string {
   return text
     .replace(
+      /\*\*\*(.*?)\*\*\*/g,
+      '<strong class="text-foreground font-semibold"><em>$1</em></strong>'
+    )
+    .replace(
       /\*\*(.*?)\*\*/g,
       '<strong class="text-foreground font-semibold">$1</strong>'
     )
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/~~(.*?)~~/g, '<del class="opacity-70">$1</del>')
     .replace(
       /`([^`]+)`/g,
       '<code class="px-1.5 py-0.5 rounded bg-tertiary-2 border border-border/50 text-primary font-mono text-xs">$1</code>'
-    );
+    )
+    .replace(
+      /!\[([^\]]*)\]\(([^)]+)\)/g,
+      '<img src="$2" alt="$1" class="rounded-xl border border-border my-4 shadow-sm max-w-full" />'
+    )
+    .replace(
+      /\[([^\]]+)\]\(([^)]+)\)/g,
+      '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary underline underline-offset-2 hover:opacity-80">$1</a>'
+    )
+    .replace(/\n/g, '<br />');
 }
 
 export default ArticleContent;

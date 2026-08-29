@@ -1,16 +1,13 @@
-'use client';
-
 import React, { useState, useCallback } from 'react';
-import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { PostStatus } from '@/types/database';
 import {
   Eye,
   Edit3,
-  Sparkles,
   AlertCircle,
   CheckCircle2,
   Info,
+  Sparkles,
 } from 'lucide-react';
 import ArticleContent from '@/components/website/pages/blog/article-content';
 import {
@@ -18,8 +15,7 @@ import {
   SUPPORTED_IMAGE_PROVIDERS,
 } from '@/utils/image-providers';
 
-// Dynamically import the markdown editor to avoid SSR issues
-const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false });
+import RichTextEditor from './rich-text-editor';
 
 // ============================================================================
 // Types & Constants
@@ -67,6 +63,7 @@ export default function BlogPostForm({
   onSubmit,
 }: BlogPostFormProps) {
   const router = useRouter();
+
   const [formData, setFormData] = useState<BlogPostFormData>(
     initialData || EMPTY_FORM_DATA
   );
@@ -328,32 +325,27 @@ export default function BlogPostForm({
             />
           </div>
 
-          {/* Markdown Editor */}
-          <div className="space-y-1.5">
+          {/* Rich Document & Markdown WYSIWYG Editor */}
+          <div className="space-y-2">
             <label className="text-xs font-bold text-muted-foreground flex items-center justify-between">
-              <span>Article Body (Markdown) *</span>
+              <span>Article Content *</span>
               <span className="text-[10px] text-primary font-normal">
-                Use the toolbar for formatting — bold, italic, headings, code,
-                lists, links & images
+                Visual formatting &bull; Single Enter for line breaks &bull;
+                Headings, lists, code & media
               </span>
             </label>
-            <div
-              data-color-mode="dark"
-              className="rounded-xl overflow-hidden border border-border"
-            >
-              <MDEditor
-                value={formData.content}
-                onChange={(val) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    content: val || '',
-                  }))
-                }
-                height={500}
-                preview="edit"
-                visibleDragbar={false}
-              />
-            </div>
+
+            <RichTextEditor
+              value={formData.content}
+              onChange={(val) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  content: val || '',
+                }))
+              }
+              minHeight={460}
+              placeholder="Write your article here... Press Enter for line breaks, or highlight text and use the toolbar for Bold, Italics, Headings, Lists, and Code."
+            />
           </div>
         </div>
       ) : (
