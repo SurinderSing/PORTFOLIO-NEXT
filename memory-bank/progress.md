@@ -25,10 +25,16 @@
 - [x] Phase 18: Mobile Button Stability & Blog Save Cache Synchronization
 - [x] Phase 19: Experience & Skills-Aligned Technical Blog System (10 In-Depth Articles)
 - [x] Phase 20: Auth Flow, Verification Redirection & Post-Login Navigation Polish
+- [x] Phase 21: Vercel Speed Insights & Web Analytics Integration
 
 ---
 
 ## Detailed Task Checklist
+
+### Phase 21: Vercel Speed Insights & Web Analytics Integration (100% Completed)
+- [x] Install `@vercel/speed-insights` and `@vercel/analytics` in `package.json`.
+- [x] Integrate `<SpeedInsights />` and `<Analytics />` into `src/app/(website)/layout.tsx`.
+- [x] Verify production build passes with 0 errors via `npm run build`.
 
 ### Phase 20: Auth Flow, Verification Redirection & Post-Login Navigation Polish (100% Completed)
 - [x] Update `src/app/(auth)/sign-in/page.tsx` default redirect target to `/blog` (preserving dynamic `?redirect=` param for protected routes).

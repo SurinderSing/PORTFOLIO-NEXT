@@ -1,13 +1,17 @@
 # Memory Bank - Active Context
 
 ## Active Focus
-The current focus is **Phase 20: Auth Flow, Verification Redirection & Post-Login Navigation Polish (Completed)**.
+The current focus is **Phase 21: Vercel Speed Insights & Web Analytics Integration (Completed)**.
 
 ---
 
 ## Recently Completed
 
-1. **Auth Flow & Post-Login Redirection Fixes:**
+1. **Vercel Speed Insights & Web Analytics Integration:**
+   - **Package Installations (`package.json`):** Added `@vercel/speed-insights` (v2.0.0) for Real Experience Score & Core Web Vitals tracking, and `@vercel/analytics` (v2.0.1) for visitor traffic, page views, and geographic analytics.
+   - **Root Website Layout Embedding (`src/app/(website)/layout.tsx`):** Injected `<SpeedInsights />` and `<Analytics />` into the main application layout under `<ThemeProvider>`, ensuring performance telemetry and visitor event collection across the homepage, work portfolio, blog articles, resume, and contact pages.
+
+2. **Auth Flow & Post-Login Redirection Fixes:**
    - **Post-Login Routing Polish (`src/app/(auth)/sign-in/page.tsx`):** Changed default redirect destination from `/admin` to `/blog` when no explicit `?redirect=` target is provided. Updated headings, subtext, and buttons from admin-centric to general user-facing terminology (`Sign In`, `Create Account`, `Continue`).
    - **Middleware Redirection Fix (`src/utils/supabase/middleware.ts`):** Changed signed-in user redirect on `/sign-in` and `/sign-up` from `/dashboard` (non-existent route) to `/blog`.
    - **Multi-Environment Base & Site URL Hardening (`.env`, `.env.example`):** Added `NEXT_PUBLIC_SITE_URL="https://surinder-singh-portfolio.vercel.app"` alongside `NEXT_PUBLIC_BASE_URL="http://localhost:3000"`, ensuring SSR and email redirect construction properly respects the production domain.
