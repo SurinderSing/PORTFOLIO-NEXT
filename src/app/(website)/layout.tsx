@@ -13,6 +13,8 @@ import CustomCursor from '@/components/animations/custom-cursor';
 import AntigravityBackground from '@/components/animations/antigravity-background';
 import Providers from '../provider';
 import { getSiteSettings, getSocialLinks } from '@/lib/supabase-queries';
+import { SpeedInsights } from '@vercel/speed-insights/next';
+import { Analytics } from '@vercel/analytics/next';
 
 // WARNING: Update all occurrences of the base URL in layout.tsx, sitemap.ts, and robots.ts whenever the production deployment domain changes!
 export const metadata: Metadata = {
@@ -130,6 +132,8 @@ export default async function RootLayout({
               </div>
               <Footer settings={settings} socialLinks={socialLinks} />
             </div>
+            <SpeedInsights />
+            <Analytics />
           </ThemeProvider>
         </Providers>
       </body>

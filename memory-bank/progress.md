@@ -24,10 +24,31 @@
 - [x] Phase 17: WYSIWYG Editor Smart Toggle & Robust DOM Unwrapping Engine
 - [x] Phase 18: Mobile Button Stability & Blog Save Cache Synchronization
 - [x] Phase 19: Experience & Skills-Aligned Technical Blog System (10 In-Depth Articles)
+- [x] Phase 20: Auth Flow, Verification Redirection & Post-Login Navigation Polish
+- [x] Phase 21: Vercel Speed Insights & Web Analytics Integration
+- [x] Phase 22: Middleware Dashboard Deprecation & Role-Based Auth Redirects
 
 ---
 
 ## Detailed Task Checklist
+
+### Phase 22: Middleware Dashboard Deprecation & Role-Based Auth Redirects (100% Completed)
+- [x] Redirect `/dashboard` and `/dashboard/*` to `/admin` and `/admin/*` in `src/utils/supabase/middleware.ts`.
+- [x] Route signed-in users on `/sign-in` and `/sign-up` to `/admin` if role is `ADMIN`, or `/blog` if general member.
+- [x] Verify production build passes with 0 errors via `npm run build`.
+
+### Phase 21: Vercel Speed Insights & Web Analytics Integration (100% Completed)
+- [x] Install `@vercel/speed-insights` and `@vercel/analytics` in `package.json`.
+- [x] Integrate `<SpeedInsights />` and `<Analytics />` into `src/app/(website)/layout.tsx`.
+- [x] Verify production build passes with 0 errors via `npm run build`.
+
+### Phase 20: Auth Flow, Verification Redirection & Post-Login Navigation Polish (100% Completed)
+- [x] Update `src/app/(auth)/sign-in/page.tsx` default redirect target to `/blog` (preserving dynamic `?redirect=` param for protected routes).
+- [x] Generalize `/sign-in` and `/sign-up` headings, placeholder values, and action buttons to be user-friendly for all members.
+- [x] Update `src/utils/supabase/middleware.ts` to redirect authenticated visitors from `/sign-in` and `/sign-up` to `/blog` instead of `/dashboard`.
+- [x] Retain `NEXT_PUBLIC_BASE_URL="http://localhost:3000"` while adding `NEXT_PUBLIC_SITE_URL="https://surinder-singh-portfolio.vercel.app"` in `.env` and `.env.example`.
+- [x] Synchronize email templates in Supabase Dashboard and configure Site URL & Redirect whitelist for production.
+- [x] Run `npm run build` verification to ensure 0 build errors.
 
 ### Phase 19: Experience & Skills-Aligned Technical Blog System (100% Completed)
 - [x] Author 10 authentic, industry-grade technical blog articles aligning with Surinder's career (Paytm, Gimmefy AI, Dialmantra, Amotus Online, Drishti IAS) and skills (Docker, Kubernetes, Cloud, SSR/CSR/SSG/ISR, Supabase, Firebase, WebSockets/WebRTC, AI Canvas, Next.js 14, Redux Toolkit).

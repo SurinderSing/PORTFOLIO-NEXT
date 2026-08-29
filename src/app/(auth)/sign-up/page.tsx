@@ -12,10 +12,10 @@ const SignUp: React.FC = () => {
             <Terminal className="h-5 w-5" />
           </div>
           <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">
-            Create Admin Account
+            Create Account
           </h1>
           <p className="text-xs text-muted-foreground">
-            Register administrator credentials to configure portfolio data.
+            Register your account to access discussions and portfolio features.
           </p>
         </div>
 

@@ -1,11 +1,26 @@
 # Memory Bank - Active Context
 
 ## Active Focus
-The current focus is **Phase 19: Experience & Skills-Aligned Technical Blog System (Completed)**.
+The current focus is **Phase 22: Middleware Dashboard Deprecation & Role-Based Auth Redirects (Completed)**.
 
 ---
 
 ## Recently Completed
+
+1. **Middleware Dashboard Deprecation & Role-Based Auth Navigation:**
+   - **Legacy `/dashboard` Alias Redirection (`src/utils/supabase/middleware.ts`):** Deprecated `/dashboard` route protection since `/dashboard` does not exist; any requests to `/dashboard` or `/dashboard/*` are now cleanly rewritten and redirected to `/admin` or `/admin/*`.
+   - **Smart Role-Based Auth Page Redirects (`src/utils/supabase/middleware.ts`):** When an authenticated user visits `/sign-in` or `/sign-up`, the middleware now checks for an explicit `?redirect=` target first; if none, it inspects `profiles.role` to redirect admins to `/admin` and general members to `/blog`.
+
+2. **Vercel Speed Insights & Web Analytics Integration:**
+   - **Package Installations (`package.json`):** Added `@vercel/speed-insights` (v2.0.0) for Real Experience Score & Core Web Vitals tracking, and `@vercel/analytics` (v2.0.1) for visitor traffic, page views, and geographic analytics.
+   - **Root Website Layout Embedding (`src/app/(website)/layout.tsx`):** Injected `<SpeedInsights />` and `<Analytics />` into the main application layout under `<ThemeProvider>`, ensuring performance telemetry and visitor event collection across the homepage, work portfolio, blog articles, resume, and contact pages.
+
+2. **Auth Flow & Post-Login Redirection Fixes:**
+   - **Post-Login Routing Polish (`src/app/(auth)/sign-in/page.tsx`):** Changed default redirect destination from `/admin` to `/blog` when no explicit `?redirect=` target is provided. Updated headings, subtext, and buttons from admin-centric to general user-facing terminology (`Sign In`, `Create Account`, `Continue`).
+   - **Middleware Redirection Fix (`src/utils/supabase/middleware.ts`):** Changed signed-in user redirect on `/sign-in` and `/sign-up` from `/dashboard` (non-existent route) to `/blog`.
+   - **Multi-Environment Base & Site URL Hardening (`.env`, `.env.example`):** Added `NEXT_PUBLIC_SITE_URL="https://surinder-singh-portfolio.vercel.app"` alongside `NEXT_PUBLIC_BASE_URL="http://localhost:3000"`, ensuring SSR and email redirect construction properly respects the production domain.
+   - **Sign-Up Form Copy Generalization (`src/app/(auth)/sign-up/page.tsx`):** Changed page title to `Create Account` and updated instructions to be welcoming for general community members accessing discussion and blog features.
+   - **Email Template & Supabase Dashboard Configuration:** Synchronized custom terminal-themed templates (`supabase/templates/confirm-signup.html` and `reset-password.html`) and verified Supabase Site URL / redirect whitelist settings.
 
 1. **Experience & Skills-Aligned Technical Blog Engine:**
    - **Full-Spectrum Technical Catalog (10 In-Depth Articles):** Authored and published 10 comprehensive, authentic technical articles covering Surinder Singh's real-world engineering career (Paytm, Gimmefy AI, Dialmantra, Amotus Online, Drishti IAS) and technical competencies:
