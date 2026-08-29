@@ -7,250 +7,301 @@ interface ArticleContentProps {
   content: string;
 }
 
-export const ArticleContent: React.FC<ArticleContentProps> = ({ content }) => {
-  // Normalize escaped newlines if any exist in raw database string
-  const normalizedContent = (content || '')
+interface ParsedBlock {
+  type:
+    | 'h1'
+    | 'h2'
+    | 'h3'
+    | 'paragraph'
+    | 'blockquote'
+    | 'ul'
+    | 'ol'
+    | 'hr'
+    | 'code';
+  content?: string;
+  items?: string[];
+  language?: string;
+  code?: string;
+}
+
+function parseMarkdownToBlocks(markdown: string): ParsedBlock[] {
+  if (!markdown || !markdown.trim()) return [];
+
+  const normalized = (markdown || '')
     .replace(/\\r\\n/g, '\n')
     .replace(/\\n/g, '\n')
-    .replace(/\\t/g, '  ');
+    .replace(/\\t/g, '  ')
+    .replace(/\r\n/g, '\n');
 
-  // Simple markdown renderer for clean paragraph & code block formatting
-  const sections = normalizedContent.split(/(```[\s\S]*?```)/g);
+  const lines = normalized.split('\n');
+  const blocks: ParsedBlock[] = [];
+
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    if (!trimmed) {
+      i++;
+      continue;
+    }
+
+    // Code block ```
+    if (trimmed.startsWith('```')) {
+      const language = trimmed.slice(3).trim() || 'code';
+      i++;
+      const codeLines: string[] = [];
+      while (i < lines.length && !lines[i].trim().startsWith('```')) {
+        codeLines.push(lines[i]);
+        i++;
+      }
+      if (i < lines.length && lines[i].trim().startsWith('```')) {
+        i++;
+      }
+      blocks.push({
+        type: 'code',
+        language,
+        code: codeLines.join('\n'),
+      });
+      continue;
+    }
+
+    // Headings
+    if (/^#\s+/.test(trimmed) || /^<h1[^>]*>[\s\S]*<\/h1>$/i.test(trimmed)) {
+      const text = trimmed.startsWith('# ')
+        ? trimmed.replace(/^#\s+/, '')
+        : trimmed.replace(/^<h1[^>]*>([\s\S]*?)<\/h1>$/i, '$1');
+      blocks.push({ type: 'h1', content: text });
+      i++;
+      continue;
+    }
+
+    if (/^##\s+/.test(trimmed) || /^<h2[^>]*>[\s\S]*<\/h2>$/i.test(trimmed)) {
+      const text = trimmed.startsWith('## ')
+        ? trimmed.replace(/^##\s+/, '')
+        : trimmed.replace(/^<h2[^>]*>([\s\S]*?)<\/h2>$/i, '$1');
+      blocks.push({ type: 'h2', content: text });
+      i++;
+      continue;
+    }
+
+    if (/^###\s+/.test(trimmed) || /^<h3[^>]*>[\s\S]*<\/h3>$/i.test(trimmed)) {
+      const text = trimmed.startsWith('### ')
+        ? trimmed.replace(/^###\s+/, '')
+        : trimmed.replace(/^<h3[^>]*>([\s\S]*?)<\/h3>$/i, '$1');
+      blocks.push({ type: 'h3', content: text });
+      i++;
+      continue;
+    }
+
+    // Divider
+    if (/^---+$/.test(trimmed) || /^<hr\s*\/?>$/i.test(trimmed)) {
+      blocks.push({ type: 'hr' });
+      i++;
+      continue;
+    }
+
+    // Blockquote
+    if (
+      /^>\s*/.test(trimmed) ||
+      /^<blockquote[^>]*>[\s\S]*<\/blockquote>$/i.test(trimmed)
+    ) {
+      if (trimmed.startsWith('<blockquote')) {
+        const text = trimmed
+          .replace(/^<blockquote[^>]*>([\s\S]*?)<\/blockquote>$/i, '$1')
+          .replace(/<p[^>]*>/gi, '')
+          .replace(/<\/p>/gi, '<br />');
+        blocks.push({ type: 'blockquote', content: text });
+        i++;
+      } else {
+        const quoteLines: string[] = [];
+        while (i < lines.length && /^>\s*/.test(lines[i].trim())) {
+          quoteLines.push(lines[i].trim().replace(/^>\s*/, ''));
+          i++;
+        }
+        blocks.push({ type: 'blockquote', content: quoteLines.join('<br />') });
+      }
+      continue;
+    }
+
+    // Unordered List
+    if (/^[-*]\s+/.test(trimmed) || /^<ul[^>]*>[\s\S]*<\/ul>$/i.test(trimmed)) {
+      if (trimmed.startsWith('<ul')) {
+        const items = Array.from(
+          trimmed.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)
+        ).map((m) => m[1]);
+        blocks.push({ type: 'ul', items });
+        i++;
+      } else {
+        const items: string[] = [];
+        while (i < lines.length && /^[-*]\s+/.test(lines[i].trim())) {
+          items.push(lines[i].trim().replace(/^[-*]\s+/, ''));
+          i++;
+        }
+        blocks.push({ type: 'ul', items });
+      }
+      continue;
+    }
+
+    // Ordered List
+    if (
+      /^\d+\.\s+/.test(trimmed) ||
+      /^<ol[^>]*>[\s\S]*<\/ol>$/i.test(trimmed)
+    ) {
+      if (trimmed.startsWith('<ol')) {
+        const items = Array.from(
+          trimmed.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)
+        ).map((m) => m[1]);
+        blocks.push({ type: 'ol', items });
+        i++;
+      } else {
+        const items: string[] = [];
+        while (i < lines.length && /^\d+\.\s+/.test(lines[i].trim())) {
+          items.push(lines[i].trim().replace(/^\d+\.\s+/, ''));
+          i++;
+        }
+        blocks.push({ type: 'ol', items });
+      }
+      continue;
+    }
+
+    // Paragraph: collect lines until blank line or next block element
+    const paraLines: string[] = [];
+    while (
+      i < lines.length &&
+      lines[i].trim() &&
+      !lines[i].trim().startsWith('```') &&
+      !/^#{1,6}\s+/.test(lines[i].trim()) &&
+      !/^>\s*/.test(lines[i].trim()) &&
+      !/^[-*]\s+/.test(lines[i].trim()) &&
+      !/^\d+\.\s+/.test(lines[i].trim()) &&
+      !/^---+$/.test(lines[i].trim()) &&
+      !/^<(h[1-6]|blockquote|ul|ol|pre)[\s\S]*>/i.test(lines[i].trim())
+    ) {
+      paraLines.push(lines[i].trim());
+      i++;
+    }
+
+    if (paraLines.length > 0) {
+      paraLines.forEach((line) => {
+        if (line) {
+          blocks.push({ type: 'paragraph', content: line });
+        }
+      });
+    }
+  }
+
+  return blocks;
+}
+
+export const ArticleContent: React.FC<ArticleContentProps> = ({ content }) => {
+  const blocks = parseMarkdownToBlocks(content);
 
   return (
     <div className="prose prose-invert max-w-none font-sans text-foreground/90 leading-relaxed space-y-6">
-      {sections.map((section, idx) => {
-        if (section.startsWith('```')) {
-          const firstLineEnd = section.indexOf('\n');
-          const language =
-            firstLineEnd > 3 ? section.slice(3, firstLineEnd).trim() : 'code';
-          const code =
-            firstLineEnd > 3
-              ? section.slice(firstLineEnd + 1, -3)
-              : section.slice(3, -3);
-
-          return <CodeBlock key={idx} language={language} code={code} />;
+      {blocks.map((block, idx) => {
+        if (block.type === 'code') {
+          return (
+            <CodeBlock
+              key={idx}
+              language={block.language || 'code'}
+              code={block.code || ''}
+            />
+          );
         }
 
-        // Parse markdown blocks separated by double newlines
-        const blocks = section.split(/\n\n+/).filter(Boolean);
+        if (block.type === 'h1') {
+          return (
+            <h1
+              key={idx}
+              className="font-mono text-2xl md:text-3xl font-bold tracking-tight text-foreground mt-8 mb-4 border-b border-border/40 pb-2"
+              dangerouslySetInnerHTML={{
+                __html: formatInlineMarkdown(block.content || ''),
+              }}
+            />
+          );
+        }
 
-        return (
-          <React.Fragment key={idx}>
-            {blocks.map((block, bIdx) => {
-              const trimmed = block.trim();
-              if (!trimmed) return null;
+        if (block.type === 'h2') {
+          return (
+            <h2
+              key={idx}
+              className="font-mono text-xl md:text-2xl font-bold tracking-tight text-foreground mt-8 mb-4 border-b border-border/40 pb-2"
+              dangerouslySetInnerHTML={{
+                __html: formatInlineMarkdown(block.content || ''),
+              }}
+            />
+          );
+        }
 
-              // Heading 1 (# Heading or <h1>Heading</h1>)
-              if (
-                trimmed.startsWith('# ') ||
-                /^<h1[^>]*>[\s\S]*<\/h1>$/i.test(trimmed)
-              ) {
-                const headingText = trimmed.startsWith('# ')
-                  ? trimmed.replace(/^#\s+/, '')
-                  : trimmed.replace(/^<h1[^>]*>([\s\S]*?)<\/h1>$/i, '$1');
+        if (block.type === 'h3') {
+          return (
+            <h3
+              key={idx}
+              className="font-mono text-lg font-bold text-foreground mt-6 mb-3"
+              dangerouslySetInnerHTML={{
+                __html: formatInlineMarkdown(block.content || ''),
+              }}
+            />
+          );
+        }
 
-                return (
-                  <h1
-                    key={bIdx}
-                    className="font-mono text-2xl md:text-3xl font-bold tracking-tight text-foreground mt-8 mb-4 border-b border-border/40 pb-2"
-                    dangerouslySetInnerHTML={{
-                      __html: formatInlineMarkdown(headingText),
-                    }}
-                  />
-                );
-              }
+        if (block.type === 'hr') {
+          return <hr key={idx} className="my-8 border-border/60" />;
+        }
 
-              // Heading 2 (## Heading or <h2>Heading</h2>)
-              if (
-                trimmed.startsWith('## ') ||
-                /^<h2[^>]*>[\s\S]*<\/h2>$/i.test(trimmed)
-              ) {
-                const headingText = trimmed.startsWith('## ')
-                  ? trimmed.replace(/^##\s+/, '')
-                  : trimmed.replace(/^<h2[^>]*>([\s\S]*?)<\/h2>$/i, '$1');
+        if (block.type === 'blockquote') {
+          return (
+            <blockquote
+              key={idx}
+              className="border-l-4 border-primary pl-4 py-2 italic text-muted-foreground text-sm md:text-base my-4 bg-primary/5 rounded-r-lg"
+              dangerouslySetInnerHTML={{
+                __html: formatInlineMarkdown(block.content || ''),
+              }}
+            />
+          );
+        }
 
-                return (
-                  <h2
-                    key={bIdx}
-                    className="font-mono text-xl md:text-2xl font-bold tracking-tight text-foreground mt-8 mb-4 flex items-center gap-2 border-b border-border/40 pb-2"
-                  >
-                    <span className="text-primary font-bold text-base">##</span>
-                    <span
-                      dangerouslySetInnerHTML={{
-                        __html: formatInlineMarkdown(headingText),
-                      }}
-                    />
-                  </h2>
-                );
-              }
-
-              // Heading 3 (### Heading or <h3>Heading</h3>)
-              if (
-                trimmed.startsWith('### ') ||
-                /^<h3[^>]*>[\s\S]*<\/h3>$/i.test(trimmed)
-              ) {
-                const headingText = trimmed.startsWith('### ')
-                  ? trimmed.replace(/^###\s+/, '')
-                  : trimmed.replace(/^<h3[^>]*>([\s\S]*?)<\/h3>$/i, '$1');
-
-                return (
-                  <h3
-                    key={bIdx}
-                    className="font-mono text-lg font-bold text-foreground mt-6 mb-3 flex items-center gap-2"
-                  >
-                    <span className="text-primary font-bold text-sm">###</span>
-                    <span
-                      dangerouslySetInnerHTML={{
-                        __html: formatInlineMarkdown(headingText),
-                      }}
-                    />
-                  </h3>
-                );
-              }
-
-              // Divider
-              if (trimmed === '---' || /^<hr\s*\/?>$/i.test(trimmed)) {
-                return <hr key={bIdx} className="my-8 border-border/60" />;
-              }
-
-              // Blockquotes
-              if (
-                trimmed.startsWith('> ') ||
-                /^<blockquote[^>]*>[\s\S]*<\/blockquote>$/i.test(trimmed)
-              ) {
-                const quoteText = trimmed.startsWith('> ')
-                  ? trimmed.replace(/^>\s*/gm, '')
-                  : trimmed.replace(
-                      /^<blockquote[^>]*>([\s\S]*?)<\/blockquote>$/i,
-                      '$1'
-                    );
-
-                return (
-                  <blockquote
-                    key={bIdx}
-                    className="border-l-4 border-primary pl-4 py-2 italic text-muted-foreground text-sm md:text-base my-4 bg-primary/5 rounded-r-lg"
-                    dangerouslySetInnerHTML={{
-                      __html: formatInlineMarkdown(quoteText),
-                    }}
-                  />
-                );
-              }
-
-              // Check for ordered lists (1. item, 2. item or <ol><li>...</li></ol>)
-              if (/^<ol[^>]*>[\s\S]*<\/ol>$/i.test(trimmed)) {
-                return (
-                  <div
-                    key={bIdx}
-                    className="my-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:text-sm [&_li]:md:text-base [&_li]:text-muted-foreground [&_li]:leading-relaxed [&_li]:my-1.5"
-                    dangerouslySetInnerHTML={{
-                      __html: formatInlineMarkdown(trimmed),
-                    }}
-                  />
-                );
-              }
-
-              const lines = trimmed.split('\n');
-              const hasOrderedItems = lines.some((l) =>
-                /^\d+\.\s+/.test(l.trim())
-              );
-              if (hasOrderedItems) {
-                return (
-                  <ol key={bIdx} className="list-decimal pl-6 space-y-2 my-4">
-                    {lines
-                      .filter((l) => /^\d+\.\s+/.test(l.trim()))
-                      .map((item, oIdx) => (
-                        <li
-                          key={oIdx}
-                          className="text-sm md:text-base text-muted-foreground leading-relaxed"
-                          dangerouslySetInnerHTML={{
-                            __html: formatInlineMarkdown(
-                              item.replace(/^\d+\.\s+/, '')
-                            ),
-                          }}
-                        />
-                      ))}
-                  </ol>
-                );
-              }
-
-              // Check if block contains unordered list items or <ul><li>...</li></ul>
-              if (/^<ul[^>]*>[\s\S]*<\/ul>$/i.test(trimmed)) {
-                return (
-                  <div
-                    key={bIdx}
-                    className="my-4 [&_ul]:list-disc [&_ul]:pl-6 [&_li]:text-sm [&_li]:md:text-base [&_li]:text-muted-foreground [&_li]:leading-relaxed [&_li]:my-1.5"
-                    dangerouslySetInnerHTML={{
-                      __html: formatInlineMarkdown(trimmed),
-                    }}
-                  />
-                );
-              }
-
-              const hasListItems = lines.some(
-                (l) => l.trim().startsWith('- ') || l.trim().startsWith('* ')
-              );
-
-              if (hasListItems) {
-                const leadInLines: string[] = [];
-                const listLines: string[] = [];
-                let isListMode = false;
-
-                lines.forEach((line) => {
-                  const lineTrimmed = line.trim();
-                  if (
-                    lineTrimmed.startsWith('- ') ||
-                    lineTrimmed.startsWith('* ')
-                  ) {
-                    isListMode = true;
-                    listLines.push(lineTrimmed.slice(2));
-                  } else if (isListMode) {
-                    listLines.push(lineTrimmed);
-                  } else {
-                    leadInLines.push(lineTrimmed);
-                  }
-                });
-
-                return (
-                  <div key={bIdx} className="space-y-3 my-4">
-                    {leadInLines.length > 0 && (
-                      <p
-                        className="text-sm md:text-base leading-relaxed text-muted-foreground"
-                        dangerouslySetInnerHTML={{
-                          __html: formatInlineMarkdown(leadInLines.join(' ')),
-                        }}
-                      />
-                    )}
-                    <ul className="list-none space-y-2.5 pl-2">
-                      {listLines.map((item, iIdx) => (
-                        <li
-                          key={iIdx}
-                          className="flex items-start gap-2.5 text-sm md:text-base text-muted-foreground"
-                        >
-                          <span className="h-1.5 w-1.5 rounded-full bg-primary mt-2 shrink-0" />
-                          <span
-                            dangerouslySetInnerHTML={{
-                              __html: formatInlineMarkdown(item),
-                            }}
-                          />
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                );
-              }
-
-              return (
-                <p
-                  key={bIdx}
-                  className="text-sm md:text-base leading-relaxed text-muted-foreground"
+        if (block.type === 'ul') {
+          return (
+            <ul key={idx} className="list-disc pl-6 space-y-2 my-4">
+              {block.items?.map((item, iIdx) => (
+                <li
+                  key={iIdx}
+                  className="text-sm md:text-base text-muted-foreground leading-relaxed"
                   dangerouslySetInnerHTML={{
-                    __html: formatInlineMarkdown(trimmed),
+                    __html: formatInlineMarkdown(item),
                   }}
                 />
-              );
-            })}
-          </React.Fragment>
+              ))}
+            </ul>
+          );
+        }
+
+        if (block.type === 'ol') {
+          return (
+            <ol key={idx} className="list-decimal pl-6 space-y-2 my-4">
+              {block.items?.map((item, iIdx) => (
+                <li
+                  key={iIdx}
+                  className="text-sm md:text-base text-muted-foreground leading-relaxed"
+                  dangerouslySetInnerHTML={{
+                    __html: formatInlineMarkdown(item),
+                  }}
+                />
+              ))}
+            </ol>
+          );
+        }
+
+        return (
+          <p
+            key={idx}
+            className="text-sm md:text-base leading-relaxed text-muted-foreground my-3"
+            dangerouslySetInnerHTML={{
+              __html: formatInlineMarkdown(block.content || ''),
+            }}
+          />
         );
       })}
     </div>
@@ -314,11 +365,12 @@ function formatInlineMarkdown(text: string): string {
       .replace(/&gt;/g, '>')
       .replace(/&quot;/g, '"')
       .replace(/&apos;/g, "'")
-      // Bold
+      // Bold + Italic
       .replace(
         /\*\*\*(.*?)\*\*\*/g,
-        '<strong class="text-foreground font-semibold">$1</strong>'
+        '<strong class="text-foreground font-semibold"><em>$1</em></strong>'
       )
+      // Bold
       .replace(
         /\*\*(.*?)\*\*/g,
         '<strong class="text-foreground font-semibold">$1</strong>'
@@ -357,7 +409,6 @@ function formatInlineMarkdown(text: string): string {
         /\[([^\]]+)\]\(([^)]+)\)/g,
         '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-primary underline underline-offset-2 hover:opacity-80">$1</a>'
       )
-      .replace(/\n/g, '<br />')
   );
 }
 
