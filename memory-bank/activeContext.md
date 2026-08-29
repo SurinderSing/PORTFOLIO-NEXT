@@ -1,13 +1,16 @@
 # Memory Bank - Active Context
 
 ## Active Focus
-The current focus is **Phase 22: Middleware Dashboard Deprecation & Role-Based Auth Redirects (Completed)**.
+The current focus is **Phase 23: Sign-Up Form Placeholder Sanitization (Completed)**.
 
 ---
 
 ## Recently Completed
 
-1. **Middleware Dashboard Deprecation & Role-Based Auth Navigation:**
+1. **Sign-Up Form Placeholder Sanitization:**
+   - **Neutral Dummy Placeholders (`src/components/auth/sign-up/form/index.tsx`):** Sanitized form input placeholders to replace personal identifiers (`Surinder`, `Singh`, `admin@surinder.dev`, `admin_user`, `+91 9876543210`) with standard, neutral dummy examples (`john_doe`, `John`, `Doe`, `john.doe@example.com`, `+15551234567`). Preserved sign-in form placeholders (`user@example.com`, `••••••••`) as confirmed.
+
+2. **Middleware Dashboard Deprecation & Role-Based Auth Navigation:**
    - **Legacy `/dashboard` Alias Redirection (`src/utils/supabase/middleware.ts`):** Deprecated `/dashboard` route protection since `/dashboard` does not exist; any requests to `/dashboard` or `/dashboard/*` are now cleanly rewritten and redirected to `/admin` or `/admin/*`.
    - **Smart Role-Based Auth Page Redirects (`src/utils/supabase/middleware.ts`):** When an authenticated user visits `/sign-in` or `/sign-up`, the middleware now checks for an explicit `?redirect=` target first; if none, it inspects `profiles.role` to redirect admins to `/admin` and general members to `/blog`.
 

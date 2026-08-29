@@ -98,7 +98,7 @@ const SignUpForm: React.FC = () => {
         <input
           type="text"
           id="user-name"
-          placeholder="admin_user"
+          placeholder="john_doe"
           {...register('username')}
           className="text-xs bg-background/80"
         />
@@ -113,7 +113,7 @@ const SignUpForm: React.FC = () => {
           <input
             type="text"
             id="first-name"
-            placeholder="Surinder"
+            placeholder="John"
             {...register('firstName')}
             className="text-xs bg-background/80"
           />
@@ -126,7 +126,7 @@ const SignUpForm: React.FC = () => {
           <input
             type="text"
             id="last-name"
-            placeholder="Singh"
+            placeholder="Doe"
             {...register('lastName')}
             className="text-xs bg-background/80"
           />
@@ -141,7 +141,7 @@ const SignUpForm: React.FC = () => {
         <input
           type="email"
           id="email"
-          placeholder="admin@surinder.dev"
+          placeholder="john.doe@example.com"
           {...register('email')}
           className="text-xs bg-background/80"
         />
@@ -153,7 +153,7 @@ const SignUpForm: React.FC = () => {
         <input
           type="tel"
           id="phone"
-          placeholder="+91 9876543210"
+          placeholder="+15551234567"
           {...register('phone')}
           className="text-xs bg-background/80"
         />
