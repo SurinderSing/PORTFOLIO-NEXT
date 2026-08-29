@@ -26,10 +26,16 @@
 - [x] Phase 19: Experience & Skills-Aligned Technical Blog System (10 In-Depth Articles)
 - [x] Phase 20: Auth Flow, Verification Redirection & Post-Login Navigation Polish
 - [x] Phase 21: Vercel Speed Insights & Web Analytics Integration
+- [x] Phase 22: Middleware Dashboard Deprecation & Role-Based Auth Redirects
 
 ---
 
 ## Detailed Task Checklist
+
+### Phase 22: Middleware Dashboard Deprecation & Role-Based Auth Redirects (100% Completed)
+- [x] Redirect `/dashboard` and `/dashboard/*` to `/admin` and `/admin/*` in `src/utils/supabase/middleware.ts`.
+- [x] Route signed-in users on `/sign-in` and `/sign-up` to `/admin` if role is `ADMIN`, or `/blog` if general member.
+- [x] Verify production build passes with 0 errors via `npm run build`.
 
 ### Phase 21: Vercel Speed Insights & Web Analytics Integration (100% Completed)
 - [x] Install `@vercel/speed-insights` and `@vercel/analytics` in `package.json`.

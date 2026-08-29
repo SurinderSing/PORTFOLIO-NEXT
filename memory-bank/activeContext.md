@@ -1,13 +1,17 @@
 # Memory Bank - Active Context
 
 ## Active Focus
-The current focus is **Phase 21: Vercel Speed Insights & Web Analytics Integration (Completed)**.
+The current focus is **Phase 22: Middleware Dashboard Deprecation & Role-Based Auth Redirects (Completed)**.
 
 ---
 
 ## Recently Completed
 
-1. **Vercel Speed Insights & Web Analytics Integration:**
+1. **Middleware Dashboard Deprecation & Role-Based Auth Navigation:**
+   - **Legacy `/dashboard` Alias Redirection (`src/utils/supabase/middleware.ts`):** Deprecated `/dashboard` route protection since `/dashboard` does not exist; any requests to `/dashboard` or `/dashboard/*` are now cleanly rewritten and redirected to `/admin` or `/admin/*`.
+   - **Smart Role-Based Auth Page Redirects (`src/utils/supabase/middleware.ts`):** When an authenticated user visits `/sign-in` or `/sign-up`, the middleware now checks for an explicit `?redirect=` target first; if none, it inspects `profiles.role` to redirect admins to `/admin` and general members to `/blog`.
+
+2. **Vercel Speed Insights & Web Analytics Integration:**
    - **Package Installations (`package.json`):** Added `@vercel/speed-insights` (v2.0.0) for Real Experience Score & Core Web Vitals tracking, and `@vercel/analytics` (v2.0.1) for visitor traffic, page views, and geographic analytics.
    - **Root Website Layout Embedding (`src/app/(website)/layout.tsx`):** Injected `<SpeedInsights />` and `<Analytics />` into the main application layout under `<ThemeProvider>`, ensuring performance telemetry and visitor event collection across the homepage, work portfolio, blog articles, resume, and contact pages.
 

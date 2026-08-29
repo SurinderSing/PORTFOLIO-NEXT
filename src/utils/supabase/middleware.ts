@@ -71,13 +71,10 @@ export async function updateSession(
       }
     }
 
-    // General dashboard protection: Must be authenticated
+    // Legacy dashboard route alias: /dashboard does not exist, redirect to /admin
     if (url.pathname.startsWith('/dashboard')) {
-      if (!user) {
-        url.pathname = '/sign-in';
-        url.searchParams.set('redirect', request.nextUrl.pathname);
-        return NextResponse.redirect(url);
-      }
+      url.pathname = url.pathname.replace(/^\/dashboard/, '/admin') || '/admin';
+      return NextResponse.redirect(url);
     }
 
     // Redirect signed-in users away from auth pages
@@ -86,7 +83,19 @@ export async function updateSession(
       (url.pathname.startsWith('/sign-in') ||
         url.pathname.startsWith('/sign-up'))
     ) {
-      url.pathname = '/blog';
+      const redirectParam = request.nextUrl.searchParams.get('redirect');
+      if (redirectParam) {
+        return NextResponse.redirect(new URL(redirectParam, request.url));
+      }
+
+      // Check role to direct admins to /admin and members to /blog
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+      url.pathname = profile?.role === 'ADMIN' ? '/admin' : '/blog';
       return NextResponse.redirect(url);
     }
   } catch {
