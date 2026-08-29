@@ -234,6 +234,89 @@ export const blogApi = {
       delayMs
     );
   },
+
+  /**
+   * Create a new blog post (delegates to server action)
+   */
+  async createPost(data: {
+    title: string;
+    slug: string;
+    excerpt?: string | null;
+    content: string;
+    cover_image_url?: string | null;
+    tags?: string[];
+    status?: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED' | 'PENDING_REVIEW';
+  }) {
+    const { createUserBlogPostAction } = await import('@/lib/admin-actions');
+    return createUserBlogPostAction(data);
+  },
+
+  /**
+   * Update an existing blog post (author or admin)
+   */
+  async updatePost(
+    id: string,
+    data: {
+      title?: string;
+      slug?: string;
+      excerpt?: string | null;
+      content?: string;
+      cover_image_url?: string | null;
+      tags?: string[];
+      status?: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED' | 'PENDING_REVIEW';
+    }
+  ) {
+    const { updateUserBlogPostAction } = await import('@/lib/admin-actions');
+    return updateUserBlogPostAction(id, data);
+  },
+
+  /**
+   * Delete a blog post (author or admin)
+   */
+  async deletePost(id: string) {
+    const { deleteUserBlogPostAction } = await import('@/lib/admin-actions');
+    return deleteUserBlogPostAction(id);
+  },
+
+  /**
+   * Approve a pending post (admin only)
+   */
+  async approvePost(id: string) {
+    const { approveBlogPostAction } = await import('@/lib/admin-actions');
+    return approveBlogPostAction(id);
+  },
+
+  /**
+   * Reject a pending post (admin only)
+   */
+  async rejectPost(id: string) {
+    const { rejectBlogPostAction } = await import('@/lib/admin-actions');
+    return rejectBlogPostAction(id);
+  },
+
+  /**
+   * Fetch a blog post for editing (verifies author/admin)
+   */
+  async getPostForEdit(slug: string) {
+    const { getBlogPostForEditAction } = await import('@/lib/admin-actions');
+    return getBlogPostForEditAction(slug);
+  },
+
+  /**
+   * Fetch author's own posts across all statuses (draft, pending, published)
+   */
+  async getUserPosts() {
+    const { getUserBlogPostsAction } = await import('@/lib/admin-actions');
+    return getUserBlogPostsAction();
+  },
+
+  /**
+   * Fetch all posts for admin moderation and management
+   */
+  async getAdminPosts() {
+    const { getAdminBlogPostsAction } = await import('@/lib/admin-actions');
+    return getAdminBlogPostsAction();
+  },
 };
 
 export default blogApi;

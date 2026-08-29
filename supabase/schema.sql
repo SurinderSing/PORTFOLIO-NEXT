@@ -328,7 +328,7 @@ create table if not exists public.blog_posts (
   excerpt text,
   cover_image_url text,
   tags text[] default '{}',
-  status text default 'DRAFT' check (status in ('DRAFT', 'PUBLISHED', 'ARCHIVED')),
+  status text default 'DRAFT' check (status in ('DRAFT', 'PUBLISHED', 'ARCHIVED', 'PENDING_REVIEW')),
   published_at timestamp with time zone,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) null
@@ -677,7 +677,7 @@ create table if not exists public.blog_posts (
   excerpt text,
   cover_image_url text,
   tags text[] default '{}',
-  status text not null default 'DRAFT' check (status in ('DRAFT', 'PUBLISHED', 'ARCHIVED')),
+  status text not null default 'DRAFT' check (status in ('DRAFT', 'PUBLISHED', 'ARCHIVED', 'PENDING_REVIEW')),
   published_at timestamp with time zone,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null

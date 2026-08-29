@@ -8,8 +8,8 @@ import {
   getSkillsByCategory,
   getExperiences,
   getProjects,
-  getBlogPosts,
 } from '@/lib/supabase-queries';
+import { getAdminBlogPostsAction } from '@/lib/admin-actions';
 import {
   Settings,
   Phone,
@@ -44,7 +44,7 @@ export default async function AdminOverviewPage() {
     getSkillsByCategory(),
     getExperiences(),
     getProjects(),
-    getBlogPosts({ status: undefined }),
+    getAdminBlogPostsAction(),
   ]);
 
   const totalSkills = skillCategories.reduce(

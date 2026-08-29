@@ -162,6 +162,7 @@ export default function BlogForm({
                 className="w-full rounded-lg border border-border bg-background px-3 py-2 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
               >
                 <option value="DRAFT">Draft (Hidden)</option>
+                <option value="PENDING_REVIEW">Pending Review</option>
                 <option value="PUBLISHED">Published (Live)</option>
                 <option value="ARCHIVED">Archived</option>
               </select>

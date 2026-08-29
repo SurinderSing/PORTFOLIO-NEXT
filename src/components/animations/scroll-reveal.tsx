@@ -26,7 +26,7 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
   duration = 0.4,
   className = '',
   yOffset = 30,
-  staggerChildren = 0,
+  staggerChildren = 0.06,
   once = true,
 }) => {
   const shouldReduceMotion = useReducedMotion();
@@ -58,7 +58,7 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({
     <motion.div
       initial={isInitialLoad.current ? 'hidden' : false}
       whileInView="visible"
-      viewport={{ once, margin: '-10px', amount: 0.1 }}
+      viewport={{ once: true, amount: 0.05 }}
       variants={containerVariants}
       className={className}
     >
@@ -98,7 +98,13 @@ export const ScrollRevealItem: React.FC<ScrollRevealItemProps> = ({
   };
 
   return (
-    <motion.div variants={itemVariants} className={className}>
+    <motion.div
+      variants={itemVariants}
+      className={className}
+      initial={hasHydrated ? false : 'hidden'}
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.05 }}
+    >
       {children}
     </motion.div>
   );
