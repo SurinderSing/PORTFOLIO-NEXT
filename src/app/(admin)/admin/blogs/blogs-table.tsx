@@ -91,12 +91,15 @@ export default function BlogsTable({
                       'rounded-md px-2 py-1 text-[11px] font-bold border focus:outline-none transition-colors cursor-pointer',
                       post.status === 'PUBLISHED'
                         ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30'
-                        : post.status === 'DRAFT'
+                        : post.status === 'PENDING_REVIEW'
                           ? 'bg-amber-500/10 text-amber-500 border-amber-500/30'
-                          : 'bg-muted text-muted-foreground border-border'
+                          : post.status === 'DRAFT'
+                            ? 'bg-zinc-500/10 text-zinc-400 border-zinc-500/30'
+                            : 'bg-muted text-muted-foreground border-border'
                     )}
                   >
                     <option value="DRAFT">Draft</option>
+                    <option value="PENDING_REVIEW">Pending Review</option>
                     <option value="PUBLISHED">Published</option>
                     <option value="ARCHIVED">Archived</option>
                   </select>

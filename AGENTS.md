@@ -21,6 +21,13 @@ Always run these commands to set up, build, or verify the application:
 To maintain project integrity, follow this three-tier ruleset:
 
 ### 🟩 Always Do
+- **Never Write Queries Directly in Client/UI Side (Highest Priority):** Always use APIs, Server Actions, or centralized Service Layer abstractions (`src/services/`, `src/lib/admin-actions.ts`, or `/api/...` route handlers) to execute queries and mutations. Client components and UI files must NEVER perform direct Supabase or database query operations. High-level UI components must always consume typed service endpoints.
+- **SOLID Principles (Highest Priority):** Strictly design and organize code according to SOLID principles:
+  - **Single Responsibility (SRP):** Each component, function, hook, or service class must have one single, well-defined responsibility.
+  - **Open/Closed (OCP):** Extend functionality via props, composition, or config abstractions rather than modifying shared core internals.
+  - **Liskov Substitution (LSP):** Ensure polymorphic components, types, and services adhere strictly to expected interfaces.
+  - **Interface Segregation (ISP):** Keep TypeScript interfaces, schemas, and prop types fine-grained and tailored to specific consumers.
+  - **Dependency Inversion (DIP):** High-level modules and UI components must depend on service abstractions/APIs, never on low-level database clients or implementation details.
 - **Keep Documentation Updated (Highest Priority):** Always update the repository documentation (`/docs/` specifications, instruction rules, memory bank files, and any related contexts) in the same PR or task session as the code changes. Never let documentation get out of sync with code modifications.
 - **DRY & Centralized Reusable Utilities (High Priority):** If a function, utility helper, calculation, or hook is going to be used in multiple places, create it once in a shared utility/hooks/lib module (`src/utils/`, `src/hooks/`, `src/lib/`) and import/reuse it everywhere. Never repeat identical or copy-pasted logic across multiple files.
 - **Single-Responsibility Component Design (High Priority):** Divide and structure components into small, focused subcomponents based on their distinct responsibilities (e.g. extract forms, list/table views, status alerts, header toolbars, and item cards into separate files). Do not bundle forms, tables, and dialogs into one monolithic component file.

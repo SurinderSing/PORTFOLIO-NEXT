@@ -21,8 +21,16 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   const resumeUrl =
     settings.resume_pdf_url || '/assets/Surinder-Singh-Resume.pdf';
 
-  const headingContent = settings.home_heading ? (
-    parse(settings.home_heading)
+  const normalizedHeading = (settings.home_heading || '')
+    .replace(/<p[^>]*>/gi, '')
+    .replace(/<\/p>/gi, '<br />')
+    .replace(/<div[^>]*>/gi, '')
+    .replace(/<\/div>/gi, '<br />')
+    .replace(/(<br\s*\/?>\s*)+/gi, '<br />')
+    .trim();
+
+  const headingContent = normalizedHeading ? (
+    parse(normalizedHeading)
   ) : (
     <>
       Hi, I&apos;m {settings.owner_name.split(' ')[0] || 'Surinder'}. <br />A{' '}
@@ -46,8 +54,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             <span>whoami</span>
           </div>
 
-          {/* Heading with styled spans */}
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-mono tracking-tight text-foreground leading-[1.2] [&_span]:text-primary [&_span]:font-bold">
+          {/* Heading with styled spans & uniform line-height */}
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-mono tracking-tight text-foreground leading-[1.3] sm:leading-[1.28] lg:leading-[1.25] [&_p]:inline [&_p]:m-0 [&_div]:inline [&_div]:m-0 [&_span]:text-primary [&_span]:font-bold [&_span]:inline">
             {headingContent}
           </h1>
 

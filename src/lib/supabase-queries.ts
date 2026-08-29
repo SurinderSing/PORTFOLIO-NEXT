@@ -923,6 +923,51 @@ export async function getBlogPostBySlug(
   return found || null;
 }
 
+/**
+ * Fetch a blog post for viewing by slug.
+ * Checks public published posts first; if not found, falls back to
+ * authenticated server client so authors and admins can preview drafts/pending reviews.
+ */
+export async function getBlogPostForViewing(
+  slug: string
+): Promise<BlogPost | null> {
+  // 1. Try public query first
+  const publicPost = await getBlogPostBySlug(slug);
+  if (publicPost && publicPost.status === 'PUBLISHED') {
+    return publicPost;
+  }
+
+  // 2. Fallback to authenticated server client (for author/admin drafts & pending review)
+  try {
+    const { createClient } = await import('@/utils/supabase/server');
+    const authSupabase = createClient();
+    const { data, error } = await authSupabase
+      .from('blog_posts')
+      .select(
+        '*, author:profiles(id, first_name, last_name, username, role, profile_picture), post_likes(id), comments(id)'
+      )
+      .eq('slug', slug)
+      .single();
+
+    if (!error && data) {
+      return {
+        ...data,
+        likes_count: Array.isArray((data as any).post_likes)
+          ? (data as any).post_likes.length
+          : 0,
+        comments_count: Array.isArray((data as any).comments)
+          ? (data as any).comments.length
+          : 0,
+      } as BlogPost;
+    }
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('getBlogPostForViewing auth fallback error:', err);
+  }
+
+  return publicPost || null;
+}
+
 export async function getCommentsByPostId(postId: string): Promise<Comment[]> {
   try {
     const supabase = createAnonClient();

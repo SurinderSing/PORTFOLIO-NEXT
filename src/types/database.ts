@@ -1,7 +1,7 @@
 export type UserRole = 'USER' | 'ADMIN' | 'MODERATOR';
 export type UserStatus = 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
 export type ExperienceType = 'EDUCATION' | 'WORK';
-export type PostStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+export type PostStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED' | 'PENDING_REVIEW';
 
 export interface StorageActionResult {
   success: boolean;
