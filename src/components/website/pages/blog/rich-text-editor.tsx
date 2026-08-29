@@ -31,6 +31,29 @@ interface RichTextEditorProps {
 }
 
 /**
+ * Format inline elements (bold, strikethrough, code, links, images, underline)
+ */
+function formatInlineElements(text: string): string {
+  return (
+    text
+      // Images
+      .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />')
+      // Links
+      .replace(
+        /\[([^\]]+)\]\(([^)]+)\)/g,
+        '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
+      )
+      // Bold
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/__(.+?)__/g, '<strong>$1</strong>')
+      // Strikethrough
+      .replace(/~~(.+?)~~/g, '<del>$1</del>')
+      // Inline Code
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+  );
+}
+
+/**
  * Idempotent, lossless Markdown to HTML converter
  */
 function markdownToHtml(markdown: string): string {
@@ -96,13 +119,13 @@ function markdownToHtml(markdown: string): string {
     }
 
     // Blockquote
-    if (/^>\s+/.test(trimmed)) {
+    if (/^>\s*/.test(trimmed)) {
       const quoteContent = trimmed
         .split('\n')
-        .map((l) => l.replace(/^>\s*/, ''))
+        .map((l: string) => l.replace(/^>\s*/, ''))
         .join('<br />');
       htmlBlocks.push(
-        `<blockquote>${formatInlineElements(quoteContent)}</blockquote>`
+        `<blockquote><p>${formatInlineElements(quoteContent)}</p></blockquote>`
       );
       continue;
     }
@@ -111,9 +134,10 @@ function markdownToHtml(markdown: string): string {
     if (/^[-*]\s+/.test(trimmed)) {
       const items = trimmed
         .split('\n')
-        .filter((l) => /^[-*]\s+/.test(l.trim()))
+        .filter((l: string) => /^[-*]\s+/.test(l.trim()))
         .map(
-          (l) => `<li>${formatInlineElements(l.replace(/^[-*]\s+/, ''))}</li>`
+          (l: string) =>
+            `<li>${formatInlineElements(l.replace(/^[-*]\s+/, ''))}</li>`
         )
         .join('');
       htmlBlocks.push(`<ul>${items}</ul>`);
@@ -124,9 +148,10 @@ function markdownToHtml(markdown: string): string {
     if (/^\d+\.\s+/.test(trimmed)) {
       const items = trimmed
         .split('\n')
-        .filter((l) => /^\d+\.\s+/.test(l.trim()))
+        .filter((l: string) => /^\d+\.\s+/.test(l.trim()))
         .map(
-          (l) => `<li>${formatInlineElements(l.replace(/^\d+\.\s+/, ''))}</li>`
+          (l: string) =>
+            `<li>${formatInlineElements(l.replace(/^\d+\.\s+/, ''))}</li>`
         )
         .join('');
       htmlBlocks.push(`<ol>${items}</ol>`);
@@ -139,29 +164,6 @@ function markdownToHtml(markdown: string): string {
   }
 
   return htmlBlocks.length > 0 ? htmlBlocks.join('\n') : '<p><br></p>';
-}
-
-/**
- * Format inline elements (bold, strikethrough, code, links, images, underline)
- */
-function formatInlineElements(text: string): string {
-  return (
-    text
-      // Images
-      .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />')
-      // Links
-      .replace(
-        /\[([^\]]+)\]\(([^)]+)\)/g,
-        '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
-      )
-      // Bold
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      .replace(/__(.+?)__/g, '<strong>$1</strong>')
-      // Strikethrough
-      .replace(/~~(.+?)~~/g, '<del>$1</del>')
-      // Inline Code
-      .replace(/`([^`]+)`/g, '<code>$1</code>')
-  );
 }
 
 /**
@@ -185,24 +187,34 @@ function htmlToMarkdown(html: string): string {
     // Code blocks
     .replace(
       /<pre><code(?:\s+class="language-([a-z0-9_-]+)")?>([\s\S]*?)<\/code><\/pre>/gi,
-      (_match, lang, code) => `\`\`\`${lang || ''}\n${code.trim()}\n\`\`\`\n\n`
+      (_match: string, lang: string, code: string) =>
+        `\`\`\`${lang || ''}\n${code.trim()}\n\`\`\`\n\n`
     )
     .replace(/<pre[^>]*>([\s\S]*?)<\/pre>/gi, '```\n$1\n```\n\n')
     // Blockquote
-    .replace(/<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi, (_match, quote) => {
-      const cleanQuote = quote
-        .replace(/<p[^>]*>/gi, '')
-        .replace(/<\/p>/gi, '\n');
-      return `> ${cleanQuote.trim()}\n\n`;
-    })
+    .replace(
+      /<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi,
+      (_match: string, quote: string) => {
+        const clean = quote
+          .replace(/<p[^>]*>/gi, '')
+          .replace(/<\/p>/gi, '\n')
+          .replace(/<br\s*\/?>/gi, '\n');
+        const lines = clean
+          .trim()
+          .split('\n')
+          .map((l: string) => (l.trim() ? `> ${l.trim()}` : '>'))
+          .join('\n');
+        return `${lines}\n\n`;
+      }
+    )
     // Lists
-    .replace(/<ul[^>]*>([\s\S]*?)<\/ul>/gi, (_match, list) => {
+    .replace(/<ul[^>]*>([\s\S]*?)<\/ul>/gi, (_match: string, list: string) => {
       const items = list
         .replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, '- $1\n')
         .trim();
       return `${items}\n\n`;
     })
-    .replace(/<ol[^>]*>([\s\S]*?)<\/ol>/gi, (_match, list) => {
+    .replace(/<ol[^>]*>([\s\S]*?)<\/ol>/gi, (_match: string, list: string) => {
       let index = 1;
       const items = list
         .replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, () => `${index++}. $1\n`)
@@ -214,25 +226,142 @@ function htmlToMarkdown(html: string): string {
     .replace(/<b>([\s\S]*?)<\/b>/gi, '**$1**')
     .replace(/<del>([\s\S]*?)<\/del>/gi, '~~$1~~')
     .replace(/<strike>([\s\S]*?)<\/strike>/gi, '~~$1~~')
+    .replace(/<s>([\s\S]*?)<\/s>/gi, '~~$1~~')
     .replace(/<code>([\s\S]*?)<\/code>/gi, '`$1`')
     // Links & Images
     .replace(/<a[^>]+href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi, '[$2]($1)')
     .replace(
       /<img[^>]+src="([^"]+)"(?:\s+alt="([^"]*)")?[^>]*>/gi,
-      (_match, src, alt) => `![${alt || ''}](${src})`
+      (_match: string, src: string, alt: string) => `![${alt || ''}](${src})`
     )
     // Paragraphs
     .replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, '$1\n\n')
     .replace(/<div[^>]*>([\s\S]*?)<\/div>/gi, '$1\n')
     // Horizontal Rule
     .replace(/<hr\s*\/?>/gi, '\n---\n\n')
-    // Clean any residual HTML tags
+    // Clean any residual HTML tags except formatting tags
     .replace(/<(?!\/?(u|span|mark))[^>]+>/g, '')
     // Normalize excessive newlines to double newlines
     .replace(/\n{3,}/g, '\n\n')
     .trim();
 
   return result;
+}
+
+/**
+ * Finds the closest ancestor element matching tag names within the editor root
+ */
+function findClosestAncestor(
+  root: HTMLElement | null,
+  tagNames: string[]
+): HTMLElement | null {
+  if (!root) return null;
+  const selection = window.getSelection();
+  if (!selection || selection.rangeCount === 0) return null;
+
+  const normalizedTags = tagNames.map((t) => t.toUpperCase());
+  let node: Node | null = selection.anchorNode;
+
+  while (node && node !== root) {
+    if (
+      node.nodeType === Node.ELEMENT_NODE &&
+      normalizedTags.includes((node as HTMLElement).tagName.toUpperCase())
+    ) {
+      return node as HTMLElement;
+    }
+    node = node.parentNode;
+  }
+  return null;
+}
+
+/**
+ * Unwraps a blockquote, preserving child paragraphs or wrapping inline text into paragraphs
+ */
+function unwrapBlockquote(bq: HTMLElement) {
+  const parent = bq.parentNode;
+  if (!parent) return;
+
+  const children = Array.from(bq.childNodes);
+  const blockTags = [
+    'P',
+    'DIV',
+    'H1',
+    'H2',
+    'H3',
+    'H4',
+    'H5',
+    'H6',
+    'UL',
+    'OL',
+    'PRE',
+    'HR',
+    'TABLE',
+  ];
+
+  if (children.length === 0) {
+    const p = document.createElement('p');
+    p.innerHTML = '<br>';
+    parent.replaceChild(p, bq);
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+  let currentP: HTMLParagraphElement | null = null;
+
+  children.forEach((child) => {
+    const isBlock =
+      child.nodeType === Node.ELEMENT_NODE &&
+      blockTags.includes((child as HTMLElement).tagName.toUpperCase());
+
+    if (isBlock) {
+      if (currentP) {
+        fragment.appendChild(currentP);
+        currentP = null;
+      }
+      fragment.appendChild(child);
+    } else {
+      if (!currentP) {
+        currentP = document.createElement('p');
+      }
+      currentP.appendChild(child);
+    }
+  });
+
+  if (currentP) {
+    fragment.appendChild(currentP);
+  }
+
+  parent.replaceChild(fragment, bq);
+}
+
+/**
+ * Unwraps a code block (<pre>), converting lines into <p> paragraphs
+ */
+function unwrapCodeBlock(pre: HTMLElement) {
+  const parent = pre.parentNode;
+  if (!parent) return;
+
+  const text = pre.textContent || '';
+  const lines = text.split('\n');
+  const fragment = document.createDocumentFragment();
+
+  if (lines.length === 0 || (lines.length === 1 && !lines[0].trim())) {
+    const p = document.createElement('p');
+    p.innerHTML = '<br>';
+    fragment.appendChild(p);
+  } else {
+    lines.forEach((line) => {
+      const p = document.createElement('p');
+      if (line.trim()) {
+        p.textContent = line;
+      } else {
+        p.innerHTML = '<br>';
+      }
+      fragment.appendChild(p);
+    });
+  }
+
+  parent.replaceChild(fragment, pre);
 }
 
 interface ActiveFormats {
@@ -271,16 +400,16 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
   );
   const isUpdatingRef = useRef(false);
 
-  // Detect current cursor active formatting
+  // Detect current cursor active formatting across DOM hierarchy and native query states
   const updateActiveFormats = useCallback(() => {
     if (!editorRef.current) return;
 
     try {
-      const bold = document.queryCommandState('bold');
-      const underline = document.queryCommandState('underline');
-      const strikeThrough = document.queryCommandState('strikeThrough');
-      const unorderedList = document.queryCommandState('insertUnorderedList');
-      const orderedList = document.queryCommandState('insertOrderedList');
+      let isBold = document.queryCommandState('bold');
+      let isUnderline = document.queryCommandState('underline');
+      let isStrike = document.queryCommandState('strikeThrough');
+      let isUnordered = document.queryCommandState('insertUnorderedList');
+      let isOrdered = document.queryCommandState('insertOrderedList');
 
       let heading: 'h1' | 'h2' | 'h3' | 'p' = 'p';
       let blockquote = false;
@@ -291,23 +420,34 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
         let node: Node | null = selection.anchorNode;
         while (node && node !== editorRef.current) {
           if (node.nodeType === Node.ELEMENT_NODE) {
-            const tagName = (node as HTMLElement).tagName.toLowerCase();
+            const el = node as HTMLElement;
+            const tagName = el.tagName.toLowerCase();
             if (tagName === 'h1') heading = 'h1';
             else if (tagName === 'h2') heading = 'h2';
             else if (tagName === 'h3') heading = 'h3';
             else if (tagName === 'blockquote') blockquote = true;
             else if (tagName === 'pre' || tagName === 'code') codeBlock = true;
+            else if (tagName === 'strong' || tagName === 'b') isBold = true;
+            else if (tagName === 'u' || tagName === 'ins') isUnderline = true;
+            else if (
+              tagName === 'del' ||
+              tagName === 's' ||
+              tagName === 'strike'
+            ) {
+              isStrike = true;
+            } else if (tagName === 'ul') isUnordered = true;
+            else if (tagName === 'ol') isOrdered = true;
           }
           node = node.parentNode;
         }
       }
 
       setActiveFormats({
-        bold,
-        underline,
-        strikeThrough,
-        unorderedList,
-        orderedList,
+        bold: isBold,
+        underline: isUnderline,
+        strikeThrough: isStrike,
+        unorderedList: isUnordered,
+        orderedList: isOrdered,
         blockquote,
         codeBlock,
         heading,
@@ -373,137 +513,153 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     [handleInput, updateActiveFormats]
   );
 
-  // Toggle Strikethrough reliably (handles <del>, <s>, <strike> unwrapping)
-  const handleStrikeThrough = useCallback(() => {
-    if (editorRef.current) {
-      editorRef.current.focus();
+  // Toggle Blockquote reliably (unwraps when active, wraps when inactive)
+  const toggleBlockquote = useCallback(() => {
+    if (!editorRef.current) return;
+    editorRef.current.focus();
+
+    const bq = findClosestAncestor(editorRef.current, ['BLOCKQUOTE']);
+    if (bq) {
+      unwrapBlockquote(bq);
+      handleInput();
+      updateActiveFormats();
+    } else {
+      document.execCommand('formatBlock', false, '<blockquote>');
+      handleInput();
+      updateActiveFormats();
     }
-
-    const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0) {
-      let strikeNode: Node | null = null;
-      let node: Node | null = selection.anchorNode;
-      while (node && node !== editorRef.current) {
-        if (
-          node.nodeType === Node.ELEMENT_NODE &&
-          ['DEL', 'S', 'STRIKE'].includes((node as HTMLElement).tagName)
-        ) {
-          strikeNode = node;
-          break;
-        }
-        node = node.parentNode;
-      }
-
-      if (strikeNode && strikeNode.parentNode) {
-        const parent = strikeNode.parentNode;
-        while (strikeNode.firstChild) {
-          parent.insertBefore(strikeNode.firstChild, strikeNode);
-        }
-        parent.removeChild(strikeNode);
-        handleInput();
-        updateActiveFormats();
-        return;
-      }
-    }
-
-    document.execCommand('strikeThrough', false);
-    handleInput();
-    updateActiveFormats();
   }, [handleInput, updateActiveFormats]);
 
-  // Toggle Underline reliably (handles <u>, <ins> unwrapping)
-  const handleUnderline = useCallback(() => {
-    if (editorRef.current) {
+  // Toggle Headings (H1, H2, H3, P) with auto-unwrap from blockquote/pre
+  const toggleHeading = useCallback(
+    (tag: 'h1' | 'h2' | 'h3' | 'p') => {
+      if (!editorRef.current) return;
       editorRef.current.focus();
-    }
 
-    const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0) {
-      let underlineNode: Node | null = null;
-      let node: Node | null = selection.anchorNode;
-      while (node && node !== editorRef.current) {
-        if (
-          node.nodeType === Node.ELEMENT_NODE &&
-          ['U', 'INS'].includes((node as HTMLElement).tagName)
-        ) {
-          underlineNode = node;
-          break;
-        }
-        node = node.parentNode;
+      // Check if currently inside a blockquote
+      const bq = findClosestAncestor(editorRef.current, ['BLOCKQUOTE']);
+      if (bq) {
+        unwrapBlockquote(bq);
       }
 
-      if (underlineNode && underlineNode.parentNode) {
-        const parent = underlineNode.parentNode;
-        while (underlineNode.firstChild) {
-          parent.insertBefore(underlineNode.firstChild, underlineNode);
-        }
-        parent.removeChild(underlineNode);
-        handleInput();
-        updateActiveFormats();
-        return;
+      // Check if currently inside a code block <pre>
+      const pre = findClosestAncestor(editorRef.current, ['PRE', 'CODE']);
+      if (pre) {
+        const actualPre =
+          pre.tagName.toUpperCase() === 'PRE'
+            ? pre
+            : (pre.closest('pre') as HTMLElement) || pre;
+        unwrapCodeBlock(actualPre);
       }
-    }
 
-    document.execCommand('underline', false);
-    handleInput();
-    updateActiveFormats();
+      // If user clicks normal paragraph 'p' or the already active heading, toggle back to '<p>'
+      if (tag === 'p' || activeFormats.heading === tag) {
+        document.execCommand('formatBlock', false, '<p>');
+      } else {
+        document.execCommand('formatBlock', false, `<${tag}>`);
+      }
+
+      handleInput();
+      updateActiveFormats();
+    },
+    [activeFormats.heading, handleInput, updateActiveFormats]
+  );
+
+  // Toggle Code Block (<pre>) reliably
+  const toggleCodeBlock = useCallback(() => {
+    if (!editorRef.current) return;
+    editorRef.current.focus();
+
+    const pre = findClosestAncestor(editorRef.current, ['PRE', 'CODE']);
+    if (pre) {
+      const actualPre =
+        pre.tagName.toUpperCase() === 'PRE'
+          ? pre
+          : (pre.closest('pre') as HTMLElement) || pre;
+      unwrapCodeBlock(actualPre);
+      handleInput();
+      updateActiveFormats();
+    } else {
+      document.execCommand('formatBlock', false, '<pre>');
+      handleInput();
+      updateActiveFormats();
+    }
   }, [handleInput, updateActiveFormats]);
 
-  // Toggle Bold reliably (handles <strong>, <b> unwrapping)
-  const handleBold = useCallback(() => {
-    if (editorRef.current) {
+  // Toggle List (Bullet or Numbered)
+  const toggleList = useCallback(
+    (type: 'unordered' | 'ordered') => {
+      if (!editorRef.current) return;
       editorRef.current.focus();
+
+      const command =
+        type === 'unordered' ? 'insertUnorderedList' : 'insertOrderedList';
+      document.execCommand(command, false);
+
+      handleInput();
+      updateActiveFormats();
+    },
+    [handleInput, updateActiveFormats]
+  );
+
+  // Toggle Inline Formatting (Bold, Underline, Strikethrough)
+  const toggleInline = useCallback(
+    (command: 'bold' | 'underline' | 'strikeThrough') => {
+      if (!editorRef.current) return;
+      editorRef.current.focus();
+
+      document.execCommand(command, false);
+      handleInput();
+      updateActiveFormats();
+    },
+    [handleInput, updateActiveFormats]
+  );
+
+  // Link Handler with insert, edit, and remove capability
+  const handleLink = useCallback(() => {
+    if (!editorRef.current) return;
+    editorRef.current.focus();
+
+    const existingLink = findClosestAncestor(editorRef.current, [
+      'A',
+    ]) as HTMLAnchorElement | null;
+    if (existingLink) {
+      const currentHref = existingLink.getAttribute('href') || '';
+      const url = prompt(
+        'Edit or remove link URL (leave empty to remove link):',
+        currentHref
+      );
+      if (url === null) return;
+      if (!url.trim()) {
+        document.execCommand('unlink', false);
+      } else {
+        existingLink.setAttribute('href', url.trim());
+      }
+      handleInput();
+      updateActiveFormats();
+      return;
     }
 
-    const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0) {
-      let boldNode: Node | null = null;
-      let node: Node | null = selection.anchorNode;
-      while (node && node !== editorRef.current) {
-        if (
-          node.nodeType === Node.ELEMENT_NODE &&
-          ['STRONG', 'B'].includes((node as HTMLElement).tagName)
-        ) {
-          boldNode = node;
-          break;
-        }
-        node = node.parentNode;
-      }
-
-      if (boldNode && boldNode.parentNode) {
-        const parent = boldNode.parentNode;
-        while (boldNode.firstChild) {
-          parent.insertBefore(boldNode.firstChild, boldNode);
-        }
-        parent.removeChild(boldNode);
-        handleInput();
-        updateActiveFormats();
-        return;
-      }
-    }
-
-    document.execCommand('bold', false);
-    handleInput();
-    updateActiveFormats();
-  }, [handleInput, updateActiveFormats]);
-
-  const handleHeading = (tag: 'h1' | 'h2' | 'h3' | 'p') => {
-    executeCommand('formatBlock', tag === 'p' ? '<p>' : `<${tag}>`);
-  };
-
-  const handleLink = () => {
     const url = prompt('Enter link URL (e.g. https://example.com):');
-    if (url) {
-      executeCommand('createLink', url);
+    if (url && url.trim()) {
+      document.execCommand('createLink', false, url.trim());
+      handleInput();
+      updateActiveFormats();
     }
-  };
+  }, [handleInput, updateActiveFormats]);
 
-  const handleImage = () => {
+  // Image Handler
+  const handleImage = useCallback(() => {
+    if (!editorRef.current) return;
+    editorRef.current.focus();
+
     const url = prompt('Enter image URL (Unsplash, Imgur, GitHub, etc.):');
-    if (url) {
-      executeCommand('insertImage', url);
+    if (url && url.trim()) {
+      document.execCommand('insertImage', false, url.trim());
+      handleInput();
+      updateActiveFormats();
     }
-  };
+  }, [handleInput, updateActiveFormats]);
 
   const handleRawTextChange = (newText: string) => {
     setRawText(newText);
@@ -546,7 +702,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             <button
               type="button"
               onMouseDown={(e) => e.preventDefault()}
-              onClick={() => handleHeading('p')}
+              onClick={() => toggleHeading('p')}
               className={`px-2 py-1 text-xs rounded transition-all ${
                 activeFormats.heading === 'p' &&
                 !activeFormats.blockquote &&
@@ -561,39 +717,39 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             <button
               type="button"
               onMouseDown={(e) => e.preventDefault()}
-              onClick={() => handleHeading('h1')}
+              onClick={() => toggleHeading('h1')}
               className={`px-2 py-1 text-xs rounded transition-all ${
                 activeFormats.heading === 'h1'
                   ? 'bg-primary text-primary-foreground font-bold shadow-xs'
                   : 'text-muted-foreground hover:text-foreground hover:bg-tertiary-2 font-bold'
               }`}
-              title="Heading 1"
+              title="Heading 1 (Click again to toggle off)"
             >
               <Heading1 className="h-3.5 w-3.5" />
             </button>
             <button
               type="button"
               onMouseDown={(e) => e.preventDefault()}
-              onClick={() => handleHeading('h2')}
+              onClick={() => toggleHeading('h2')}
               className={`px-2 py-1 text-xs rounded transition-all ${
                 activeFormats.heading === 'h2'
                   ? 'bg-primary text-primary-foreground font-bold shadow-xs'
                   : 'text-muted-foreground hover:text-foreground hover:bg-tertiary-2 font-bold'
               }`}
-              title="Heading 2"
+              title="Heading 2 (Click again to toggle off)"
             >
               <Heading2 className="h-3.5 w-3.5" />
             </button>
             <button
               type="button"
               onMouseDown={(e) => e.preventDefault()}
-              onClick={() => handleHeading('h3')}
+              onClick={() => toggleHeading('h3')}
               className={`px-2 py-1 text-xs rounded transition-all ${
                 activeFormats.heading === 'h3'
                   ? 'bg-primary text-primary-foreground font-bold shadow-xs'
                   : 'text-muted-foreground hover:text-foreground hover:bg-tertiary-2 font-bold'
               }`}
-              title="Heading 3"
+              title="Heading 3 (Click again to toggle off)"
             >
               <Heading3 className="h-3.5 w-3.5" />
             </button>
@@ -604,7 +760,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             <button
               type="button"
               onMouseDown={(e) => e.preventDefault()}
-              onClick={handleBold}
+              onClick={() => toggleInline('bold')}
               className={`p-1.5 rounded transition-all ${
                 activeFormats.bold
                   ? 'bg-primary text-primary-foreground font-bold shadow-xs'
@@ -617,7 +773,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             <button
               type="button"
               onMouseDown={(e) => e.preventDefault()}
-              onClick={handleUnderline}
+              onClick={() => toggleInline('underline')}
               className={`p-1.5 rounded transition-all ${
                 activeFormats.underline
                   ? 'bg-primary text-primary-foreground font-bold shadow-xs'
@@ -630,7 +786,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             <button
               type="button"
               onMouseDown={(e) => e.preventDefault()}
-              onClick={handleStrikeThrough}
+              onClick={() => toggleInline('strikeThrough')}
               className={`p-1.5 rounded transition-all ${
                 activeFormats.strikeThrough
                   ? 'bg-primary text-primary-foreground font-bold shadow-xs'
@@ -647,7 +803,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             <button
               type="button"
               onMouseDown={(e) => e.preventDefault()}
-              onClick={() => executeCommand('insertUnorderedList')}
+              onClick={() => toggleList('unordered')}
               className={`p-1.5 rounded transition-all ${
                 activeFormats.unorderedList
                   ? 'bg-primary text-primary-foreground font-bold shadow-xs'
@@ -660,7 +816,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             <button
               type="button"
               onMouseDown={(e) => e.preventDefault()}
-              onClick={() => executeCommand('insertOrderedList')}
+              onClick={() => toggleList('ordered')}
               className={`p-1.5 rounded transition-all ${
                 activeFormats.orderedList
                   ? 'bg-primary text-primary-foreground font-bold shadow-xs'
@@ -673,15 +829,13 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             <button
               type="button"
               onMouseDown={(e) => e.preventDefault()}
-              onClick={() => {
-                executeCommand('formatBlock', '<blockquote>');
-              }}
+              onClick={toggleBlockquote}
               className={`p-1.5 rounded transition-all ${
                 activeFormats.blockquote
                   ? 'bg-primary text-primary-foreground font-bold shadow-xs'
                   : 'text-muted-foreground hover:text-foreground hover:bg-tertiary-2'
               }`}
-              title="Blockquote"
+              title="Blockquote (Click again to toggle off)"
             >
               <Quote className="h-3.5 w-3.5" />
             </button>
@@ -692,13 +846,13 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             <button
               type="button"
               onMouseDown={(e) => e.preventDefault()}
-              onClick={() => executeCommand('formatBlock', '<pre>')}
+              onClick={toggleCodeBlock}
               className={`p-1.5 rounded transition-all ${
                 activeFormats.codeBlock
                   ? 'bg-primary text-primary-foreground font-bold shadow-xs'
                   : 'text-muted-foreground hover:text-foreground hover:bg-tertiary-2'
               }`}
-              title="Code Block"
+              title="Code Block (Click again to toggle off)"
             >
               <Code className="h-3.5 w-3.5" />
             </button>

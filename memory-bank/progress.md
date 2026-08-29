@@ -19,13 +19,22 @@
 - [x] DRY Reusable Utilities, Custom Hooks & Single-Responsibility Component Modularization
 - [x] Navigation Performance Optimization & Route Transition Polish
 - [x] Complete Portfolio UI/UX Redesign Aligned with Figma Specifications
-- [x] Custom Cursor, In-App Confirmation Modals, Dynamic HTML Heading & Experience Achievements
 - [x] Phase 15: Dynamic Blog, REST API Layer, Interactive Comments Engine & Admin Blog Manager
 - [x] Phase 16: Custom Cyber/Terminal Boot Loader & Visual Boot Sequence
+- [x] Phase 17: WYSIWYG Editor Smart Toggle & Robust DOM Unwrapping Engine
 
 ---
 
 ## Detailed Task Checklist
+
+### Phase 17: WYSIWYG Editor Smart Toggle & Robust DOM Unwrapping Engine (100% Completed)
+- [x] Implement robust `toggleBlockquote` handler in `src/components/website/pages/blog/rich-text-editor.tsx` that unwraps blockquotes when active.
+- [x] Implement smart `toggleHeading` handler to toggle active headings (H1/H2/H3) back to `<p>` paragraphs and unwrap outer blockquotes/pre blocks.
+- [x] Implement `toggleCodeBlock` to unwrap `<pre><code>` blocks into editable paragraphs.
+- [x] Implement `toggleList`, `toggleInline`, and robust link editing/removal (`handleLink`).
+- [x] Enhance `updateActiveFormats` to inspect both DOM hierarchy and native query states for accurate toolbar active button feedback.
+- [x] Support `<s>`, `<del>`, `<strike>`, and multi-line blockquotes in `htmlToMarkdown` & `markdownToHtml`.
+- [x] Run `npm run build` and `npm run lint` verification.
 
 ### Phase 16: Custom Cyber/Terminal Boot Loader & Visual Boot Sequence (100% Completed)
 - [x] Design and build modular, typed `TerminalLoader` component (`src/components/ui/terminal-loader.tsx`).
