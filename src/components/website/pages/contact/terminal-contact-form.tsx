@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useForm, ValidationError } from '@formspree/react';
-import { Send, Terminal, CheckCircle2 } from 'lucide-react';
+import { Send, Terminal, CheckCircle2, Loader2 } from 'lucide-react';
 
 interface TerminalContactFormProps {
   formspreeId?: string | null;
@@ -141,10 +141,19 @@ export const TerminalContactForm: React.FC<TerminalContactFormProps> = ({
           <button
             type="submit"
             disabled={state.submitting}
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-xs font-bold text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-xs font-bold text-primary-foreground hover:opacity-90 active:opacity-80 transition-all duration-150 disabled:opacity-50 shrink-0 min-h-[38px] min-w-[140px] select-none transform-gpu shadow-xs"
           >
-            <Send className="h-3.5 w-3.5" />
-            <span>{state.submitting ? 'EXECUTING...' : 'EXECUTE_SEND()'}</span>
+            {state.submitting ? (
+              <>
+                <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0" />
+                <span>EXECUTING...</span>
+              </>
+            ) : (
+              <>
+                <Send className="h-3.5 w-3.5 shrink-0" />
+                <span>EXECUTE_SEND()</span>
+              </>
+            )}
           </button>
         </div>
       </form>

@@ -57,10 +57,12 @@ export const EditBlogPostClient: React.FC<EditBlogPostClientProps> = ({
           type: 'success',
           message: res.message || 'Article updated successfully!',
         });
+        router.refresh();
+        const targetSlug = formData.slug.trim();
         setTimeout(() => {
-          router.push(`/blog/${formData.slug.trim()}`);
+          router.push(`/blog/${targetSlug}`);
           router.refresh();
-        }, 1500);
+        }, 1200);
       } else {
         setStatusMessage({
           type: 'error',

@@ -631,7 +631,12 @@ export async function createBlogPostAction(
   if (error) return { success: false, error: error.message };
 
   revalidatePath('/blog');
+  revalidatePath('/blog/[slug]', 'page');
+  if (created?.slug) {
+    revalidatePath(`/blog/${created.slug}`);
+  }
   revalidatePath('/admin/blogs');
+  revalidatePath('/', 'layout');
   return {
     success: true,
     message: 'Blog post created successfully.',
@@ -647,6 +652,14 @@ export async function updateBlogPostAction(
   if (!auth.authorized) return { success: false, error: auth.error };
 
   const supabase = createClient();
+
+  // Get current slug before update for thorough cache revalidation
+  const { data: existingPost } = await supabase
+    .from('blog_posts')
+    .select('slug')
+    .eq('id', id)
+    .single();
+
   const payload: any = {
     ...data,
     updated_at: new Date().toISOString(),
@@ -669,10 +682,15 @@ export async function updateBlogPostAction(
   if (error) return { success: false, error: error.message };
 
   revalidatePath('/blog');
-  if (data.slug) {
+  revalidatePath('/blog/[slug]', 'page');
+  if (existingPost?.slug) {
+    revalidatePath(`/blog/${existingPost.slug}`);
+  }
+  if (data.slug && data.slug !== existingPost?.slug) {
     revalidatePath(`/blog/${data.slug}`);
   }
   revalidatePath('/admin/blogs');
+  revalidatePath('/', 'layout');
   return { success: true, message: 'Blog post updated successfully.' };
 }
 
@@ -681,12 +699,24 @@ export async function deleteBlogPostAction(id: string): Promise<ActionResult> {
   if (!auth.authorized) return { success: false, error: auth.error };
 
   const supabase = createClient();
+
+  const { data: existingPost } = await supabase
+    .from('blog_posts')
+    .select('slug')
+    .eq('id', id)
+    .single();
+
   const { error } = await supabase.from('blog_posts').delete().eq('id', id);
 
   if (error) return { success: false, error: error.message };
 
   revalidatePath('/blog');
+  revalidatePath('/blog/[slug]', 'page');
+  if (existingPost?.slug) {
+    revalidatePath(`/blog/${existingPost.slug}`);
+  }
   revalidatePath('/admin/blogs');
+  revalidatePath('/', 'layout');
   return { success: true, message: 'Blog post deleted successfully.' };
 }
 
@@ -733,7 +763,9 @@ export async function addCommentAction(data: {
   if (data.slug) {
     revalidatePath(`/blog/${data.slug}`);
   }
-  revalidatePath(`/blog`);
+  revalidatePath('/blog/[slug]', 'page');
+  revalidatePath('/blog');
+  revalidatePath('/', 'layout');
   return {
     success: true,
     message: 'Comment posted successfully.',
@@ -774,7 +806,9 @@ export async function deleteCommentAction(
   if (slug) {
     revalidatePath(`/blog/${slug}`);
   }
+  revalidatePath('/blog/[slug]', 'page');
   revalidatePath('/blog');
+  revalidatePath('/', 'layout');
   return { success: true, message: 'Comment deleted successfully.' };
 }
 
@@ -878,6 +912,12 @@ export async function createUserBlogPostAction(
   if (error) return { success: false, error: error.message };
 
   revalidatePath('/blog');
+  revalidatePath('/blog/[slug]', 'page');
+  if (created?.slug) {
+    revalidatePath(`/blog/${created.slug}`);
+  }
+  revalidatePath('/admin/blogs');
+  revalidatePath('/', 'layout');
   const statusMsg =
     effectiveStatus === 'PENDING_REVIEW'
       ? 'Article submitted for review! It will be visible once approved by an admin.'
@@ -904,21 +944,21 @@ export async function updateUserBlogPostAction(
 
   const supabase = createClient();
 
-  // Verify ownership or admin
-  if (!auth.isAdmin) {
-    const { data: post } = await supabase
-      .from('blog_posts')
-      .select('author_id')
-      .eq('id', id)
-      .single();
+  // Verify ownership or admin & capture existing slug
+  const { data: post } = await supabase
+    .from('blog_posts')
+    .select('author_id, slug')
+    .eq('id', id)
+    .single();
 
-    if (!post || post.author_id !== auth.userId) {
-      return {
-        success: false,
-        error: 'You can only edit your own articles.',
-      };
-    }
+  if (!auth.isAdmin && (!post || post.author_id !== auth.userId)) {
+    return {
+      success: false,
+      error: 'You can only edit your own articles.',
+    };
   }
+
+  const currentSlug = post?.slug;
 
   // Check slug uniqueness if slug changed
   if (data.slug) {
@@ -969,9 +1009,15 @@ export async function updateUserBlogPostAction(
   if (error) return { success: false, error: error.message };
 
   revalidatePath('/blog');
-  if (data.slug) {
+  revalidatePath('/blog/[slug]', 'page');
+  if (currentSlug) {
+    revalidatePath(`/blog/${currentSlug}`);
+  }
+  if (data.slug && data.slug !== currentSlug) {
     revalidatePath(`/blog/${data.slug}`);
   }
+  revalidatePath('/admin/blogs');
+  revalidatePath('/', 'layout');
 
   const statusMsg =
     effectiveStatus === 'PENDING_REVIEW'
@@ -992,26 +1038,30 @@ export async function deleteUserBlogPostAction(
 
   const supabase = createClient();
 
-  // Verify ownership or admin
-  if (!auth.isAdmin) {
-    const { data: post } = await supabase
-      .from('blog_posts')
-      .select('author_id')
-      .eq('id', id)
-      .single();
+  // Verify ownership or admin & capture existing slug
+  const { data: post } = await supabase
+    .from('blog_posts')
+    .select('author_id, slug')
+    .eq('id', id)
+    .single();
 
-    if (!post || post.author_id !== auth.userId) {
-      return {
-        success: false,
-        error: 'You can only delete your own articles.',
-      };
-    }
+  if (!auth.isAdmin && (!post || post.author_id !== auth.userId)) {
+    return {
+      success: false,
+      error: 'You can only delete your own articles.',
+    };
   }
 
   const { error } = await supabase.from('blog_posts').delete().eq('id', id);
   if (error) return { success: false, error: error.message };
 
   revalidatePath('/blog');
+  revalidatePath('/blog/[slug]', 'page');
+  if (post?.slug) {
+    revalidatePath(`/blog/${post.slug}`);
+  }
+  revalidatePath('/admin/blogs');
+  revalidatePath('/', 'layout');
   return { success: true, message: 'Article deleted successfully.' };
 }
 
@@ -1023,6 +1073,13 @@ export async function approveBlogPostAction(id: string): Promise<ActionResult> {
   if (!adminAuth.authorized) return { success: false, error: adminAuth.error };
 
   const supabase = createClient();
+
+  const { data: post } = await supabase
+    .from('blog_posts')
+    .select('slug')
+    .eq('id', id)
+    .single();
+
   const { error } = await supabase
     .from('blog_posts')
     .update({
@@ -1035,7 +1092,12 @@ export async function approveBlogPostAction(id: string): Promise<ActionResult> {
   if (error) return { success: false, error: error.message };
 
   revalidatePath('/blog');
+  revalidatePath('/blog/[slug]', 'page');
+  if (post?.slug) {
+    revalidatePath(`/blog/${post.slug}`);
+  }
   revalidatePath('/admin/blogs');
+  revalidatePath('/', 'layout');
   return { success: true, message: 'Article approved and published.' };
 }
 
@@ -1047,6 +1109,13 @@ export async function rejectBlogPostAction(id: string): Promise<ActionResult> {
   if (!adminAuth.authorized) return { success: false, error: adminAuth.error };
 
   const supabase = createClient();
+
+  const { data: post } = await supabase
+    .from('blog_posts')
+    .select('slug')
+    .eq('id', id)
+    .single();
+
   const { error } = await supabase
     .from('blog_posts')
     .update({
@@ -1058,7 +1127,12 @@ export async function rejectBlogPostAction(id: string): Promise<ActionResult> {
   if (error) return { success: false, error: error.message };
 
   revalidatePath('/blog');
+  revalidatePath('/blog/[slug]', 'page');
+  if (post?.slug) {
+    revalidatePath(`/blog/${post.slug}`);
+  }
   revalidatePath('/admin/blogs');
+  revalidatePath('/', 'layout');
   return { success: true, message: 'Article rejected and returned to draft.' };
 }
 

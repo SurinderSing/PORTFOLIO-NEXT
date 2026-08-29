@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useForm, ValidationError } from '@formspree/react';
+import { Loader2 } from 'lucide-react';
 
 interface ContactFormProps {
   formspreeId?: string | null;
@@ -138,13 +139,14 @@ const ContactForm: React.FC<ContactFormProps> = ({
           <button
             type="submit"
             disabled={state.submitting}
-            className="main-gradient-1 px-4 py-2 rounded-full"
+            className="main-gradient-1 px-5 py-2.5 rounded-full inline-flex items-center justify-center gap-2 shrink-0 min-h-[38px] min-w-[120px] select-none transform-gpu disabled:opacity-50 active:opacity-80 transition-all duration-150 shadow-xs"
           >
-            <div className="flex items-center justify-center gap-2">
-              <p className="para-2 font-semibold">
-                {state.submitting ? 'Sending...' : 'Submit'}
-              </p>
-            </div>
+            {state.submitting && (
+              <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0" />
+            )}
+            <p className="para-2 font-semibold">
+              {state.submitting ? 'Sending...' : 'Submit'}
+            </p>
           </button>
         </form>
       </div>

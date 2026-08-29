@@ -139,17 +139,26 @@ export const CommentForm: React.FC<CommentFormProps> = ({
         </div>
       )}
 
-      <div className="flex items-center justify-between pt-1">
-        <span className="text-[11px] text-muted-foreground">
+      <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-3 pt-1">
+        <span className="text-[11px] text-muted-foreground text-left">
           Markdown formatting supported
         </span>
         <button
           type="submit"
           disabled={isSubmitting || !content.trim()}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-xs font-bold text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50 shadow-xs"
+          className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-xs font-bold text-primary-foreground hover:opacity-90 active:opacity-80 transition-all duration-150 disabled:opacity-50 shadow-xs shrink-0 self-end sm:self-auto min-w-[130px] min-h-[38px] select-none transform-gpu"
         >
-          <Send className="h-3.5 w-3.5" />
-          <span>{isSubmitting ? 'Posting...' : 'Post Comment'}</span>
+          {isSubmitting ? (
+            <>
+              <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0" />
+              <span>Posting...</span>
+            </>
+          ) : (
+            <>
+              <Send className="h-3.5 w-3.5 shrink-0" />
+              <span>Post Comment</span>
+            </>
+          )}
         </button>
       </div>
     </form>

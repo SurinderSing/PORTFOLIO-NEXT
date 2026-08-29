@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { PostStatus } from '@/types/database';
-import { Eye, Edit3, Sparkles } from 'lucide-react';
+import { Eye, Edit3, Sparkles, Loader2 } from 'lucide-react';
 import ArticleContent from '@/components/website/pages/blog/article-content';
 
 export interface BlogFormData {
@@ -248,24 +248,27 @@ export default function BlogForm({
       )}
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-end gap-3 pt-3 border-t border-border">
+      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pt-3 border-t border-border">
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-lg border border-border px-4 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-tertiary-2 transition-colors"
+          className="rounded-lg border border-border px-4 py-2 text-xs text-muted-foreground hover:text-foreground hover:bg-tertiary-2 active:opacity-80 transition-all flex items-center justify-center shrink-0 min-h-[38px] select-none transform-gpu"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={loading}
-          className="rounded-lg bg-primary px-5 py-2 text-xs font-bold text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50 shadow-xs"
+          className="rounded-lg bg-primary px-5 py-2 text-xs font-bold text-primary-foreground hover:opacity-90 active:opacity-80 transition-all duration-150 disabled:opacity-50 shadow-xs flex items-center justify-center gap-2 shrink-0 min-h-[38px] select-none transform-gpu"
         >
-          {loading
-            ? 'Saving...'
-            : isCreating
-              ? 'Create Article'
-              : 'Save Changes'}
+          {loading && <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0" />}
+          <span>
+            {loading
+              ? 'Saving...'
+              : isCreating
+                ? 'Create Article'
+                : 'Save Changes'}
+          </span>
         </button>
       </div>
     </form>

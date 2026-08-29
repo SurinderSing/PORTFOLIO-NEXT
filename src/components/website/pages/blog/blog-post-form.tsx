@@ -8,6 +8,7 @@ import {
   CheckCircle2,
   Info,
   Sparkles,
+  Loader2,
 } from 'lucide-react';
 import ArticleContent from '@/components/website/pages/blog/article-content';
 import {
@@ -393,28 +394,31 @@ export default function BlogPostForm({
       )}
 
       {/* Action Buttons */}
-      <div className="flex items-center justify-between gap-4 pt-4 border-t border-border">
+      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-border">
         <button
           type="button"
           onClick={() => router.back()}
-          className="rounded-lg border border-border px-5 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-tertiary-2 transition-colors"
+          className="rounded-lg border border-border px-5 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-tertiary-2 active:opacity-80 transition-all flex items-center justify-center shrink-0 min-h-[42px] select-none transform-gpu"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={loading || !!imageError}
-          className="rounded-lg bg-primary px-6 py-2.5 text-sm font-bold text-primary-foreground hover:opacity-90 transition-opacity disabled:opacity-50 shadow-xs"
+          className="rounded-lg bg-primary px-6 py-2.5 text-sm font-bold text-primary-foreground hover:opacity-90 active:opacity-80 transition-all duration-150 disabled:opacity-50 shadow-xs flex items-center justify-center gap-2 shrink-0 min-h-[42px] select-none transform-gpu"
         >
-          {loading
-            ? 'Saving...'
-            : mode === 'create'
-              ? isAdmin
-                ? 'Create Article'
-                : formData.status === 'PUBLISHED'
-                  ? 'Submit for Review'
-                  : 'Save Draft'
-              : 'Save Changes'}
+          {loading && <Loader2 className="h-4 w-4 animate-spin shrink-0" />}
+          <span>
+            {loading
+              ? 'Saving...'
+              : mode === 'create'
+                ? isAdmin
+                  ? 'Create Article'
+                  : formData.status === 'PUBLISHED'
+                    ? 'Submit for Review'
+                    : 'Save Draft'
+                : 'Save Changes'}
+          </span>
         </button>
       </div>
     </form>
