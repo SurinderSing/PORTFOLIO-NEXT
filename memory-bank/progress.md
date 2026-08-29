@@ -27,10 +27,16 @@
 - [x] Phase 20: Auth Flow, Verification Redirection & Post-Login Navigation Polish
 - [x] Phase 21: Vercel Speed Insights & Web Analytics Integration
 - [x] Phase 22: Middleware Dashboard Deprecation & Role-Based Auth Redirects
+- [x] Phase 23: Sign-Up Form Placeholder Sanitization
 
 ---
 
 ## Detailed Task Checklist
+
+### Phase 23: Sign-Up Form Placeholder Sanitization (100% Completed)
+- [x] Replace personal details (`Surinder`, `Singh`, `admin@surinder.dev`, `admin_user`, `+91 9876543210`) in `src/components/auth/sign-up/form/index.tsx` with generic placeholders (`john_doe`, `John`, `Doe`, `john.doe@example.com`, `+15551234567`).
+- [x] Retain confirmed neutral placeholders on `/sign-in`.
+- [x] Run `npm run build` to verify 0 errors.
 
 ### Phase 22: Middleware Dashboard Deprecation & Role-Based Auth Redirects (100% Completed)
 - [x] Redirect `/dashboard` and `/dashboard/*` to `/admin` and `/admin/*` in `src/utils/supabase/middleware.ts`.
