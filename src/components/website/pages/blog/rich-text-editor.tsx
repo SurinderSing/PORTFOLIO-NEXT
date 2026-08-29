@@ -67,25 +67,37 @@ function markdownToHtml(markdown: string): string {
   }
 
   // Normalize newlines
-  const normalized = markdown.replace(/\r\n/g, '\n');
+  const normalized = (markdown || '')
+    .replace(/\\r\\n/g, '\n')
+    .replace(/\\n/g, '\n')
+    .replace(/\r\n/g, '\n');
 
-  // Split into distinct blocks by double newlines
-  const rawBlocks = normalized.split(/\n\n+/);
+  const lines = normalized.split('\n');
   const htmlBlocks: string[] = [];
 
-  for (const block of rawBlocks) {
-    const trimmed = block.trim();
-    if (!trimmed) continue;
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    const trimmed = line.trim();
 
-    // Code block
+    if (!trimmed) {
+      i++;
+      continue;
+    }
+
+    // Code block ```
     if (trimmed.startsWith('```')) {
-      const firstLineEnd = trimmed.indexOf('\n');
-      const lang =
-        firstLineEnd > 3 ? trimmed.slice(3, firstLineEnd).trim() : '';
-      const code =
-        firstLineEnd > 3
-          ? trimmed.slice(firstLineEnd + 1, -3)
-          : trimmed.slice(3, -3);
+      const lang = trimmed.slice(3).trim();
+      i++;
+      const codeLines: string[] = [];
+      while (i < lines.length && !lines[i].trim().startsWith('```')) {
+        codeLines.push(lines[i]);
+        i++;
+      }
+      if (i < lines.length && lines[i].trim().startsWith('```')) {
+        i++;
+      }
+      const code = codeLines.join('\n');
       htmlBlocks.push(
         `<pre><code class="language-${lang}">${code}</code></pre>`
       );
@@ -97,70 +109,97 @@ function markdownToHtml(markdown: string): string {
       htmlBlocks.push(
         `<h1>${formatInlineElements(trimmed.replace(/^#\s+/, ''))}</h1>`
       );
+      i++;
       continue;
     }
+
     if (/^##\s+/.test(trimmed)) {
       htmlBlocks.push(
         `<h2>${formatInlineElements(trimmed.replace(/^##\s+/, ''))}</h2>`
       );
+      i++;
       continue;
     }
+
     if (/^###\s+/.test(trimmed)) {
       htmlBlocks.push(
         `<h3>${formatInlineElements(trimmed.replace(/^###\s+/, ''))}</h3>`
       );
+      i++;
       continue;
     }
 
     // Horizontal Rule
     if (/^---+$/.test(trimmed)) {
       htmlBlocks.push('<hr />');
+      i++;
       continue;
     }
 
     // Blockquote
     if (/^>\s*/.test(trimmed)) {
-      const quoteContent = trimmed
-        .split('\n')
-        .map((l: string) => l.replace(/^>\s*/, ''))
-        .join('<br />');
+      const quoteLines: string[] = [];
+      while (i < lines.length && /^>\s*/.test(lines[i].trim())) {
+        quoteLines.push(
+          formatInlineElements(lines[i].trim().replace(/^>\s*/, ''))
+        );
+        i++;
+      }
       htmlBlocks.push(
-        `<blockquote><p>${formatInlineElements(quoteContent)}</p></blockquote>`
+        `<blockquote><p>${quoteLines.join('<br />')}</p></blockquote>`
       );
       continue;
     }
 
     // Unordered List
     if (/^[-*]\s+/.test(trimmed)) {
-      const items = trimmed
-        .split('\n')
-        .filter((l: string) => /^[-*]\s+/.test(l.trim()))
-        .map(
-          (l: string) =>
-            `<li>${formatInlineElements(l.replace(/^[-*]\s+/, ''))}</li>`
-        )
-        .join('');
-      htmlBlocks.push(`<ul>${items}</ul>`);
+      const items: string[] = [];
+      while (i < lines.length && /^[-*]\s+/.test(lines[i].trim())) {
+        items.push(
+          `<li>${formatInlineElements(lines[i].trim().replace(/^[-*]\s+/, ''))}</li>`
+        );
+        i++;
+      }
+      htmlBlocks.push(`<ul>${items.join('')}</ul>`);
       continue;
     }
 
     // Ordered List
     if (/^\d+\.\s+/.test(trimmed)) {
-      const items = trimmed
-        .split('\n')
-        .filter((l: string) => /^\d+\.\s+/.test(l.trim()))
-        .map(
-          (l: string) =>
-            `<li>${formatInlineElements(l.replace(/^\d+\.\s+/, ''))}</li>`
-        )
-        .join('');
-      htmlBlocks.push(`<ol>${items}</ol>`);
+      const items: string[] = [];
+      while (i < lines.length && /^\d+\.\s+/.test(lines[i].trim())) {
+        items.push(
+          `<li>${formatInlineElements(lines[i].trim().replace(/^\d+\.\s+/, ''))}</li>`
+        );
+        i++;
+      }
+      htmlBlocks.push(`<ol>${items.join('')}</ol>`);
       continue;
     }
 
-    // Regular Paragraph (convert single newlines inside paragraph to <br />)
-    const paraHtml = formatInlineElements(trimmed).replace(/\n/g, '<br />');
-    htmlBlocks.push(`<p>${paraHtml}</p>`);
+    // Paragraph: collect lines until blank line or next block
+    const paraLines: string[] = [];
+    while (
+      i < lines.length &&
+      lines[i].trim() &&
+      !lines[i].trim().startsWith('```') &&
+      !/^#{1,6}\s+/.test(lines[i].trim()) &&
+      !/^>\s*/.test(lines[i].trim()) &&
+      !/^[-*]\s+/.test(lines[i].trim()) &&
+      !/^\d+\.\s+/.test(lines[i].trim()) &&
+      !/^---+$/.test(lines[i].trim())
+    ) {
+      paraLines.push(lines[i].trim());
+      i++;
+    }
+
+    if (paraLines.length > 0) {
+      paraLines.forEach((l: string) => {
+        if (l.trim()) {
+          htmlBlocks.push(`<p>${formatInlineElements(l.trim())}</p>`);
+        }
+      });
+    }
   }
 
   return htmlBlocks.length > 0 ? htmlBlocks.join('\n') : '<p><br></p>';
@@ -173,10 +212,32 @@ function htmlToMarkdown(html: string): string {
   if (!html || !html.trim()) return '';
 
   // Clean empty wrapper artifacts
-  const cleanHtml = html
+  let cleanHtml = html
     .replace(/<p><br\s*\/?><\/p>/gi, '\n\n')
-    .replace(/<div><br\s*\/?><\/div>/gi, '\n')
+    .replace(/<div><br\s*\/?><\/div>/gi, '\n\n')
     .replace(/<br\s*\/?>/gi, '\n');
+
+  // Convert inline styled spans before tag stripping
+  cleanHtml = cleanHtml
+    .replace(
+      /<span[^>]*style="[^"]*font-weight:\s*(?:bold|[6-9]00)[^"]*"[^>]*>([\s\S]*?)<\/span>/gi,
+      '<strong>$1</strong>'
+    )
+    .replace(
+      /<span[^>]*style="[^"]*text-decoration:[^"]*underline[^"]*"[^>]*>([\s\S]*?)<\/span>/gi,
+      '<u>$1</u>'
+    )
+    .replace(
+      /<span[^>]*style="[^"]*text-decoration:[^"]*line-through[^"]*"[^>]*>([\s\S]*?)<\/span>/gi,
+      '<del>$1</del>'
+    )
+    .replace(
+      /<span[^>]*style="[^"]*font-style:\s*italic[^"]*"[^>]*>([\s\S]*?)<\/span>/gi,
+      '<em>$1</em>'
+    );
+
+  // Strip all span tags completely
+  cleanHtml = cleanHtml.replace(/<\/?span[^>]*>/gi, '');
 
   // Parse HTML elements into clean Markdown blocks
   const result = cleanHtml
@@ -186,11 +247,23 @@ function htmlToMarkdown(html: string): string {
     .replace(/<h3[^>]*>([\s\S]*?)<\/h3>/gi, '### $1\n\n')
     // Code blocks
     .replace(
-      /<pre><code(?:\s+class="language-([a-z0-9_-]+)")?>([\s\S]*?)<\/code><\/pre>/gi,
-      (_match: string, lang: string, code: string) =>
-        `\`\`\`${lang || ''}\n${code.trim()}\n\`\`\`\n\n`
+      /<pre[^>]*><code(?:\s+class="language-([a-z0-9_-]+)")?>([\s\S]*?)<\/code><\/pre>/gi,
+      (_match: string, lang: string, code: string) => {
+        const cleanCode = code
+          .replace(/<br\s*\/?>/gi, '\n')
+          .replace(/<[^>]+>/g, '');
+        return `\`\`\`${lang || ''}\n${cleanCode.trim()}\n\`\`\`\n\n`;
+      }
     )
-    .replace(/<pre[^>]*>([\s\S]*?)<\/pre>/gi, '```\n$1\n```\n\n')
+    .replace(
+      /<pre[^>]*>([\s\S]*?)<\/pre>/gi,
+      (_match: string, code: string) => {
+        const cleanCode = code
+          .replace(/<br\s*\/?>/gi, '\n')
+          .replace(/<[^>]+>/g, '');
+        return `\`\`\`\n${cleanCode.trim()}\n\`\`\`\n\n`;
+      }
+    )
     // Blockquote
     .replace(
       /<blockquote[^>]*>([\s\S]*?)<\/blockquote>/gi,
@@ -210,14 +283,20 @@ function htmlToMarkdown(html: string): string {
     // Lists
     .replace(/<ul[^>]*>([\s\S]*?)<\/ul>/gi, (_match: string, list: string) => {
       const items = list
-        .replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, '- $1\n')
+        .replace(
+          /<li[^>]*>([\s\S]*?)<\/li>/gi,
+          (_m: string, item: string) => `- ${item.trim()}\n`
+        )
         .trim();
       return `${items}\n\n`;
     })
     .replace(/<ol[^>]*>([\s\S]*?)<\/ol>/gi, (_match: string, list: string) => {
       let index = 1;
       const items = list
-        .replace(/<li[^>]*>([\s\S]*?)<\/li>/gi, () => `${index++}. $1\n`)
+        .replace(
+          /<li[^>]*>([\s\S]*?)<\/li>/gi,
+          (_m: string, item: string) => `${index++}. ${item.trim()}\n`
+        )
         .trim();
       return `${items}\n\n`;
     })
@@ -234,13 +313,13 @@ function htmlToMarkdown(html: string): string {
       /<img[^>]+src="([^"]+)"(?:\s+alt="([^"]*)")?[^>]*>/gi,
       (_match: string, src: string, alt: string) => `![${alt || ''}](${src})`
     )
-    // Paragraphs
+    // Paragraphs & Divs
     .replace(/<p[^>]*>([\s\S]*?)<\/p>/gi, '$1\n\n')
-    .replace(/<div[^>]*>([\s\S]*?)<\/div>/gi, '$1\n')
+    .replace(/<div[^>]*>([\s\S]*?)<\/div>/gi, '$1\n\n')
     // Horizontal Rule
     .replace(/<hr\s*\/?>/gi, '\n---\n\n')
-    // Clean any residual HTML tags except formatting tags
-    .replace(/<(?!\/?(u|span|mark))[^>]+>/g, '')
+    // Clean any residual HTML tags except u
+    .replace(/<(?!\/?u)[^>]+>/g, '')
     // Normalize excessive newlines to double newlines
     .replace(/\n{3,}/g, '\n\n')
     .trim();
@@ -580,6 +659,24 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
       handleInput();
       updateActiveFormats();
     } else {
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        let blockNode: Node | null = selection.anchorNode;
+        while (blockNode && blockNode.parentNode !== editorRef.current) {
+          blockNode = blockNode.parentNode;
+        }
+
+        if (blockNode && blockNode !== editorRef.current) {
+          const preEl = document.createElement('pre');
+          const codeEl = document.createElement('code');
+          codeEl.textContent = blockNode.textContent || '';
+          preEl.appendChild(codeEl);
+          editorRef.current.replaceChild(preEl, blockNode);
+          handleInput();
+          updateActiveFormats();
+          return;
+        }
+      }
       document.execCommand('formatBlock', false, '<pre>');
       handleInput();
       updateActiveFormats();
