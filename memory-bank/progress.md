@@ -21,10 +21,20 @@
 - [x] Complete Portfolio UI/UX Redesign Aligned with Figma Specifications
 - [x] Custom Cursor, In-App Confirmation Modals, Dynamic HTML Heading & Experience Achievements
 - [x] Phase 15: Dynamic Blog, REST API Layer, Interactive Comments Engine & Admin Blog Manager
+- [x] Phase 16: Custom Cyber/Terminal Boot Loader & Visual Boot Sequence
 
 ---
 
 ## Detailed Task Checklist
+
+### Phase 16: Custom Cyber/Terminal Boot Loader & Visual Boot Sequence (100% Completed)
+- [x] Design and build modular, typed `TerminalLoader` component (`src/components/ui/terminal-loader.tsx`).
+- [x] Integrate cyber terminal styling, traffic light indicators, and pulsing status dot `INDER_DEV_ENGINE // v2.4`.
+- [x] Implement syntax-highlighted code simulation block with custom lines requested by user.
+- [x] Build glowing neon progress bar with dynamic percentage counter and contextual status ticker.
+- [x] Implement instant skip/fast-forward via Escape key and click listener.
+- [x] Integrate with `GlobalLoader` (`src/components/ui/global-loader.tsx`) with client hydration safety.
+- [x] Validate build with `npm run lint` (0 errors) and `npm run build` (28/28 routes compiled).
 
 ### Phase 15: Dynamic Blog, REST API Layer, Interactive Comments Engine & Admin Blog Manager (100% Completed)
 - [x] Build dedicated REST API endpoints (`/api/blog/like`, `/api/blog/reaction`) with server-side auth validation.

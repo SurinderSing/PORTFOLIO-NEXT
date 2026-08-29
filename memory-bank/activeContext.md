@@ -1,13 +1,25 @@
 # Memory Bank - Active Context
 
 ## Active Focus
-The current focus is **Phase 15: Dynamic Blog, REST API Layer, Interactive Comments Engine & Admin Blog Manager (Completed)**.
+The current focus is **Phase 16: Custom Cyber/Terminal Boot Loader & Visual Boot Sequence (Completed)**.
 
 ---
 
 ## Recently Completed
 
-1. **Rich Text WYSIWYG Editor & Robust Markdown/HTML Article Rendering:**
+1. **Custom Cyber/Terminal Boot Loader (`TerminalLoader`):**
+   - **Interactive Terminal Boot Architecture (`src/components/ui/terminal-loader.tsx`):** Engineered a high-performance cyber terminal boot loader inspired by the reference `index.html`, featuring a matrix/scanline background grid, glowing ambient orbs, and Mac/cyber-styled traffic light window controls with live blinking indicator `SYS_BOOT // INDER_DEV_ENGINE v2.4`.
+   - **Full Light & Dark Mode Dynamic Theme Adaptation:** Refactored terminal palette, syntax highlighting tokens, grid lines, and progress tracks to automatically synchronize with the active theme (`ThemeProvider`) in both light mode (clean crisp light terminal with emerald accents) and dark mode (neon cyberpunk terminal).
+   - **Zero UI Layout Shift & Instant SSR Painting:** Eliminated initial content flash by removing hydration delays in `GlobalLoader` and removing `body.overflow = 'hidden'` scrollbar mutations, preventing viewport jumps and ensuring smooth initial painting and exit transitions.
+   - **Syntax-Highlighted Initializer Simulation:** Formatted code block simulating system boot:
+     - `// initializing surinder-portfolio.exe`
+     - `import { FrontendEngineer } from './surinder-singh';`
+     - `// loading frontend & full-stack expertise...`
+     - `const skills = await loadStack(['React', 'Next.js', 'TypeScript', 'AI']);`
+     - `// connecting to InderDevEngine servers...`
+     - `const portfolio = await initialize({ status: 'ready' });`
+   - **Neon Glowing Progress Bar & Live Status Ticker:** Built animated progress track with emerald/cyan gradient glow, percentage indicator `[0%] -> [100%]`, and live stage announcements (`INITIALIZING SYSTEM CORE...`, `LOADING FRONTEND & FULL-STACK EXPERTISE...`, `CONNECTING TO INDERDEVENGINE SERVERS...`, `OPTIMIZING ASSETS & RENDERING DOM...`, `SYSTEM READY // ACCESS GRANTED`).
+   - **Accessibility & Skip Controls:** Implemented instant bypass via `Escape` key or anywhere-click with subtle helper hint.
    - **WYSIWYG Rich Text Editor (`RichTextEditor`):** Built custom visual document editor with direct text formatting (Headings, Bold, Underline, Strikethrough, Bullet Lists, Numbered Lists, Blockquotes, Code Blocks, Links, Images, and Horizontal Rules) without exposing raw markdown symbols.
    - **Active Format Toolbar Highlighting:** Implemented `updateActiveFormats` with `document.queryCommandState()` and DOM selection inspection to dynamically highlight active toolbar buttons in emerald when cursor enters formatted text.
    - **Lossless & Idempotent Mode Switching:** Engineered idempotent block-based serializer (`markdownToHtml` and `htmlToMarkdown`) with persistent dual DOM containers to eliminate text mutation, line doubling, and clearing when toggling between Visual Editor and Markdown Source.
