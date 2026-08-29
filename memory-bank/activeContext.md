@@ -7,7 +7,13 @@ The current focus is **Phase 15: Dynamic Blog, REST API Layer, Interactive Comme
 
 ## Recently Completed
 
-1. **REST API Routes & Dedicated Services (`/api/...` & `src/services/`):**
+1. **Rich Text WYSIWYG Editor & Robust Markdown/HTML Article Rendering:**
+   - **WYSIWYG Rich Text Editor (`RichTextEditor`):** Built custom visual document editor with direct text formatting (Headings, Bold, Underline, Strikethrough, Bullet Lists, Numbered Lists, Blockquotes, Code Blocks, Links, Images, and Horizontal Rules) without exposing raw markdown symbols.
+   - **Active Format Toolbar Highlighting:** Implemented `updateActiveFormats` with `document.queryCommandState()` and DOM selection inspection to dynamically highlight active toolbar buttons in emerald when cursor enters formatted text.
+   - **Lossless & Idempotent Mode Switching:** Engineered idempotent block-based serializer (`markdownToHtml` and `htmlToMarkdown`) with persistent dual DOM containers to eliminate text mutation, line doubling, and clearing when toggling between Visual Editor and Markdown Source.
+   - **Universal Article Content Renderer (`ArticleContent`):** Enhanced parser to seamlessly render both rich HTML tags (`<u>`, `<del>`, `<strong>`, `<h1>`-`<h6>`, `<ol>`, `<ul>`, `<blockquote>`) and Markdown inline elements across all headings, lists, and paragraphs with zero raw markdown leaking.
+
+2. **REST API Routes & Dedicated Services (`/api/...` & `src/services/`):**
    - **Post Likes Route (`/api/blog/like`):** Dedicated Next.js Route Handler for fetching and toggling post likes with session authentication and count aggregation.
    - **Comment Reactions Route (`/api/blog/reaction`):** Dedicated route for toggling upvotes/downvotes per comment.
    - **Centralized Services:**

@@ -373,6 +373,120 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     [handleInput, updateActiveFormats]
   );
 
+  // Toggle Strikethrough reliably (handles <del>, <s>, <strike> unwrapping)
+  const handleStrikeThrough = useCallback(() => {
+    if (editorRef.current) {
+      editorRef.current.focus();
+    }
+
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      let strikeNode: Node | null = null;
+      let node: Node | null = selection.anchorNode;
+      while (node && node !== editorRef.current) {
+        if (
+          node.nodeType === Node.ELEMENT_NODE &&
+          ['DEL', 'S', 'STRIKE'].includes((node as HTMLElement).tagName)
+        ) {
+          strikeNode = node;
+          break;
+        }
+        node = node.parentNode;
+      }
+
+      if (strikeNode && strikeNode.parentNode) {
+        const parent = strikeNode.parentNode;
+        while (strikeNode.firstChild) {
+          parent.insertBefore(strikeNode.firstChild, strikeNode);
+        }
+        parent.removeChild(strikeNode);
+        handleInput();
+        updateActiveFormats();
+        return;
+      }
+    }
+
+    document.execCommand('strikeThrough', false);
+    handleInput();
+    updateActiveFormats();
+  }, [handleInput, updateActiveFormats]);
+
+  // Toggle Underline reliably (handles <u>, <ins> unwrapping)
+  const handleUnderline = useCallback(() => {
+    if (editorRef.current) {
+      editorRef.current.focus();
+    }
+
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      let underlineNode: Node | null = null;
+      let node: Node | null = selection.anchorNode;
+      while (node && node !== editorRef.current) {
+        if (
+          node.nodeType === Node.ELEMENT_NODE &&
+          ['U', 'INS'].includes((node as HTMLElement).tagName)
+        ) {
+          underlineNode = node;
+          break;
+        }
+        node = node.parentNode;
+      }
+
+      if (underlineNode && underlineNode.parentNode) {
+        const parent = underlineNode.parentNode;
+        while (underlineNode.firstChild) {
+          parent.insertBefore(underlineNode.firstChild, underlineNode);
+        }
+        parent.removeChild(underlineNode);
+        handleInput();
+        updateActiveFormats();
+        return;
+      }
+    }
+
+    document.execCommand('underline', false);
+    handleInput();
+    updateActiveFormats();
+  }, [handleInput, updateActiveFormats]);
+
+  // Toggle Bold reliably (handles <strong>, <b> unwrapping)
+  const handleBold = useCallback(() => {
+    if (editorRef.current) {
+      editorRef.current.focus();
+    }
+
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      let boldNode: Node | null = null;
+      let node: Node | null = selection.anchorNode;
+      while (node && node !== editorRef.current) {
+        if (
+          node.nodeType === Node.ELEMENT_NODE &&
+          ['STRONG', 'B'].includes((node as HTMLElement).tagName)
+        ) {
+          boldNode = node;
+          break;
+        }
+        node = node.parentNode;
+      }
+
+      if (boldNode && boldNode.parentNode) {
+        const parent = boldNode.parentNode;
+        while (boldNode.firstChild) {
+          parent.insertBefore(boldNode.firstChild, boldNode);
+        }
+        parent.removeChild(boldNode);
+        handleInput();
+        updateActiveFormats();
+        return;
+      }
+    }
+
+    document.execCommand('bold', false);
+    handleInput();
+    updateActiveFormats();
+  }, [handleInput, updateActiveFormats]);
+
   const handleHeading = (tag: 'h1' | 'h2' | 'h3' | 'p') => {
     executeCommand('formatBlock', tag === 'p' ? '<p>' : `<${tag}>`);
   };
@@ -431,6 +545,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <div className="flex items-center rounded-lg border border-border/80 bg-card p-0.5">
             <button
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => handleHeading('p')}
               className={`px-2 py-1 text-xs rounded transition-all ${
                 activeFormats.heading === 'p' &&
@@ -445,6 +560,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             </button>
             <button
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => handleHeading('h1')}
               className={`px-2 py-1 text-xs rounded transition-all ${
                 activeFormats.heading === 'h1'
@@ -457,6 +573,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             </button>
             <button
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => handleHeading('h2')}
               className={`px-2 py-1 text-xs rounded transition-all ${
                 activeFormats.heading === 'h2'
@@ -469,6 +586,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             </button>
             <button
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => handleHeading('h3')}
               className={`px-2 py-1 text-xs rounded transition-all ${
                 activeFormats.heading === 'h3'
@@ -485,7 +603,8 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <div className="flex items-center rounded-lg border border-border/80 bg-card p-0.5">
             <button
               type="button"
-              onClick={() => executeCommand('bold')}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={handleBold}
               className={`p-1.5 rounded transition-all ${
                 activeFormats.bold
                   ? 'bg-primary text-primary-foreground font-bold shadow-xs'
@@ -497,7 +616,8 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             </button>
             <button
               type="button"
-              onClick={() => executeCommand('underline')}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={handleUnderline}
               className={`p-1.5 rounded transition-all ${
                 activeFormats.underline
                   ? 'bg-primary text-primary-foreground font-bold shadow-xs'
@@ -509,7 +629,8 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             </button>
             <button
               type="button"
-              onClick={() => executeCommand('strikeThrough')}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={handleStrikeThrough}
               className={`p-1.5 rounded transition-all ${
                 activeFormats.strikeThrough
                   ? 'bg-primary text-primary-foreground font-bold shadow-xs'
@@ -525,6 +646,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <div className="flex items-center rounded-lg border border-border/80 bg-card p-0.5">
             <button
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => executeCommand('insertUnorderedList')}
               className={`p-1.5 rounded transition-all ${
                 activeFormats.unorderedList
@@ -537,6 +659,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             </button>
             <button
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => executeCommand('insertOrderedList')}
               className={`p-1.5 rounded transition-all ${
                 activeFormats.orderedList
@@ -549,6 +672,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             </button>
             <button
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => {
                 executeCommand('formatBlock', '<blockquote>');
               }}
@@ -567,6 +691,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <div className="flex items-center rounded-lg border border-border/80 bg-card p-0.5">
             <button
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => executeCommand('formatBlock', '<pre>')}
               className={`p-1.5 rounded transition-all ${
                 activeFormats.codeBlock
@@ -579,6 +704,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             </button>
             <button
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={handleLink}
               className="p-1.5 text-muted-foreground hover:text-primary hover:bg-tertiary-2 rounded transition-colors"
               title="Insert Link"
@@ -587,6 +713,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             </button>
             <button
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={handleImage}
               className="p-1.5 text-muted-foreground hover:text-primary hover:bg-tertiary-2 rounded transition-colors"
               title="Insert Image"
@@ -595,6 +722,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             </button>
             <button
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => executeCommand('insertHorizontalRule')}
               className="p-1.5 text-muted-foreground hover:text-primary hover:bg-tertiary-2 rounded transition-colors"
               title="Divider Line"
@@ -607,6 +735,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           <div className="flex items-center rounded-lg border border-border/80 bg-card p-0.5">
             <button
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => executeCommand('undo')}
               className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-tertiary-2 rounded transition-colors"
               title="Undo"
@@ -615,6 +744,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             </button>
             <button
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => executeCommand('redo')}
               className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-tertiary-2 rounded transition-colors"
               title="Redo"
@@ -623,6 +753,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             </button>
             <button
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => executeCommand('removeFormat')}
               className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded transition-colors"
               title="Clear Formatting"
@@ -636,6 +767,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
         <div className="inline-flex items-center gap-1 rounded-lg border border-border bg-card p-1 text-xs font-mono">
           <button
             type="button"
+            onMouseDown={(e) => e.preventDefault()}
             onClick={() => handleSwitchMode('wysiwyg')}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all font-semibold ${
               viewMode === 'wysiwyg'
@@ -649,6 +781,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
           </button>
           <button
             type="button"
+            onMouseDown={(e) => e.preventDefault()}
             onClick={() => handleSwitchMode('markdown')}
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all font-semibold ${
               viewMode === 'markdown'
