@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import {
-  getBlogPostBySlug,
+  getBlogPostForViewing,
   getCommentsByPostId,
   getBlogPosts,
 } from '@/lib/supabase-queries';
@@ -12,7 +12,8 @@ import ArticleContent from '@/components/website/pages/blog/article-content';
 import CommentsSection from '@/components/website/pages/blog/comments-section';
 import LikeButton from '@/components/website/pages/blog/like-button';
 import { FadeIn, FadeInItem } from '@/components/animations/fade-in';
-import { ArrowLeft, Tag } from 'lucide-react';
+import ArticleHeaderActions from '@/components/website/pages/blog/article-header-actions';
+import { ArrowLeft, Tag, Clock3, AlertCircle } from 'lucide-react';
 
 interface BlogPostPageProps {
   params: {
@@ -32,7 +33,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({
   params,
 }: BlogPostPageProps): Promise<Metadata> {
-  const post = await getBlogPostBySlug(params.slug);
+  const post = await getBlogPostForViewing(params.slug);
 
   if (!post) {
     return {
@@ -57,7 +58,7 @@ export async function generateMetadata({
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
-  const post = await getBlogPostBySlug(params.slug);
+  const post = await getBlogPostForViewing(params.slug);
 
   if (!post) {
     notFound();
@@ -85,11 +86,11 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     : 'Surinder Singh';
 
   return (
-    <article className="w-full font-mono py-2 max-w-4xl mx-auto">
+    <article className="w-full font-mono py-2 max-w-5xl mx-auto">
       <FadeIn staggerChildren={0.08} className="flex flex-col space-y-5">
         {/* Navigation & Breadcrumb */}
         <FadeInItem>
-          <div className="flex items-center justify-between gap-3 font-mono text-xs">
+          <div className="flex items-center justify-between gap-3 font-mono text-xs flex-wrap">
             <Link
               href="/blog"
               className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-muted-foreground hover:text-foreground hover:bg-tertiary-2 transition-colors whitespace-nowrap shrink-0"
@@ -99,12 +100,60 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               <span className="sm:hidden">Back</span>
             </Link>
 
-            <div className="inline-flex items-center gap-2 rounded-md bg-tertiary-2 px-2.5 py-1 text-muted-foreground border border-border/60 max-w-[200px] sm:max-w-xs md:max-w-none overflow-hidden">
-              <span className="text-primary font-bold shrink-0">$</span>
-              <span className="truncate">cat ./{post.slug}.md</span>
+            <div className="flex items-center gap-2 flex-wrap">
+              <ArticleHeaderActions
+                postId={post.id}
+                postSlug={post.slug}
+                authorId={post.author_id}
+                postTitle={post.title}
+              />
+
+              <div className="inline-flex items-center gap-2 rounded-md bg-tertiary-2 px-2.5 py-1 text-muted-foreground border border-border/60 max-w-[200px] sm:max-w-xs md:max-w-none overflow-hidden">
+                <span className="text-primary font-bold shrink-0">$</span>
+                <span className="truncate">cat ./{post.slug}.md</span>
+              </div>
             </div>
           </div>
         </FadeInItem>
+
+        {/* Non-Published Status Notice Banner */}
+        {post.status !== 'PUBLISHED' && (
+          <FadeInItem>
+            <div
+              className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border p-4 text-xs font-mono ${
+                post.status === 'PENDING_REVIEW'
+                  ? 'bg-amber-500/10 border-amber-500/30 text-amber-500'
+                  : 'bg-zinc-500/10 border-zinc-500/30 text-zinc-400'
+              }`}
+            >
+              <div className="flex items-start sm:items-center gap-2.5">
+                {post.status === 'PENDING_REVIEW' ? (
+                  <Clock3 className="h-4 w-4 shrink-0 mt-0.5 sm:mt-0 text-amber-500" />
+                ) : (
+                  <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 sm:mt-0 text-zinc-400" />
+                )}
+                <div>
+                  <p className="font-bold text-foreground">
+                    {post.status === 'PENDING_REVIEW'
+                      ? 'Article Status: Pending Review'
+                      : 'Article Status: Draft'}
+                  </p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">
+                    {post.status === 'PENDING_REVIEW'
+                      ? 'This article has been submitted for review. It is only visible to you (the author) and administrators.'
+                      : 'This is a private draft and is not visible to public visitors.'}
+                  </p>
+                </div>
+              </div>
+              <Link
+                href={`/blog/edit/${post.slug}`}
+                className="inline-flex items-center gap-1 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:opacity-90 transition-opacity self-start sm:self-auto shrink-0 shadow-xs"
+              >
+                <span>Edit Article</span>
+              </Link>
+            </div>
+          </FadeInItem>
+        )}
 
         {/* Article Header */}
         <FadeInItem className="space-y-3">

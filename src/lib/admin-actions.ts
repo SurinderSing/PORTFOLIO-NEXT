@@ -777,3 +777,377 @@ export async function deleteCommentAction(
   revalidatePath('/blog');
   return { success: true, message: 'Comment deleted successfully.' };
 }
+
+// ============================================================================
+// 11. User Blog Post Actions (Authenticated Users — Not Admin Only)
+// ============================================================================
+
+/**
+ * Helper to verify a user is authenticated (not admin-only).
+ * Returns the user and profile data for authorization checks.
+ */
+async function verifyAuth(): Promise<{
+  authorized: boolean;
+  error?: string;
+  userId?: string;
+  isAdmin?: boolean;
+}> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { authorized: false, error: 'Please sign in to continue.' };
+  }
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+
+  return {
+    authorized: true,
+    userId: user.id,
+    isAdmin: profile?.role === 'ADMIN',
+  };
+}
+
+/**
+ * Create a new blog post as an authenticated user.
+ * Regular users' posts go to PENDING_REVIEW. Admins can publish directly.
+ */
+export async function createUserBlogPostAction(
+  data: Partial<BlogPost>
+): Promise<ActionResult & { post?: BlogPost }> {
+  const auth = await verifyAuth();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+
+  const slug =
+    data.slug?.trim() ||
+    data.title
+      ?.toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '') ||
+    `post-${Date.now()}`;
+
+  // Check slug uniqueness
+  const { data: existingSlug } = await supabase
+    .from('blog_posts')
+    .select('id')
+    .eq('slug', slug)
+    .maybeSingle();
+
+  if (existingSlug) {
+    return {
+      success: false,
+      error: `Slug "${slug}" already exists. Please choose a different one.`,
+    };
+  }
+
+  // Determine effective status: regular users go to PENDING_REVIEW when publishing
+  let effectiveStatus = data.status || 'DRAFT';
+  if (!auth.isAdmin && effectiveStatus === 'PUBLISHED') {
+    effectiveStatus = 'PENDING_REVIEW';
+  }
+
+  const payload = {
+    author_id: auth.userId,
+    title: data.title || 'Untitled Post',
+    slug,
+    content: data.content || '',
+    excerpt: data.excerpt || null,
+    cover_image_url: data.cover_image_url || null,
+    tags: data.tags || [],
+    status: effectiveStatus,
+    published_at:
+      effectiveStatus === 'PUBLISHED'
+        ? data.published_at || new Date().toISOString()
+        : null,
+  };
+
+  const { data: created, error } = await supabase
+    .from('blog_posts')
+    .insert(payload)
+    .select()
+    .single();
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/blog');
+  const statusMsg =
+    effectiveStatus === 'PENDING_REVIEW'
+      ? 'Article submitted for review! It will be visible once approved by an admin.'
+      : effectiveStatus === 'PUBLISHED'
+        ? 'Article published successfully!'
+        : 'Draft saved successfully.';
+
+  return {
+    success: true,
+    message: statusMsg,
+    post: created as BlogPost,
+  };
+}
+
+/**
+ * Update a blog post. Authors can update their own posts, admins can update any.
+ */
+export async function updateUserBlogPostAction(
+  id: string,
+  data: Partial<BlogPost>
+): Promise<ActionResult> {
+  const auth = await verifyAuth();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+
+  // Verify ownership or admin
+  if (!auth.isAdmin) {
+    const { data: post } = await supabase
+      .from('blog_posts')
+      .select('author_id')
+      .eq('id', id)
+      .single();
+
+    if (!post || post.author_id !== auth.userId) {
+      return {
+        success: false,
+        error: 'You can only edit your own articles.',
+      };
+    }
+  }
+
+  // Check slug uniqueness if slug changed
+  if (data.slug) {
+    const { data: existingSlug } = await supabase
+      .from('blog_posts')
+      .select('id')
+      .eq('slug', data.slug)
+      .neq('id', id)
+      .maybeSingle();
+
+    if (existingSlug) {
+      return {
+        success: false,
+        error: `Slug "${data.slug}" already exists. Please choose a different one.`,
+      };
+    }
+  }
+
+  // Regular users: PUBLISHED → PENDING_REVIEW (re-review after edit)
+  let effectiveStatus = data.status;
+  if (!auth.isAdmin && effectiveStatus === 'PUBLISHED') {
+    effectiveStatus = 'PENDING_REVIEW';
+  }
+
+  const payload: Record<string, unknown> = {
+    ...data,
+    updated_at: new Date().toISOString(),
+  };
+
+  if (effectiveStatus) {
+    payload.status = effectiveStatus;
+  }
+
+  if (effectiveStatus === 'PUBLISHED' && !data.published_at) {
+    payload.published_at = new Date().toISOString();
+  }
+
+  // Remove relation properties if passed
+  delete payload.author;
+  delete payload.likes_count;
+  delete payload.comments_count;
+
+  const { error } = await supabase
+    .from('blog_posts')
+    .update(payload)
+    .eq('id', id);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/blog');
+  if (data.slug) {
+    revalidatePath(`/blog/${data.slug}`);
+  }
+
+  const statusMsg =
+    effectiveStatus === 'PENDING_REVIEW'
+      ? 'Article updated and submitted for review.'
+      : 'Article updated successfully.';
+
+  return { success: true, message: statusMsg };
+}
+
+/**
+ * Delete a blog post. Authors can delete their own, admins can delete any.
+ */
+export async function deleteUserBlogPostAction(
+  id: string
+): Promise<ActionResult> {
+  const auth = await verifyAuth();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+
+  // Verify ownership or admin
+  if (!auth.isAdmin) {
+    const { data: post } = await supabase
+      .from('blog_posts')
+      .select('author_id')
+      .eq('id', id)
+      .single();
+
+    if (!post || post.author_id !== auth.userId) {
+      return {
+        success: false,
+        error: 'You can only delete your own articles.',
+      };
+    }
+  }
+
+  const { error } = await supabase.from('blog_posts').delete().eq('id', id);
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/blog');
+  return { success: true, message: 'Article deleted successfully.' };
+}
+
+/**
+ * Admin-only: Approve a PENDING_REVIEW post by setting its status to PUBLISHED.
+ */
+export async function approveBlogPostAction(id: string): Promise<ActionResult> {
+  const adminAuth = await verifyAdmin();
+  if (!adminAuth.authorized) return { success: false, error: adminAuth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase
+    .from('blog_posts')
+    .update({
+      status: 'PUBLISHED',
+      published_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/blog');
+  revalidatePath('/admin/blogs');
+  return { success: true, message: 'Article approved and published.' };
+}
+
+/**
+ * Admin-only: Reject a PENDING_REVIEW post by setting its status back to DRAFT.
+ */
+export async function rejectBlogPostAction(id: string): Promise<ActionResult> {
+  const adminAuth = await verifyAdmin();
+  if (!adminAuth.authorized) return { success: false, error: adminAuth.error };
+
+  const supabase = createClient();
+  const { error } = await supabase
+    .from('blog_posts')
+    .update({
+      status: 'DRAFT',
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id);
+
+  if (error) return { success: false, error: error.message };
+
+  revalidatePath('/blog');
+  revalidatePath('/admin/blogs');
+  return { success: true, message: 'Article rejected and returned to draft.' };
+}
+
+/**
+ * Fetch a single blog post for editing (works for drafts, pending, and published posts).
+ * Verifies that the caller is either the author or an admin.
+ */
+export async function getBlogPostForEditAction(slug: string): Promise<{
+  success: boolean;
+  post?: BlogPost;
+  error?: string;
+  isAdmin?: boolean;
+}> {
+  const auth = await verifyAuth();
+  if (!auth.authorized) return { success: false, error: auth.error };
+
+  const supabase = createClient();
+  const { data: post, error } = await supabase
+    .from('blog_posts')
+    .select(
+      '*, author:profiles(id, first_name, last_name, username, role, profile_picture)'
+    )
+    .eq('slug', slug)
+    .maybeSingle();
+
+  if (error || !post) {
+    return { success: false, error: 'Article not found.' };
+  }
+
+  // Verify author or admin
+  if (!auth.isAdmin && post.author_id !== auth.userId) {
+    return {
+      success: false,
+      error: 'You do not have permission to edit this article.',
+    };
+  }
+
+  return {
+    success: true,
+    post: post as BlogPost,
+    isAdmin: auth.isAdmin,
+  };
+}
+
+/**
+ * Fetch all blog posts for the Admin Control Center across all statuses (Draft, Pending Review, Published, Archived).
+ */
+export async function getAdminBlogPostsAction(): Promise<BlogPost[]> {
+  const auth = await verifyAdmin();
+  if (!auth.authorized) return [];
+
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from('blog_posts')
+    .select(
+      '*, author:profiles(id, first_name, last_name, username, role, profile_picture), post_likes(id), comments(id)'
+    )
+    .order('created_at', { ascending: false });
+
+  if (error || !data) return [];
+
+  return data.map((post: any) => ({
+    ...post,
+    likes_count: Array.isArray(post.post_likes) ? post.post_likes.length : 0,
+    comments_count: Array.isArray(post.comments) ? post.comments.length : 0,
+  })) as BlogPost[];
+}
+
+/**
+ * Fetch the authenticated user's own blog posts (all statuses: draft, pending, published).
+ */
+export async function getUserBlogPostsAction(): Promise<BlogPost[]> {
+  const auth = await verifyAuth();
+  if (!auth.authorized || !auth.userId) return [];
+
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from('blog_posts')
+    .select(
+      '*, author:profiles(id, first_name, last_name, username, role, profile_picture), post_likes(id), comments(id)'
+    )
+    .eq('author_id', auth.userId)
+    .order('created_at', { ascending: false });
+
+  if (error || !data) return [];
+
+  return data.map((post: any) => ({
+    ...post,
+    likes_count: Array.isArray(post.post_likes) ? post.post_likes.length : 0,
+    comments_count: Array.isArray(post.comments) ? post.comments.length : 0,
+  })) as BlogPost[];
+}

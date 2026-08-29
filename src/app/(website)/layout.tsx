@@ -93,7 +93,6 @@ export default async function RootLayout({
         <Suspense>
           <RouteLoader />
         </Suspense>
-        <GlobalLoader />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -119,6 +118,7 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <GlobalLoader />
             <div className="min-h-screen flex flex-col justify-between relative">
               <AntigravityBackground />
               <CustomCursor />
