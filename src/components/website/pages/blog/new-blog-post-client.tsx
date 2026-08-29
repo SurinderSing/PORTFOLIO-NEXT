@@ -47,10 +47,19 @@ export const NewBlogPostClient: React.FC<NewBlogPostClientProps> = ({
           type: 'success',
           message: res.message || 'Article created successfully!',
         });
+        router.refresh();
+        const targetSlug = formData.slug.trim();
         setTimeout(() => {
-          router.push('/blog');
+          if (
+            formData.status === 'PUBLISHED' ||
+            formData.status === 'PENDING_REVIEW'
+          ) {
+            router.push(`/blog/${targetSlug}`);
+          } else {
+            router.push('/blog');
+          }
           router.refresh();
-        }, 1500);
+        }, 1200);
       } else {
         setStatusMessage({
           type: 'error',

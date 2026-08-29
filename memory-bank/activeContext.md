@@ -1,13 +1,25 @@
 # Memory Bank - Active Context
 
 ## Active Focus
-The current focus is **Phase 16: Custom Cyber/Terminal Boot Loader & Visual Boot Sequence (Completed)**.
+The current focus is **Phase 17: Mobile Button Stability & Blog Save Cache Synchronization (Completed)**.
 
 ---
 
 ## Recently Completed
 
-1. **Custom Cyber/Terminal Boot Loader (`TerminalLoader`):**
+1. **Mobile Button Stability & Tap Performance Fixes:**
+   - **Global Mobile Touch Enhancement (`src/styles/globals.css`):** Added `touch-action: manipulation;`, `-webkit-appearance: none;`, `appearance: none;`, `-webkit-touch-callout: none;`, `-webkit-user-select: none;`, and `-webkit-tap-highlight-color: transparent;` to base `<button>` styles to eliminate mobile double-tap zoom jitter, iOS button styling artifacts, and touch clipping.
+   - **Smooth Hardware-Accelerated UI Button (`src/components/ui/button.tsx`):** Refined `buttonVariants` to use `transform-gpu` and active feedback (`active:scale-[0.98] active:opacity-90`), removing aggressive hover transforms that conflicted with touchscreens and caused subpixel rendering clipping.
+   - **Responsive Button Stacking & Layout Protection:**
+     - `CommentForm` (`comment-form.tsx`): Stacks elements on narrow viewports (`flex flex-col-reverse sm:flex-row`), adding `shrink-0`, `min-w-[130px]`, `min-h-[38px]`, and a dedicated `<Loader2 />` spinner.
+     - `BlogPostForm` (`blog-post-form.tsx`): Made action buttons container responsive (`flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3`), adding `shrink-0`, `min-h-[42px]`, and `<Loader2 />` spinner.
+     - Admin `BlogForm` (`blog-form.tsx`), `TerminalContactForm`, and `ContactForm`: Added responsive widths, `shrink-0`, and loaders.
+
+2. **Blog Save Redirect Real-Time Cache Synchronization:**
+   - **Comprehensive Server-Side ISR Revalidation (`src/lib/admin-actions.ts`):** Fixed `updateUserBlogPostAction`, `updateBlogPostAction`, `createUserBlogPostAction`, `createBlogPostAction`, `deleteUserBlogPostAction`, and comment actions to capture pre-existing and updated slugs and always invalidate `/blog/[slug]`, `/blog/${slug}`, `/blog`, `/admin/blogs`, and `/` (layout).
+   - **Next.js Client-Side Router Cache Purging (`edit-blog-post-client.tsx`, `new-blog-post-client.tsx`):** Added immediate `router.refresh()` upon mutation completion before and after navigating, ensuring the redirected article page displays fresh data without requiring manual browser reload.
+
+3. **Custom Cyber/Terminal Boot Loader (`TerminalLoader`):**
    - **Interactive Terminal Boot Architecture (`src/components/ui/terminal-loader.tsx`):** Engineered a high-performance cyber terminal boot loader inspired by the reference `index.html`, featuring a matrix/scanline background grid, glowing ambient orbs, and Mac/cyber-styled traffic light window controls with live blinking indicator `SYS_BOOT // INDER_DEV_ENGINE v2.4`.
    - **Full Light & Dark Mode Dynamic Theme Adaptation:** Refactored terminal palette, syntax highlighting tokens, grid lines, and progress tracks to automatically synchronize with the active theme (`ThemeProvider`) in both light mode (clean crisp light terminal with emerald accents) and dark mode (neon cyberpunk terminal).
    - **Zero UI Layout Shift & Instant SSR Painting:** Eliminated initial content flash by removing hydration delays in `GlobalLoader` and removing `body.overflow = 'hidden'` scrollbar mutations, preventing viewport jumps and ensuring smooth initial painting and exit transitions.
