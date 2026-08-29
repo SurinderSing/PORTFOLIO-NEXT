@@ -1,11 +1,18 @@
 # Memory Bank - Active Context
 
 ## Active Focus
-The current focus is **Phase 19: Experience & Skills-Aligned Technical Blog System (Completed)**.
+The current focus is **Phase 20: Auth Flow, Verification Redirection & Post-Login Navigation Polish (Completed)**.
 
 ---
 
 ## Recently Completed
+
+1. **Auth Flow & Post-Login Redirection Fixes:**
+   - **Post-Login Routing Polish (`src/app/(auth)/sign-in/page.tsx`):** Changed default redirect destination from `/admin` to `/blog` when no explicit `?redirect=` target is provided. Updated headings, subtext, and buttons from admin-centric to general user-facing terminology (`Sign In`, `Create Account`, `Continue`).
+   - **Middleware Redirection Fix (`src/utils/supabase/middleware.ts`):** Changed signed-in user redirect on `/sign-in` and `/sign-up` from `/dashboard` (non-existent route) to `/blog`.
+   - **Multi-Environment Base & Site URL Hardening (`.env`, `.env.example`):** Added `NEXT_PUBLIC_SITE_URL="https://surinder-singh-portfolio.vercel.app"` alongside `NEXT_PUBLIC_BASE_URL="http://localhost:3000"`, ensuring SSR and email redirect construction properly respects the production domain.
+   - **Sign-Up Form Copy Generalization (`src/app/(auth)/sign-up/page.tsx`):** Changed page title to `Create Account` and updated instructions to be welcoming for general community members accessing discussion and blog features.
+   - **Email Template & Supabase Dashboard Configuration:** Synchronized custom terminal-themed templates (`supabase/templates/confirm-signup.html` and `reset-password.html`) and verified Supabase Site URL / redirect whitelist settings.
 
 1. **Experience & Skills-Aligned Technical Blog Engine:**
    - **Full-Spectrum Technical Catalog (10 In-Depth Articles):** Authored and published 10 comprehensive, authentic technical articles covering Surinder Singh's real-world engineering career (Paytm, Gimmefy AI, Dialmantra, Amotus Online, Drishti IAS) and technical competencies:

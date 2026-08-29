@@ -86,7 +86,7 @@ export async function updateSession(
       (url.pathname.startsWith('/sign-in') ||
         url.pathname.startsWith('/sign-up'))
     ) {
-      url.pathname = '/dashboard';
+      url.pathname = '/blog';
       return NextResponse.redirect(url);
     }
   } catch {

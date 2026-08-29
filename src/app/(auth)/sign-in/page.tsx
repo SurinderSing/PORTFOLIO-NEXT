@@ -27,7 +27,7 @@ type FormValues = z.infer<typeof formSchema>;
 function SignInContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTarget = searchParams.get('redirect') || '/admin';
+  const redirectTarget = searchParams.get('redirect') || '/blog';
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -86,10 +86,10 @@ function SignInContent() {
             <Terminal className="h-5 w-5" />
           </div>
           <h1 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">
-            Portfolio Admin
+            Sign In
           </h1>
           <p className="text-xs text-muted-foreground">
-            Sign in to manage portfolio assets and configuration.
+            Sign in to your account to access the portfolio platform.
           </p>
         </div>
 
@@ -108,7 +108,7 @@ function SignInContent() {
                 href={redirectTarget}
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:opacity-90 transition-opacity"
               >
-                <span>Dashboard</span>
+                <span>Continue</span>
                 <ArrowRight size={13} />
               </Link>
               <button
@@ -141,7 +141,7 @@ function SignInContent() {
               type="email"
               required
               className="text-xs bg-background/80"
-              placeholder="admin@surinder.dev"
+              placeholder="user@example.com"
               {...register('email')}
             />
             {errors.email && (
@@ -184,7 +184,7 @@ function SignInContent() {
             href="/sign-up"
             className="text-primary hover:underline font-semibold"
           >
-            Create Admin Account
+            Create Account
           </Link>
         </div>
       </div>
