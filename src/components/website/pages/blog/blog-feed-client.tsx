@@ -237,13 +237,13 @@ export const BlogFeedClient: React.FC<BlogFeedClientProps> = ({
               {/* Write Article CTA for all authenticated users */}
               <Link
                 href="/blog/new"
-                className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:opacity-90 transition-opacity shadow-xs"
+                className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-primary px-3 text-xs font-bold text-primary-foreground hover:opacity-90 transition-opacity shadow-xs"
               >
                 <PenSquare className="h-3.5 w-3.5" />
                 <span>Write Article</span>
               </Link>
 
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 text-[11px] font-semibold text-emerald-500">
+              <span className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 px-2.5 text-xs font-semibold text-emerald-500">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 {effectiveIsAdmin ? 'Admin' : 'Author'}
               </span>
@@ -251,10 +251,10 @@ export const BlogFeedClient: React.FC<BlogFeedClientProps> = ({
               {effectiveIsAdmin && (
                 <Link
                   href="/admin/blogs"
-                  className="inline-flex items-center gap-1 rounded-lg border border-primary/30 bg-primary/10 px-2.5 py-1.5 text-xs font-bold text-primary hover:bg-primary/20 transition-colors shadow-xs"
+                  className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-tertiary-2 px-2.5 text-xs font-medium text-foreground hover:bg-card hover:border-primary/40 transition-colors shadow-xs"
                   title="Admin Management Panel"
                 >
-                  <ShieldCheck className="h-3.5 w-3.5" />
+                  <ShieldCheck className="h-3.5 w-3.5 text-primary" />
                   <span>Admin Panel</span>
                 </Link>
               )}
@@ -262,10 +262,10 @@ export const BlogFeedClient: React.FC<BlogFeedClientProps> = ({
               <button
                 type="button"
                 onClick={signOut}
-                className="inline-flex items-center gap-1 rounded-lg border border-border bg-card px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-tertiary-2 transition-colors"
+                className="inline-flex h-8 items-center gap-1 rounded-lg border border-border bg-card px-2.5 text-xs text-muted-foreground hover:text-foreground hover:bg-tertiary-2 transition-colors shadow-xs"
                 title="Sign Out"
               >
-                <LogOut className="h-3 w-3" />
+                <LogOut className="h-3.5 w-3.5" />
                 <span>Sign Out</span>
               </button>
             </div>
@@ -273,17 +273,17 @@ export const BlogFeedClient: React.FC<BlogFeedClientProps> = ({
             <>
               <Link
                 href="/sign-in?redirect=/blog"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-tertiary-2 px-3 py-1.5 text-xs text-foreground hover:bg-card hover:border-border/80 transition-colors"
+                className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-border bg-tertiary-2 px-3 text-xs text-foreground hover:bg-card hover:border-border/80 transition-colors shadow-xs"
               >
                 <LogIn className="h-3.5 w-3.5 text-primary" />
                 <span>Sign In</span>
               </Link>
               <Link
                 href="/sign-up?redirect=/blog"
-                className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground hover:opacity-90 transition-opacity shadow-xs"
+                className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-primary px-3 text-xs font-bold text-primary-foreground hover:opacity-90 transition-opacity shadow-xs"
               >
                 <UserPlus className="h-3.5 w-3.5" />
-                <span>Sign Up to Write</span>
+                <span>Join / Register</span>
               </Link>
             </>
           ) : null}

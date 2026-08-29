@@ -86,7 +86,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     : 'Surinder Singh';
 
   return (
-    <article className="w-full font-mono py-2 max-w-4xl mx-auto">
+    <article className="w-full font-mono py-2 max-w-5xl mx-auto">
       <FadeIn staggerChildren={0.08} className="flex flex-col space-y-5">
         {/* Navigation & Breadcrumb */}
         <FadeInItem>
