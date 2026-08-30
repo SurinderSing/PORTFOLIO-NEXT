@@ -18,11 +18,17 @@ import {
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Contact | Establish Connection | Surinder Singh',
+  title: 'Contact & Hire | Surinder Singh Portfolio',
   description:
-    'Have a project in mind or want to collaborate? Contact Surinder Singh for frontend engineering, AI tool development, and tech opportunities.',
+    'Get in touch with Surinder Singh for frontend engineering opportunities, project collaborations, or technical consultation in React, Next.js, and modern web architectures.',
   alternates: {
     canonical: '/contact',
+  },
+  openGraph: {
+    title: 'Contact & Hire | Surinder Singh Portfolio',
+    description:
+      'Get in touch with Surinder Singh for frontend engineering opportunities, project collaborations, or technical consultation in React, Next.js, and modern web architectures.',
+    url: 'https://surinder-singh-portfolio.vercel.app/contact',
   },
 };
 
@@ -176,6 +182,51 @@ export default async function ContactPage() {
           </FadeInItem>
         </div>
       </FadeIn>
+
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@graph': [
+              {
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                  {
+                    '@type': 'ListItem',
+                    position: 1,
+                    name: 'Home',
+                    item: 'https://surinder-singh-portfolio.vercel.app',
+                  },
+                  {
+                    '@type': 'ListItem',
+                    position: 2,
+                    name: 'Contact',
+                    item: 'https://surinder-singh-portfolio.vercel.app/contact',
+                  },
+                ],
+              },
+              {
+                '@type': 'ContactPage',
+                name: 'Contact Surinder Singh',
+                description:
+                  'Contact form and communication channels for Surinder Singh, Senior Frontend Developer.',
+                url: 'https://surinder-singh-portfolio.vercel.app/contact',
+                mainEntity: {
+                  '@type': 'Person',
+                  name: settings.owner_name,
+                  email: emailContact,
+                  address: {
+                    '@type': 'PostalAddress',
+                    addressLocality: locationContact,
+                  },
+                },
+              },
+            ],
+          }),
+        }}
+      />
     </div>
   );
 }

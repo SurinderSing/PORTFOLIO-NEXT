@@ -1,11 +1,29 @@
 # Memory Bank - Active Context
 
 ## Active Focus
-The current focus is **Phase 23: Sign-Up Form Placeholder Sanitization (Completed)**.
+The current focus is **Phase 25: Core Web Vitals & Runtime Performance Optimization (Completed)**.
 
 ---
 
 ## Recently Completed
+
+1. **Core Web Vitals & Runtime Performance Optimization & Dot Particle Background:**
+   - **Stationary Background Dots on Scroll & Delayed Cursor Trailing (`src/components/animations/antigravity-background.tsx`):** Fixed background dots in place so they remain stationary on viewport scroll without artificial vertical displacement, and tuned the mouse coordinate interpolation (`0.07` lerp factor) and particle transition force (`0.10`) so the antigravity repulsion field smoothly glides behind the cursor with a fluid magnetic delay.
+   - **Antigravity Micro-Dot Particles with 50% Lighter Opacity (`src/components/animations/antigravity-background.tsx`):** Redesigned the background particle geometry from pins/lines to subtle circular micro-dots (`0.65px–1.0px` radius) with a 50% lighter opacity baseline (`0.11` dark / `0.13` light). Maintained smooth fluid organic repulsion, ambient harmonic floating drift, trail inertia, and theme adaptability.
+   - **Session-Aware Non-Blocking Boot Loader (`src/components/ui/global-loader.tsx`, `terminal-loader.tsx`):** Added `sessionStorage` awareness so the terminal boot sequence only plays once per visitor session and never blocks subsequent page transitions. Optimized progression interval to complete in a crisp ~300ms–400ms rather than holding the LCP element for 2.5 seconds.
+   - **Idle-Deferred Antigravity Canvas (`src/components/animations/antigravity-background.tsx`):** Deferred canvas particle allocation to `requestIdleCallback` (with timeout fallback), added `visibilitychange` listeners to suspend the 60fps render loop when tabs are inactive, and implemented adaptive particle spacing for mobile viewports (`spacing = 40` on mobile vs `32` on desktop) to eliminate Total Blocking Time (TBT).
+   - **RequestAnimationFrame Throttled Custom Cursor (`src/components/animations/custom-cursor.tsx`):** Replaced unthrottled DOM queries in `mousemove` with single-frame RAF batching and passive listeners to eliminate main-thread layout thrashing.
+   - **Build Verification:** Verified `npm run lint` and `npm run build` compiled 36 static pages cleanly with 0 errors.
+
+1. **SEO Optimization & #1 Google Ranking Infrastructure:**
+   - **Dynamic Database Sitemap (`src/app/sitemap.ts`):** Replaced static array with dynamic async query fetching all published blog posts from Supabase (`getBlogPosts({ status: 'PUBLISHED' })`), assigning accurate `lastModified` dates and priority weightings across all static and dynamic paths.
+   - **Structured Data JSON-LD Entity Graph (`src/app/(website)/layout.tsx`):** Implemented a comprehensive Google-compliant `@graph` containing `WebSite`, `ProfilePage`, and `Person` schemas with `sameAs` entity links (LinkedIn, GitHub, previous Netlify portfolio), `knowsAbout`, and `worksFor` specifications to establish Google Knowledge Graph entity recognition.
+   - **BreadcrumbList Structured Data:** Injected `BreadcrumbList` schemas across all subpages (`/work`, `/resume`, `/blog`, `/blog/[slug]`, `/contact`) to qualify for rich breadcrumb snippet display in Google SERPs.
+   - **App Router Web App Manifest (`src/app/manifest.ts`):** Created `manifest.ts` providing full PWA metadata, standalone display properties, theme colors, and icons for Google mobile-first indexing.
+   - **Dynamic Social & OpenGraph Cards (`src/app/(website)/opengraph-image.tsx`, `twitter-image.tsx`):** Implemented high-resolution edge-rendered social card generators for rich link previews in search and social shares.
+   - **Robots.txt Directives (`src/app/robots.ts`):** Structured crawler allow/disallow rules, sitemap locator, and host configuration.
+   - **Old Portfolio PageRank Transfer (`inder-dev-portfolio`):** Added canonical link (`<link rel="canonical">`), meta-refresh, instant JavaScript redirect in `index.html`, and Netlify `_redirects` file (`/* https://surinder-singh-portfolio.vercel.app/:splat 301!`) to transfer accumulated Google ranking equity and backlinks from the old Netlify deployment to `PORTFOLIO-NEXT`.
+   - **Redundant Layout Pruning & Metadata Base Normalization:** Removed conflicting `contact/layout.tsx`, normalized `metadataBase` across all route groups, and fixed Prettier/ESLint formatting. All 36 static/dynamic pages pass `npm run build` with 0 errors.
 
 1. **Sign-Up Form Placeholder Sanitization:**
    - **Neutral Dummy Placeholders (`src/components/auth/sign-up/form/index.tsx`):** Sanitized form input placeholders to replace personal identifiers (`Surinder`, `Singh`, `admin@surinder.dev`, `admin_user`, `+91 9876543210`) with standard, neutral dummy examples (`john_doe`, `John`, `Doe`, `john.doe@example.com`, `+15551234567`). Preserved sign-in form placeholders (`user@example.com`, `••••••••`) as confirmed.

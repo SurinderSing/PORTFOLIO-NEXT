@@ -11,8 +11,13 @@ import { Terminal } from 'lucide-react';
 import Providers from '../provider';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://surinder-singh-portfolio.vercel.app'),
   title: 'Portfolio Admin | Authentication',
   description: 'Secure admin authentication for portfolio management',
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function AuthLayout({

@@ -5,12 +5,17 @@ import BlogFeedClient from '@/components/website/pages/blog/blog-feed-client';
 import { FadeIn, FadeInItem } from '@/components/animations/fade-in';
 
 export const metadata: Metadata = {
-  title:
-    'Blog & Articles | Architecture & Frontend Engineering | Surinder Singh',
+  title: 'Engineering Blog & Articles | Surinder Singh Portfolio',
   description:
     'Deep dives on Micro-Frontends, Webpack Module Federation, React Server Components, Next.js 14, and scalable frontend architectures by Surinder Singh.',
   alternates: {
     canonical: '/blog',
+  },
+  openGraph: {
+    title: 'Engineering Blog & Articles | Surinder Singh Portfolio',
+    description:
+      'Deep dives on Micro-Frontends, Webpack Module Federation, React Server Components, Next.js 14, and scalable frontend architectures by Surinder Singh.',
+    url: 'https://surinder-singh-portfolio.vercel.app/blog',
   },
 };
 
@@ -48,6 +53,31 @@ export default async function BlogPage() {
           <BlogFeedClient initialPosts={posts} />
         </FadeInItem>
       </FadeIn>
+
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Home',
+                item: 'https://surinder-singh-portfolio.vercel.app',
+              },
+              {
+                '@type': 'ListItem',
+                position: 2,
+                name: 'Blog',
+                item: 'https://surinder-singh-portfolio.vercel.app/blog',
+              },
+            ],
+          }),
+        }}
+      />
     </div>
   );
 }

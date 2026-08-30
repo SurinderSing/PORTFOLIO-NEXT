@@ -20,36 +20,64 @@ import { Analytics } from '@vercel/analytics/next';
 export const metadata: Metadata = {
   metadataBase: new URL('https://surinder-singh-portfolio.vercel.app'),
   title: {
-    default: 'Surinder Singh | Frontend Developer',
+    default: 'Surinder Singh | Frontend Developer Portfolio',
     template: '%s | Surinder Singh',
   },
   description:
-    'Frontend Developer with 4+ years experience specializing in React, Next.js, AI tools, and building high-performance web applications.',
+    'Portfolio of Surinder Singh, a Senior Frontend Developer & Web Architect specializing in React, Next.js, TypeScript, AI tools, and building scalable high-performance web applications.',
+  applicationName: 'Surinder Singh Portfolio',
   keywords: [
-    'Frontend Developer',
-    'React Developer',
-    'Next.js Specialist',
-    'TypeScript Engineer',
     'Surinder Singh',
     'Surinder Singh Portfolio',
-    'Web Development Specialist',
-    'AI Tools Developer',
-    'Gimmefy AI',
+    'Surinder Singh Frontend Developer',
+    'Surinder Singh Web Developer',
+    'Surinder Singh React Developer',
+    'Surinder Singh Next.js',
+    'Surinder Singh Engineer Delhi',
+    'Senior Frontend Engineer',
+    'React Specialist',
+    'Next.js 14 Developer',
+    'TypeScript Engineer',
+    'Micro-Frontend Architecture',
+    'Module Federation',
+    'Frontend Web Developer Delhi',
+    'Gimmefy AI Developer',
+    'Web Architecture Specialist',
   ],
+  authors: [
+    {
+      name: 'Surinder Singh',
+      url: 'https://surinder-singh-portfolio.vercel.app',
+    },
+  ],
+  creator: 'Surinder Singh',
+  publisher: 'Surinder Singh',
+  category: 'technology',
+  alternates: {
+    canonical: '/',
+  },
   icons: {
     icon: '/favicon.png',
     shortcut: '/favicon.png',
     apple: '/favicon.png',
   },
-  authors: [{ name: 'Surinder Singh' }],
-  creator: 'Surinder Singh',
-  alternates: {
-    canonical: '/',
+  manifest: '/manifest.webmanifest',
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
   openGraph: {
-    title: 'Surinder Singh | Frontend Developer',
+    title: 'Surinder Singh | Frontend Developer Portfolio',
     description:
-      'Frontend Developer specializing in React, Next.js, and modern web technologies. Explore my projects and experience.',
+      'Explore projects, engineering experience, and technical articles by Surinder Singh, a Frontend Engineer building scalable web systems.',
     type: 'website',
     locale: 'en_US',
     url: 'https://surinder-singh-portfolio.vercel.app',
@@ -57,10 +85,13 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Surinder Singh | Frontend Developer',
+    title: 'Surinder Singh | Frontend Developer Portfolio',
     description:
-      'Frontend Developer specializing in React, Next.js, and modern web technologies. Explore my projects and experience.',
+      'Explore projects, engineering experience, and technical articles by Surinder Singh, a Frontend Engineer building scalable web systems.',
     creator: '@SurinderDev',
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
   },
 };
 
@@ -69,6 +100,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
+  themeColor: '#090d16',
 };
 
 export default async function RootLayout({
@@ -79,7 +111,85 @@ export default async function RootLayout({
     getSocialLinks(),
   ]);
 
-  const sameAsUrls = socialLinks.map((link) => link.url);
+  const sameAsUrls = Array.from(
+    new Set([
+      ...socialLinks.map((link) => link.url),
+      'https://github.com/SurinderSing',
+      'https://github.com/SurinderSing/inder-dev-portfolio',
+      'https://www.linkedin.com/in/surinder-singh-dev/',
+    ])
+  );
+
+  const structuredDataGraph = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'WebSite',
+        '@id': 'https://surinder-singh-portfolio.vercel.app/#website',
+        url: 'https://surinder-singh-portfolio.vercel.app',
+        name: 'Surinder Singh | Portfolio',
+        alternateName: [
+          'Surinder Singh Portfolio',
+          'Surinder Singh Dev',
+          'Surinder Singh Frontend Developer',
+        ],
+        description:
+          'Official portfolio of Surinder Singh, Senior Frontend Developer and Web Architect.',
+        publisher: {
+          '@id': 'https://surinder-singh-portfolio.vercel.app/#person',
+        },
+        inLanguage: 'en-US',
+      },
+      {
+        '@type': 'ProfilePage',
+        '@id': 'https://surinder-singh-portfolio.vercel.app/#profilepage',
+        url: 'https://surinder-singh-portfolio.vercel.app',
+        name: 'Surinder Singh - Frontend Developer Profile & Portfolio',
+        isPartOf: {
+          '@id': 'https://surinder-singh-portfolio.vercel.app/#website',
+        },
+        mainEntity: {
+          '@id': 'https://surinder-singh-portfolio.vercel.app/#person',
+        },
+      },
+      {
+        '@type': 'Person',
+        '@id': 'https://surinder-singh-portfolio.vercel.app/#person',
+        name: settings.owner_name || 'Surinder Singh',
+        alternateName: 'Surinder Singh',
+        url: 'https://surinder-singh-portfolio.vercel.app',
+        image:
+          settings.profile_photo_url ||
+          'https://surinder-singh-portfolio.vercel.app/favicon.png',
+        jobTitle: settings.owner_title || 'Frontend Developer',
+        worksFor: {
+          '@type': 'Organization',
+          name: 'Gimmefy AI',
+        },
+        sameAs: sameAsUrls,
+        description:
+          settings.owner_summary ||
+          'Senior Frontend Developer with 4+ years experience specializing in React, Next.js, TypeScript, Micro-Frontends, and AI web applications.',
+        knowsAbout: [
+          'React.js',
+          'Next.js',
+          'TypeScript',
+          'JavaScript',
+          'Micro-Frontend Architecture',
+          'Module Federation',
+          'Tailwind CSS',
+          'Redux Toolkit',
+          'Frontend System Architecture',
+          'Web Performance Optimization',
+        ],
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: 'Delhi',
+          addressCountry: 'India',
+        },
+      },
+    ],
+  };
 
   return (
     <html
@@ -98,19 +208,7 @@ export default async function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'Person',
-              name: settings.owner_name,
-              url: 'https://surinder-singh-portfolio.vercel.app',
-              jobTitle: settings.owner_title,
-              sameAs: sameAsUrls,
-              description: settings.owner_summary,
-              worksFor: {
-                '@type': 'Organization',
-                name: 'Gimmefy AI',
-              },
-            }),
+            __html: JSON.stringify(structuredDataGraph),
           }}
         />
         <Providers>

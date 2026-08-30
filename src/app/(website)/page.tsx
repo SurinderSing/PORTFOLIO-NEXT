@@ -15,11 +15,17 @@ import FeaturedWork from '@/components/website/pages/home/featured-work';
 import ContactTeaser from '@/components/website/pages/home/contact-teaser';
 
 export const metadata: Metadata = {
-  title: 'Surinder Singh | React & Next.js Frontend Developer',
+  title: 'Surinder Singh | Frontend Developer Portfolio',
   description:
-    'Portfolio of Surinder Singh, a Frontend Engineer building high-performance SaaS platforms, AI-powered tools, and real-time systems using React, Next.js, and TypeScript.',
+    'Official portfolio of Surinder Singh, a Senior Frontend Developer specializing in React, Next.js, TypeScript, Micro-Frontends, and building high-performance scalable web systems.',
   alternates: {
     canonical: '/',
+  },
+  openGraph: {
+    title: 'Surinder Singh | Frontend Developer Portfolio',
+    description:
+      'Official portfolio of Surinder Singh, a Senior Frontend Developer specializing in React, Next.js, TypeScript, Micro-Frontends, and building high-performance scalable web systems.',
+    url: 'https://surinder-singh-portfolio.vercel.app',
   },
 };
 

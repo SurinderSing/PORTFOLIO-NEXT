@@ -10,9 +10,7 @@ interface Particle {
   originY: number;
   vx: number;
   vy: number;
-  angle: number;
-  baseLength: number;
-  baseAngle: number;
+  baseRadius: number;
   phaseX: number;
   phaseY: number;
   freq: number;
@@ -32,26 +30,29 @@ export const AntigravityBackground: React.FC = () => {
     if (!ctx) return;
 
     let animationFrameId: number;
+    let idleCallbackId: number;
+    let isRunning = true;
     let width = window.innerWidth;
     let height = window.innerHeight;
     let dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-    // Mouse coordinates (target & smoothly lerped current)
+    // Mouse coordinates (target & trailing follower with distinct delay)
     const mouse = {
       x: -1000,
       y: -1000,
       targetX: -1000,
       targetY: -1000,
-      radius: 480, // Expansive Antigravity effect radius
+      radius: 440, // Antigravity field radius
       active: false,
     };
 
-    // Scroll tracking with smooth fluid inertia
+    // Scroll inertia tracking with 2x extended delayed wave
     let lastScrollY = window.scrollY;
-    let scrollVelocity = 0;
+    let targetScrollVelocity = 0;
+    let smoothScrollVelocity = 0;
 
     // Configuration
-    const spacing = 32; // Grid spacing in px
+    const spacing = width < 768 ? 40 : 32;
     let particles: Particle[] = [];
 
     const initParticles = () => {
@@ -64,7 +65,7 @@ export const AntigravityBackground: React.FC = () => {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       // Dynamically scale radius on larger/smaller viewports
-      mouse.radius = Math.max(440, Math.min(width * 0.4, 580));
+      mouse.radius = Math.max(400, Math.min(width * 0.36, 540));
 
       const cols = Math.ceil(width / spacing) + 2;
       const rows = Math.ceil(height / spacing) + 2;
@@ -73,11 +74,10 @@ export const AntigravityBackground: React.FC = () => {
       for (let i = -1; i < cols; i++) {
         for (let j = -1; j < rows; j++) {
           // Organic distribution jitter
-          const jitterX = (Math.random() - 0.5) * 10;
-          const jitterY = (Math.random() - 0.5) * 10;
+          const jitterX = (Math.random() - 0.5) * 8;
+          const jitterY = (Math.random() - 0.5) * 8;
           const x = i * spacing + jitterX;
           const y = j * spacing + jitterY;
-          const randomAngle = Math.random() * Math.PI * 2;
 
           particles.push({
             x,
@@ -86,9 +86,7 @@ export const AntigravityBackground: React.FC = () => {
             originY: y,
             vx: 0,
             vy: 0,
-            angle: randomAngle,
-            baseAngle: randomAngle,
-            baseLength: 2.2 + Math.random() * 2.5,
+            baseRadius: 1.0 + Math.random() * 0.5,
             phaseX: Math.random() * Math.PI * 2,
             phaseY: Math.random() * Math.PI * 2,
             freq: 0.0008 + Math.random() * 0.0008,
@@ -99,9 +97,7 @@ export const AntigravityBackground: React.FC = () => {
       }
     };
 
-    initParticles();
-
-    // Mouse event handlers
+    // Mouse event handlers - tracks live cursor position
     const handleMouseMove = (e: MouseEvent) => {
       mouse.targetX = e.clientX;
       mouse.targetY = e.clientY;
@@ -110,6 +106,8 @@ export const AntigravityBackground: React.FC = () => {
 
     const handleMouseLeave = () => {
       mouse.active = false;
+      mouse.targetX = -1000;
+      mouse.targetY = -1000;
     };
 
     const handleScroll = () => {
@@ -117,161 +115,178 @@ export const AntigravityBackground: React.FC = () => {
       const delta = currentScrollY - lastScrollY;
       lastScrollY = currentScrollY;
 
-      // Impart responsive scroll inertia lag
-      if (mouse.active) {
-        mouse.y -= delta * 0.45;
-      }
-
-      // Gentle scroll impulse
-      scrollVelocity += Math.max(Math.min(delta * 0.04, 7), -7);
+      // Accumulate scroll impulse for 2x extended delayed wave
+      targetScrollVelocity += Math.max(Math.min(delta * 0.2, 28), -28);
     };
 
+    let resizeTimer: ReturnType<typeof setTimeout>;
     const handleResize = () => {
-      initParticles();
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(initParticles, 150);
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        isRunning = false;
+        cancelAnimationFrame(animationFrameId);
+      } else {
+        if (!isRunning) {
+          isRunning = true;
+          animationFrameId = requestAnimationFrame(render);
+        }
+      }
     };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('mouseout', handleMouseLeave, { passive: true });
     window.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('resize', handleResize, { passive: true });
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     let time = 0;
 
     // Render loop
-    const render = (timestamp: number) => {
-      time = timestamp;
+    const render = () => {
+      if (!isRunning) return;
+      time += 1;
+
+      // Heavy trailing lag: mouse follower glides smoothly behind the cursor
+      mouse.x += (mouse.targetX - mouse.x) * 0.038;
+      mouse.y += (mouse.targetY - mouse.y) * 0.038;
+
+      // 2x Extended delayed smooth scroll velocity wave (0.011 lerp)
+      smoothScrollVelocity +=
+        (targetScrollVelocity - smoothScrollVelocity) * 0.011;
+      targetScrollVelocity *= 0.96;
+
       ctx.clearRect(0, 0, width, height);
 
-      // Smooth, responsive cursor tracking (calibrated follow-through speed)
-      if (mouse.active) {
-        mouse.x += (mouse.targetX - mouse.x) * 0.048;
-        mouse.y += (mouse.targetY - mouse.y) * 0.048;
-      } else {
-        mouse.x += (-1000 - mouse.x) * 0.025;
-        mouse.y += (-1000 - mouse.y) * 0.025;
-      }
+      const isDark = resolvedTheme === 'dark';
 
-      // Smooth exponential decay on scroll inertia
-      scrollVelocity *= 0.95;
-      const absScrollVel = Math.abs(scrollVelocity);
-
-      const isDark =
-        document.documentElement.classList.contains('dark') ||
-        resolvedTheme === 'dark';
-
-      const maxDist = mouse.radius;
-      const maxDistSq = maxDist * maxDist;
-
-      // Draw each particle
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i];
 
-        // 1. Ambient continuous floating motion (smooth ease when idle)
-        const floatX =
+        // Harmonic organic ambient drift around fixed origin
+        const harmonicX =
           Math.sin(time * p.freq + p.phaseX) * 3.5 * p.speedMultiplier;
-        const floatY =
-          Math.cos(time * p.freq * 0.85 + p.phaseY) * 3.5 * p.speedMultiplier;
-        const targetOriginX = p.originX + floatX;
-        const targetOriginY = p.originY + floatY;
+        const harmonicY =
+          Math.cos(time * p.freq + p.phaseY) * 3.5 * p.speedMultiplier;
+        const naturalX = p.originX + harmonicX;
+        const naturalY = p.originY + harmonicY;
 
-        const dx = mouse.x - p.x;
-        const dy = mouse.y - p.y;
+        // Trailing mouse distance vectors (screen space)
+        const dx = p.x - mouse.x;
+        const dy = p.y - mouse.y;
         const distSq = dx * dx + dy * dy;
+        const dist = Math.sqrt(distSq);
 
-        // Ambient undulating angle wave across the field
-        const ambientWave =
-          Math.sin(time * 0.001 + p.originX * 0.003 + p.originY * 0.003) * 0.3;
-        let targetAngle = p.baseAngle + ambientWave;
         let targetForce = 0;
+        let repelAngle = 0;
 
-        // 2. Antigravity Mouse Forcefield Interaction with Smoothstep Curve
-        if (distSq < maxDistSq) {
-          const dist = Math.sqrt(distSq);
-          const rawForce = 1 - dist / maxDist; // 0 (edge) -> 1 (center)
-
-          // Smoothstep Hermite curve: 3x^2 - 2x^3 for soft ease-in-out perimeter
-          targetForce = rawForce * rawForce * (3 - 2 * rawForce);
-
-          // Living flutter micro-oscillation around cursor
-          const livingFlutter =
-            Math.sin(time * 0.0025 + p.phaseX) * 0.15 * targetForce;
-          targetAngle = Math.atan2(dy, dx) + Math.PI + livingFlutter;
+        // Antigravity force calculation with organic exponential falloff
+        if (mouse.active && dist < mouse.radius && dist > 0) {
+          const normDist = 1 - dist / mouse.radius;
+          targetForce = normDist * normDist * 1.35; // Power curve
+          repelAngle = Math.atan2(dy, dx);
         }
 
-        // 3. Calibrated Transition Delay on Forcefield
-        p.currentForce += (targetForce - p.currentForce) * 0.065;
-        const easeForce = p.currentForce;
+        // Gradual force accumulation for distinct trailing wave effect
+        p.currentForce += (targetForce - p.currentForce) * 0.055;
 
-        // Silky spring return force to origin
-        const returnForceX = (targetOriginX - p.x) * 0.05;
-        const returnForceY = (targetOriginY - p.y) * 0.05;
-        p.vx += returnForceX;
-        p.vy += returnForceY;
+        // Combine cursor trailing force with delayed scroll wave influence
+        const scrollEffect = Math.min(
+          Math.abs(smoothScrollVelocity) * 0.04,
+          0.32
+        );
+        const combinedForce = Math.max(p.currentForce, scrollEffect);
 
-        // Scroll reaction: gentle tilt and subtle float
-        if (absScrollVel > 0.05) {
-          p.vy -= scrollVelocity * 0.02;
-          const scrollTilt = Math.sign(scrollVelocity) * 0.15;
-          targetAngle += scrollTilt;
+        // 50% increased opacity baseline
+        let opacity = isDark ? 0.17 : 0.2;
+        let radius = p.baseRadius;
+        let color = isDark ? '34, 197, 94' : '15, 23, 42'; // subtle emerald in dark, slate in light
+
+        if (combinedForce > 0.02) {
+          // Antigravity & scroll wave active state (50% increased opacity)
+          opacity = Math.min(
+            (isDark ? 0.27 : 0.3) + combinedForce * 0.45,
+            0.75
+          );
+          radius = p.baseRadius + combinedForce * 0.95;
+
+          // Color transition to vibrant cyan/emerald highlight on interaction
+          if (combinedForce > 0.35) {
+            color = isDark ? '56, 189, 248' : '14, 165, 233'; // Cyan highlight
+          } else if (combinedForce > 0.15) {
+            color = isDark ? '52, 211, 153' : '16, 185, 129'; // Emerald highlight
+          }
         }
 
-        // Apply magnetic push based on delayed force
-        if (easeForce > 0.005) {
-          const pushAngle = Math.atan2(dy, dx);
-          const pushForce = easeForce * 16;
-          p.vx -= Math.cos(pushAngle) * pushForce * 0.03;
-          p.vy -= Math.sin(pushAngle) * pushForce * 0.03;
+        // Soft elastic spring physics: low spring force gives particles extended delay & inertia
+        const springX = (naturalX - p.x) * 0.024;
+        const springY = (naturalY - p.y) * 0.016; // 2x softer vertical spring for long, fluid scroll return
+
+        p.vx += springX;
+        p.vy += springY;
+
+        // Antigravity cursor push impulse
+        if (p.currentForce > 0.01) {
+          const push = p.currentForce * 2.8;
+          p.vx += Math.cos(repelAngle) * push;
+          p.vy += Math.sin(repelAngle) * push;
         }
 
-        // Dynamic length, opacity, and theme color transition (lightened further)
-        const scrollStretch =
-          absScrollVel > 0.05 ? Math.min(absScrollVel * 0.15, 4.0) : 0;
-        const length = p.baseLength + easeForce * 7.5 + scrollStretch;
+        // 2x Extended delayed fluid scroll wave impulse with row-phase lag
+        if (Math.abs(smoothScrollVelocity) > 0.003) {
+          const normalizedY = p.originY / (height || 800);
+          const rowPhase = Math.sin(normalizedY * Math.PI + time * 0.018);
+          const scrollPush = smoothScrollVelocity * (0.28 + rowPhase * 0.12);
+          p.vy -= scrollPush;
+        }
 
-        const opacity = isDark
-          ? 0.045 + easeForce * 0.32
-          : 0.03 + easeForce * 0.32;
-
-        // Brand Emerald Green: #34D399 (dark) / #16A34A (light)
-        const color = isDark ? '52, 211, 153' : '22, 163, 74';
-
-        // Soft fluid friction
-        p.vx *= 0.88;
-        p.vy *= 0.88;
+        // Velocity damping & floating integration
+        p.vx *= 0.92;
+        p.vy *= 0.935;
         p.x += p.vx;
         p.y += p.vy;
 
-        // Calibrated liquid angle interpolation
-        let angleDiff = targetAngle - p.angle;
-        while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
-        while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
-        p.angle += angleDiff * 0.075;
-
-        // Draw particle dash
-        const halfLen = length / 2;
-        const cos = Math.cos(p.angle);
-        const sin = Math.sin(p.angle);
-
+        // Draw particle dot (circle)
         ctx.beginPath();
-        ctx.moveTo(p.x - cos * halfLen, p.y - sin * halfLen);
-        ctx.lineTo(p.x + cos * halfLen, p.y + sin * halfLen);
-        ctx.strokeStyle = `rgba(${color}, ${opacity})`;
-        ctx.lineWidth = 1.3;
-        ctx.lineCap = 'round';
-        ctx.stroke();
+        ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${color}, ${opacity})`;
+        ctx.fill();
       }
 
       animationFrameId = requestAnimationFrame(render);
     };
 
-    animationFrameId = requestAnimationFrame(render);
+    // Defer initialization to idle time so main paint is not blocked
+    if ('requestIdleCallback' in window) {
+      idleCallbackId = (window as any).requestIdleCallback(
+        () => {
+          initParticles();
+          animationFrameId = requestAnimationFrame(render);
+        },
+        { timeout: 100 }
+      );
+    } else {
+      setTimeout(() => {
+        initParticles();
+        animationFrameId = requestAnimationFrame(render);
+      }, 50);
+    }
 
     return () => {
+      isRunning = false;
+      if (idleCallbackId && 'cancelIdleCallback' in window) {
+        (window as any).cancelIdleCallback(idleCallbackId);
+      }
       cancelAnimationFrame(animationFrameId);
+      clearTimeout(resizeTimer);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseout', handleMouseLeave);
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [resolvedTheme]);
 

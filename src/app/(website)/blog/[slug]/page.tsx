@@ -53,6 +53,15 @@ export async function generateMetadata({
       images: post.cover_image_url ? [post.cover_image_url] : [],
       type: 'article',
       publishedTime: post.published_at || undefined,
+      authors: ['Surinder Singh'],
+      tags: post.tags || [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.excerpt || post.title,
+      images: post.cover_image_url ? [post.cover_image_url] : [],
+      creator: '@SurinderDev',
     },
   };
 }
@@ -249,6 +258,69 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           />
         </FadeInItem>
       </FadeIn>
+
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@graph': [
+              {
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                  {
+                    '@type': 'ListItem',
+                    position: 1,
+                    name: 'Home',
+                    item: 'https://surinder-singh-portfolio.vercel.app',
+                  },
+                  {
+                    '@type': 'ListItem',
+                    position: 2,
+                    name: 'Blog',
+                    item: 'https://surinder-singh-portfolio.vercel.app/blog',
+                  },
+                  {
+                    '@type': 'ListItem',
+                    position: 3,
+                    name: post.title,
+                    item: `https://surinder-singh-portfolio.vercel.app/blog/${post.slug}`,
+                  },
+                ],
+              },
+              {
+                '@type': 'BlogPosting',
+                mainEntityOfPage: {
+                  '@type': 'WebPage',
+                  '@id': `https://surinder-singh-portfolio.vercel.app/blog/${post.slug}`,
+                },
+                headline: post.title,
+                description: post.excerpt || post.title,
+                image: post.cover_image_url
+                  ? [post.cover_image_url]
+                  : ['https://surinder-singh-portfolio.vercel.app/favicon.png'],
+                datePublished: post.published_at || post.created_at,
+                dateModified:
+                  post.updated_at || post.published_at || post.created_at,
+                author: {
+                  '@type': 'Person',
+                  name: authorName,
+                  url: 'https://surinder-singh-portfolio.vercel.app',
+                },
+                publisher: {
+                  '@type': 'Person',
+                  name: 'Surinder Singh',
+                  url: 'https://surinder-singh-portfolio.vercel.app',
+                },
+                keywords:
+                  post.tags?.join(', ') ||
+                  'Frontend Engineering, React, Next.js',
+              },
+            ],
+          }),
+        }}
+      />
     </article>
   );
 }

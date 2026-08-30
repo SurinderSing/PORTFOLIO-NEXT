@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 type CursorVariant = 'default' | 'pointer' | 'text' | 'input' | 'drag';
@@ -20,6 +20,8 @@ export default function CustomCursor() {
   const smoothX = useSpring(mouseX, springConfig);
   const smoothY = useSpring(mouseY, springConfig);
 
+  const rafRef = useRef<number | null>(null);
+
   useEffect(() => {
     // Check if device has touch capability (mobile/tablet)
     const hasTouch =
@@ -35,35 +37,33 @@ export default function CustomCursor() {
     setIsTouchDevice(false);
     document.body.classList.add('custom-cursor-none');
 
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
-      if (!isVisible) setIsVisible(true);
+    let pendingTarget: HTMLElement | null = null;
 
-      // Detect cursor context based on DOM target
-      const target = e.target as HTMLElement | null;
-      if (!target) {
+    const evaluateTarget = () => {
+      if (!pendingTarget) {
         setVariant('default');
         return;
       }
 
       // Check for draggable elements
       if (
-        target.closest('[draggable="true"], .cursor-grab, [data-cursor="drag"]')
+        pendingTarget.closest(
+          '[draggable="true"], .cursor-grab, [data-cursor="drag"]'
+        )
       ) {
         setVariant('drag');
         return;
       }
 
       // Check for inputs and textareas
-      if (target.closest('input, textarea')) {
+      if (pendingTarget.closest('input, textarea')) {
         setVariant('input');
         return;
       }
 
       // Check for interactive clickables (links, buttons, controls)
       if (
-        target.closest(
+        pendingTarget.closest(
           'a, button, [role="button"], label, select, summary, [data-cursor="pointer"]'
         )
       ) {
@@ -73,7 +73,7 @@ export default function CustomCursor() {
 
       // Check for text content (paragraphs, headings, lists, code)
       if (
-        target.closest(
+        pendingTarget.closest(
           'p, h1, h2, h3, h4, h5, h6, span, blockquote, code, pre, article, [data-cursor="text"]'
         )
       ) {
@@ -84,18 +84,36 @@ export default function CustomCursor() {
       setVariant('default');
     };
 
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+      if (!isVisible) setIsVisible(true);
+
+      pendingTarget = e.target as HTMLElement | null;
+
+      if (!rafRef.current) {
+        rafRef.current = requestAnimationFrame(() => {
+          evaluateTarget();
+          rafRef.current = null;
+        });
+      }
+    };
+
     const handleMouseDown = () => setIsClicked(true);
     const handleMouseUp = () => setIsClicked(false);
     const handleMouseLeave = () => setIsVisible(false);
     const handleMouseEnter = () => setIsVisible(true);
 
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mousedown', handleMouseDown);
-    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    window.addEventListener('mousedown', handleMouseDown, { passive: true });
+    window.addEventListener('mouseup', handleMouseUp, { passive: true });
     document.documentElement.addEventListener('mouseleave', handleMouseLeave);
     document.documentElement.addEventListener('mouseenter', handleMouseEnter);
 
     return () => {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
       document.body.classList.remove('custom-cursor-none');
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mousedown', handleMouseDown);

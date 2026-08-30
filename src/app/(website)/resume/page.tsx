@@ -15,11 +15,17 @@ import { Download, Code2, Sparkles } from 'lucide-react';
 import ProfileImg from '@/assets/images/profile-photos/surinder_profile_photo.png';
 
 export const metadata: Metadata = {
-  title: 'Resume | Frontend Developer Experience | Surinder Singh',
+  title: 'Resume & Experience | Surinder Singh Portfolio',
   description:
-    'Download my resume and explore my 4+ years of experience in frontend development, working with React, Next.js, and AI tools.',
+    'Download and explore the technical resume of Surinder Singh. 4+ years of frontend engineering experience in React, Next.js, Micro-Frontends, and AI web apps.',
   alternates: {
     canonical: '/resume',
+  },
+  openGraph: {
+    title: 'Resume & Experience | Surinder Singh Portfolio',
+    description:
+      'Download and explore the technical resume of Surinder Singh. 4+ years of frontend engineering experience in React, Next.js, Micro-Frontends, and AI web apps.',
+    url: 'https://surinder-singh-portfolio.vercel.app/resume',
   },
 };
 
@@ -156,6 +162,31 @@ export default async function ResumePage() {
           />
         </FadeInItem>
       </FadeIn>
+
+      {/* Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              {
+                '@type': 'ListItem',
+                position: 1,
+                name: 'Home',
+                item: 'https://surinder-singh-portfolio.vercel.app',
+              },
+              {
+                '@type': 'ListItem',
+                position: 2,
+                name: 'Resume',
+                item: 'https://surinder-singh-portfolio.vercel.app/resume',
+              },
+            ],
+          }),
+        }}
+      />
     </div>
   );
 }
