@@ -91,7 +91,9 @@ export const metadata: Metadata = {
     creator: '@SurinderDev',
   },
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+    google:
+      process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ||
+      'r-9sHFg6rP_cszoEU3JNCzHNYsoe6cFNgUK8mKW3cfk',
   },
 };
 
