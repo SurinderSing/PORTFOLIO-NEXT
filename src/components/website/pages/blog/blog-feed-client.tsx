@@ -1,11 +1,18 @@
 'use client';
 
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, {
+  useState,
+  useMemo,
+  useEffect,
+  useCallback,
+  useRef,
+} from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { BlogPost, Profile } from '@/types/database';
 import BlogCard from '@/components/website/pages/blog/blog-card';
 import BlogDeleteModal from '@/components/website/pages/blog/blog-delete-modal';
+import BlogPagination from '@/components/website/pages/blog/blog-pagination';
 import { ScrollReveal } from '@/components/animations/scroll-reveal';
 import {
   Search,
@@ -30,6 +37,8 @@ interface BlogFeedClientProps {
   currentProfile?: Profile | null;
 }
 
+const POSTS_PER_PAGE = 7;
+
 // Deterministic stable sorting helper
 const sortPostsStable = (list: BlogPost[]): BlogPost[] => {
   return [...list].sort((a, b) => {
@@ -45,6 +54,8 @@ export const BlogFeedClient: React.FC<BlogFeedClientProps> = ({
   currentProfile: initialProfile,
 }) => {
   const router = useRouter();
+  const feedTopRef = useRef<HTMLDivElement | null>(null);
+
   const {
     user: clientUser,
     profile: clientProfile,
@@ -74,6 +85,7 @@ export const BlogFeedClient: React.FC<BlogFeedClientProps> = ({
   const [filterMode, setFilterMode] = useState<'all' | 'my-posts' | 'pending'>(
     'all'
   );
+  const [currentPage, setCurrentPage] = useState(1);
   const [deletingPost, setDeletingPost] = useState<BlogPost | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
@@ -146,6 +158,24 @@ export const BlogFeedClient: React.FC<BlogFeedClientProps> = ({
     }
   }, [deletingPost, router]);
 
+  // Filter change handlers that reset pagination to page 1
+  const handleSearchChange = (val: string) => {
+    setSearchQuery(val);
+    setCurrentPage(1);
+  };
+
+  const handleTagToggle = (tag: string) => {
+    setSelectedTag((prev) => (prev === tag ? null : tag));
+    setFilterMode('all');
+    setCurrentPage(1);
+  };
+
+  const handleFilterModeChange = (mode: 'all' | 'my-posts' | 'pending') => {
+    setFilterMode(mode);
+    setSelectedTag(null);
+    setCurrentPage(1);
+  };
+
   // Extract all unique tags
   const allTags = useMemo(() => {
     const tagsSet = new Set<string>();
@@ -196,15 +226,37 @@ export const BlogFeedClient: React.FC<BlogFeedClientProps> = ({
     });
   }, [posts, searchQuery, selectedTag, filterMode, effectiveUser]);
 
-  const featuredPost = filteredPosts.length > 0 ? filteredPosts[0] : null;
-  const remainingPosts = filteredPosts.length > 1 ? filteredPosts.slice(1) : [];
+  // Pagination calculation
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredPosts.length / POSTS_PER_PAGE)
+  );
+  const safeCurrentPage = Math.min(Math.max(1, currentPage), totalPages);
+
+  const startIndex = (safeCurrentPage - 1) * POSTS_PER_PAGE;
+  const endIndex = startIndex + POSTS_PER_PAGE;
+  const currentBatch = filteredPosts.slice(startIndex, endIndex);
+
+  // Page 1 gets 1 Featured Hero + 6 Grid cards; Page 2+ gets full 2-column grid
+  const featuredPost =
+    safeCurrentPage === 1 && currentBatch.length > 0 ? currentBatch[0] : null;
+  const remainingPosts =
+    safeCurrentPage === 1 ? currentBatch.slice(1) : currentBatch;
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage < 1 || newPage > totalPages) return;
+    setCurrentPage(newPage);
+    if (feedTopRef.current) {
+      feedTopRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   const displayName = effectiveProfile?.first_name
     ? `${effectiveProfile.first_name} ${effectiveProfile.last_name || ''}`.trim()
     : effectiveProfile?.username || effectiveUser?.email || 'Member';
 
   return (
-    <div className="w-full space-y-8 font-mono">
+    <div ref={feedTopRef} className="w-full space-y-8 font-mono">
       {/* Top Banner: Auth State & Quick Action */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-xl border border-border/70 bg-card/60 p-4 backdrop-blur-xs">
         <div className="flex items-center gap-3">
@@ -297,7 +349,7 @@ export const BlogFeedClient: React.FC<BlogFeedClientProps> = ({
           <input
             type="text"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             placeholder="Search articles by title, keyword, or tech stack..."
             className="w-full rounded-xl border border-border bg-card/80 py-2.5 pl-10 pr-4 text-xs font-mono text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
           />
@@ -308,10 +360,7 @@ export const BlogFeedClient: React.FC<BlogFeedClientProps> = ({
           {/* Main Feed Filter Modes */}
           <button
             type="button"
-            onClick={() => {
-              setFilterMode('all');
-              setSelectedTag(null);
-            }}
+            onClick={() => handleFilterModeChange('all')}
             className={cn(
               'rounded-lg px-3 py-1 text-xs font-mono transition-all',
               filterMode === 'all' && selectedTag === null
@@ -325,10 +374,7 @@ export const BlogFeedClient: React.FC<BlogFeedClientProps> = ({
           {effectiveUser && (
             <button
               type="button"
-              onClick={() => {
-                setFilterMode('my-posts');
-                setSelectedTag(null);
-              }}
+              onClick={() => handleFilterModeChange('my-posts')}
               className={cn(
                 'rounded-lg px-3 py-1 text-xs font-mono transition-all flex items-center gap-1.5',
                 filterMode === 'my-posts'
@@ -344,10 +390,7 @@ export const BlogFeedClient: React.FC<BlogFeedClientProps> = ({
           {effectiveIsAdmin && (
             <button
               type="button"
-              onClick={() => {
-                setFilterMode('pending');
-                setSelectedTag(null);
-              }}
+              onClick={() => handleFilterModeChange('pending')}
               className={cn(
                 'rounded-lg px-3 py-1 text-xs font-mono transition-all flex items-center gap-1.5',
                 filterMode === 'pending'
@@ -375,10 +418,7 @@ export const BlogFeedClient: React.FC<BlogFeedClientProps> = ({
             <button
               key={tag}
               type="button"
-              onClick={() => {
-                setSelectedTag(selectedTag === tag ? null : tag);
-                setFilterMode('all');
-              }}
+              onClick={() => handleTagToggle(tag)}
               className={cn(
                 'rounded-lg px-2.5 py-1 text-xs font-mono transition-all flex items-center gap-1',
                 selectedTag === tag
@@ -420,6 +460,7 @@ export const BlogFeedClient: React.FC<BlogFeedClientProps> = ({
                 setSearchQuery('');
                 setSelectedTag(null);
                 setFilterMode('all');
+                setCurrentPage(1);
               }}
               className="mt-4 rounded-lg bg-primary/10 border border-primary/20 px-3 py-1.5 text-xs text-primary font-bold hover:bg-primary/20 transition-colors"
             >
@@ -429,7 +470,7 @@ export const BlogFeedClient: React.FC<BlogFeedClientProps> = ({
         </div>
       ) : (
         <div className="space-y-6">
-          {/* Featured Hero Card */}
+          {/* Featured Hero Card (Page 1 only) */}
           {featuredPost && (
             <ScrollReveal>
               <div className="grid grid-cols-1">
@@ -458,6 +499,16 @@ export const BlogFeedClient: React.FC<BlogFeedClientProps> = ({
               ))}
             </ScrollReveal>
           )}
+
+          {/* Bottom Pagination Bar */}
+          <BlogPagination
+            currentPage={safeCurrentPage}
+            totalPages={totalPages}
+            totalItems={filteredPosts.length}
+            startIndex={startIndex}
+            endIndex={endIndex}
+            onPageChange={handlePageChange}
+          />
         </div>
       )}
 

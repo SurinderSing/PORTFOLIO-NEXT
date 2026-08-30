@@ -16,9 +16,14 @@ import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://surinder-singh-portfolio.vercel.app'),
   title: 'Admin Control Center | Surinder Singh Portfolio',
   description:
     'Administrative dashboard for managing portfolio data, settings, skills, experiences, and projects.',
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default async function AdminLayout({

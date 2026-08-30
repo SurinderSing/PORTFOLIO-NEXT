@@ -28,10 +28,40 @@
 - [x] Phase 21: Vercel Speed Insights & Web Analytics Integration
 - [x] Phase 22: Middleware Dashboard Deprecation & Role-Based Auth Redirects
 - [x] Phase 23: Sign-Up Form Placeholder Sanitization
+- [x] Phase 24: SEO Optimization & #1 Google Ranking Infrastructure
+- [x] Phase 25: Core Web Vitals & Runtime Performance Optimization
+- [x] Phase 26: Blog Feed Numbered Pagination & Feed UX
 
 ---
 
 ## Detailed Task Checklist
+
+### Phase 26: Blog Feed Numbered Pagination & Feed UX (100% Completed)
+- [x] Create dedicated `BlogPagination` subcomponent (`src/components/website/pages/blog/blog-pagination.tsx`) with numbered pills, ellipsis windowing, range counter, and Prev/Next buttons.
+- [x] Integrate pagination state into `BlogFeedClient` with 7 posts per page (1 Hero + 6 Grid Cards on Page 1; 7 Grid Cards on Page 2+).
+- [x] Add auto-reset to Page 1 on search keyword change, tag filter selection, or view mode toggle.
+- [x] Implement smooth scroll-to-top on page change via `feedTopRef`.
+- [x] Verify `npm run lint` and `npm run build` compile cleanly with 0 errors across 36 static pages.
+
+### Phase 25: Core Web Vitals & Runtime Performance Optimization (100% Completed)
+- [x] Configure stationary background dots on scroll and smooth delayed cursor trailing field in AntigravityBackground.
+- [x] Redesign AntigravityBackground particle geometry from lines/pins to circular micro-dots with 50% lighter opacity.
+- [x] Optimize `GlobalLoader` to be session-aware using `sessionStorage` so it only displays once per browsing session.
+- [x] Accelerate `TerminalLoader` progression rate to ~300ms-400ms without altering aesthetics or cyber status stages.
+- [x] Defer `AntigravityBackground` particle canvas with `requestIdleCallback`, adaptive mobile spacing, and `visibilitychange` suspension.
+- [x] Throttle `CustomCursor` DOM traversals via `requestAnimationFrame` and passive listeners.
+- [x] Verify `npm run lint` and `npm run build` compile cleanly with 0 errors across 36 static pages.
+
+### Phase 24: SEO Optimization & #1 Google Ranking Infrastructure (100% Completed)
+- [x] Create dynamic async sitemap (`src/app/sitemap.ts`) fetching published blog posts from database with accurate priorities.
+- [x] Construct Google-compliant JSON-LD `@graph` with `WebSite`, `ProfilePage`, and `Person` schemas in `src/app/(website)/layout.tsx`.
+- [x] Ingest `BreadcrumbList` structured data across all subpages (`/work`, `/resume`, `/blog`, `/blog/[slug]`, `/contact`).
+- [x] Implement Web App Manifest (`src/app/manifest.ts`) for PWA and mobile indexing.
+- [x] Add dynamic OpenGraph and Twitter card image generators (`src/app/(website)/opengraph-image.tsx`, `twitter-image.tsx`).
+- [x] Refine `robots.ts` with host and crawling directives.
+- [x] Add 301 Netlify redirect (`_redirects`), canonical link, and meta-refresh in `inder-dev-portfolio` to transfer PageRank to `PORTFOLIO-NEXT`.
+- [x] Remove redundant `src/app/(website)/contact/layout.tsx`.
+- [x] Run `npm run lint` and `npm run build` to verify 0 errors across 36 static pages.
 
 ### Phase 23: Sign-Up Form Placeholder Sanitization (100% Completed)
 - [x] Replace personal details (`Surinder`, `Singh`, `admin@surinder.dev`, `admin_user`, `+91 9876543210`) in `src/components/auth/sign-up/form/index.tsx` with generic placeholders (`john_doe`, `John`, `Doe`, `john.doe@example.com`, `+15551234567`).

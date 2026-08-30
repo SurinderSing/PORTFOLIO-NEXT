@@ -11,11 +11,17 @@ import DrishtiImage from '@/assets/images/projects/drishti-ias.png';
 import { Code2, Github } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Projects | Systems & Architecture | Surinder Singh',
+  title: 'Projects & Systems Architecture | Surinder Singh Portfolio',
   description:
-    'Explore a collection of technical deployments and scalable frontend systems built using React, Next.js, and TypeScript.',
+    'Explore engineering projects, SaaS systems, and micro-frontend architectures built by Surinder Singh using React, Next.js, and TypeScript.',
   alternates: {
     canonical: '/work',
+  },
+  openGraph: {
+    title: 'Projects & Systems Architecture | Surinder Singh Portfolio',
+    description:
+      'Explore engineering projects, SaaS systems, and micro-frontend architectures built by Surinder Singh using React, Next.js, and TypeScript.',
+    url: 'https://surinder-singh-portfolio.vercel.app/work',
   },
 };
 
@@ -131,21 +137,43 @@ export default async function WorkPage() {
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             '@context': 'https://schema.org',
-            '@type': 'ItemList',
-            itemListElement: projectsData.map((project, index) => ({
-              '@type': 'ListItem',
-              position: index + 1,
-              item: {
-                '@type': 'CreativeWork',
-                name: project.title,
-                description: project.description,
-                url: project.link,
-                creator: {
-                  '@type': 'Person',
-                  name: settings.owner_name,
-                },
+            '@graph': [
+              {
+                '@type': 'BreadcrumbList',
+                itemListElement: [
+                  {
+                    '@type': 'ListItem',
+                    position: 1,
+                    name: 'Home',
+                    item: 'https://surinder-singh-portfolio.vercel.app',
+                  },
+                  {
+                    '@type': 'ListItem',
+                    position: 2,
+                    name: 'Projects',
+                    item: 'https://surinder-singh-portfolio.vercel.app/work',
+                  },
+                ],
               },
-            })),
+              {
+                '@type': 'ItemList',
+                name: 'Projects by Surinder Singh',
+                itemListElement: projectsData.map((project, index) => ({
+                  '@type': 'ListItem',
+                  position: index + 1,
+                  item: {
+                    '@type': 'CreativeWork',
+                    name: project.title,
+                    description: project.description,
+                    url: project.link,
+                    creator: {
+                      '@type': 'Person',
+                      name: settings.owner_name,
+                    },
+                  },
+                })),
+              },
+            ],
           }),
         }}
       />

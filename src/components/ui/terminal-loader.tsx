@@ -34,8 +34,8 @@ export default function TerminalLoader({ onComplete }: TerminalLoaderProps) {
   useEffect(() => {
     let current = 0;
     const interval = setInterval(() => {
-      // Natural randomized cyber progression
-      const increment = Math.random() * 8 + 3;
+      // Snappy cyber progression
+      const increment = Math.random() * 8 + 6;
       current += increment;
 
       if (current >= 100) {
@@ -45,11 +45,11 @@ export default function TerminalLoader({ onComplete }: TerminalLoaderProps) {
         setTimeout(() => {
           setIsVisible(false);
           onComplete?.();
-        }, 380);
+        }, 180);
       } else {
         setProgress(Math.floor(current));
       }
-    }, 45);
+    }, 20);
 
     return () => {
       clearInterval(interval);
