@@ -30,10 +30,18 @@
 - [x] Phase 23: Sign-Up Form Placeholder Sanitization
 - [x] Phase 24: SEO Optimization & #1 Google Ranking Infrastructure
 - [x] Phase 25: Core Web Vitals & Runtime Performance Optimization
+- [x] Phase 26: Blog Feed Numbered Pagination & Feed UX
 
 ---
 
 ## Detailed Task Checklist
+
+### Phase 26: Blog Feed Numbered Pagination & Feed UX (100% Completed)
+- [x] Create dedicated `BlogPagination` subcomponent (`src/components/website/pages/blog/blog-pagination.tsx`) with numbered pills, ellipsis windowing, range counter, and Prev/Next buttons.
+- [x] Integrate pagination state into `BlogFeedClient` with 7 posts per page (1 Hero + 6 Grid Cards on Page 1; 7 Grid Cards on Page 2+).
+- [x] Add auto-reset to Page 1 on search keyword change, tag filter selection, or view mode toggle.
+- [x] Implement smooth scroll-to-top on page change via `feedTopRef`.
+- [x] Verify `npm run lint` and `npm run build` compile cleanly with 0 errors across 36 static pages.
 
 ### Phase 25: Core Web Vitals & Runtime Performance Optimization (100% Completed)
 - [x] Configure stationary background dots on scroll and smooth delayed cursor trailing field in AntigravityBackground.

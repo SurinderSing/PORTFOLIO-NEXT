@@ -1,11 +1,16 @@
 # Memory Bank - Active Context
 
 ## Active Focus
-The current focus is **Phase 25: Core Web Vitals & Runtime Performance Optimization (Completed)**.
+The current focus is **Phase 26: Blog Feed Numbered Pagination & Feed UX (Completed)**.
 
 ---
 
 ## Recently Completed
+
+1. **Blog Feed Numbered Pagination & Feed UX:**
+   - **Dedicated Pagination Subcomponent (`src/components/website/pages/blog/blog-pagination.tsx`):** Designed a cyber-styled numbered pagination bar with `Prev`, `Next`, ellipsis windowing (`1 ... 4 5 6 ... 12`), range indicators (`Showing 1–7 of 24 articles`), and accessible disabled states.
+   - **Feed Batch Chunking & Scroll-to-Top (`src/components/website/pages/blog/blog-feed-client.tsx`):** Structured blog feed into 7 articles per page (Page 1: 1 Featured Hero + 6 Grid Cards; Page 2+: 7 Grid Cards). Connected search, tag filtering, and view modes with automatic page-1 reset, and added smooth `scrollIntoView` to the top of the feed upon page transitions.
+   - **Build & Lint Verification:** Verified `npm run lint` and `npm run build` with 0 errors across all 36 static pages.
 
 1. **Core Web Vitals & Runtime Performance Optimization & Dot Particle Background:**
    - **Stationary Background Dots on Scroll & Delayed Cursor Trailing (`src/components/animations/antigravity-background.tsx`):** Fixed background dots in place so they remain stationary on viewport scroll without artificial vertical displacement, and tuned the mouse coordinate interpolation (`0.07` lerp factor) and particle transition force (`0.10`) so the antigravity repulsion field smoothly glides behind the cursor with a fluid magnetic delay.
