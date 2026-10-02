@@ -1,11 +1,24 @@
 # Memory Bank - Active Context
 
 ## Active Focus
-The current focus is **Phase 26: Blog Feed Numbered Pagination & Feed UX (Completed)**.
+The current focus is **Phase 27: Hero Section Antigravity Background Scoping (Completed)**.
 
 ---
 
 ## Recently Completed
+
+1. **Hero Section Antigravity Background Scoping & Continuous Ambient Motion:**
+   - **Compact Localized Cursor Repulsion Radius (`src/components/animations/antigravity-background.tsx`):** Decreased the interactive antigravity field radius by an additional 50% (baseline `95px`, dynamically bounded between `75px–105px` via `Math.max(75, Math.min(width * 0.08, 105))`), producing a focused, tight micro-ripple around the cursor without affecting surrounding particles. Proximity buffer reduced to `20px`.
+   - **Original Custom Cursor Preserved (`src/components/animations/custom-cursor.tsx`):** Retained original custom cursor dimensions and physics (`default`: 32px ring / 7px dot; `pointer`: 48px ring / 8px dot).
+   - **Layered Depth-of-Field Particle Sizing (`src/components/animations/antigravity-background.tsx`):** Scaled 20% of particles by +50% (`1.5x` multiplier, `~1.3px–2.1px` radius) while keeping 80% at standard subtle size (`0.85px–1.4px`), introducing an organic layered depth-of-field and starfield hierarchy to the Hero background.
+   - **Removal of Vertical Scroll Displacement Wave (`src/components/animations/antigravity-background.tsx`):** Eliminated the physical vertical scroll-follow push wave (`p.vy -= scrollPush`), preventing particles from being pulled or dragged vertically on page scroll. Preserved subtle, non-displacing scroll luminescence reaction (`scrollEffect` in `combinedForce`).
+   - **Continuous Ultra-Slow Ambient Movement & Boundary Wrapping (`src/components/animations/antigravity-background.tsx`):** Calibrated continuous autonomous slow-wander physics to a tranquil, gentle drift rate (`0.08–0.20px/frame` via `baseSpeed: 0.08 + Math.random() * 0.12` and subtle direction drift `angleSpeed: (Math.random() - 0.5) * 0.003`), down by 50% from the initial pass. Particles wrap seamlessly around hero boundary edges, and repulsion impulses smoothly return to peaceful drifting.
+   - **Dynamic Aurora Cyber Color Shifting (`src/components/animations/antigravity-background.tsx`):** Implemented continuous HSLA-based color shifting transitioning smoothly across the cyber spectrum: Emerald (`~152°`) ➔ Electric Cyan (`~195°`) ➔ Tech Blue (`~220°`) ➔ Cyber Indigo/Violet (`~268°`). Each particle possesses an individualized phase offset and spatial gradient mapping, forming multi-colored organic aurora waves across the hero section.
+   - **Global Layout Pruning (`src/app/(website)/layout.tsx`):** Removed global `<AntigravityBackground />` instance and import from the root website layout, ensuring blog, work, resume, contact, and lower home page sections remain clean and distraction-free without background canvas particles.
+   - **Container-Scoped Antigravity Background (`src/components/animations/antigravity-background.tsx`):** Upgraded `AntigravityBackground` to support parent container bounds measurement (`canvas.parentElement`), dynamic `ResizeObserver` responsive auto-resizing, relative cursor coordinate tracking (`e.clientX - rect.left`), and an `IntersectionObserver` to automatically pause the 60fps render loop when the Hero section scrolls out of the viewport.
+   - **Full-Width Hero Background Breakout (`src/components/website/pages/home/hero-section.tsx`, `src/app/(website)/layout.tsx`):** Wrapped `<AntigravityBackground />` in an edge-to-edge breakout container (`absolute inset-y-0 left-1/2 -translate-x-1/2 w-screen pointer-events-none -z-10 overflow-hidden`) so the particle field spans the full viewport width into left and right side gutters/corners. Preserved the Hero bottom border (`border-b border-border/50`) and content inside `.section-container`. Added `overflow-x-clip` on `body` to ensure zero horizontal scroll on Windows.
+   - **Hero Section Composition (`src/components/website/pages/home/hero-section.tsx`):** Embedded `<AntigravityBackground />` inside the full-width breakout within `HeroSection`, neatly containing particle physics behind hero content without bleeding into adjacent sections.
+   - **Build & Lint Verification:** Verified with `npm run lint` and `npm run build` with 0 errors across all 36 static pages.
 
 1. **Blog Feed Numbered Pagination & Feed UX:**
    - **Dedicated Pagination Subcomponent (`src/components/website/pages/blog/blog-pagination.tsx`):** Designed a cyber-styled numbered pagination bar with `Prev`, `Next`, ellipsis windowing (`1 ... 4 5 6 ... 12`), range indicators (`Showing 1–7 of 24 articles`), and accessible disabled states.
