@@ -8,7 +8,7 @@ interface Particle {
   y: number;
   vx: number;
   vy: number;
-  baseSpeed: number; // continuous slow drift speed (0.18 to 0.40 px/frame)
+  baseSpeed: number; // continuous gentle ambient drift speed (0.08 to 0.20 px/frame)
   angle: number; // heading direction in radians
   angleSpeed: number; // gentle organic wandering rate
   baseRadius: number;
@@ -52,7 +52,7 @@ export const AntigravityBackground: React.FC<AntigravityBackgroundProps> = ({
       active: false,
     };
 
-    // Scroll inertia tracking with 2x extended delayed wave
+    // Scroll inertia tracking for subtle luminescence reaction
     let lastScrollY = window.scrollY;
     let targetScrollVelocity = 0;
     let smoothScrollVelocity = 0;
@@ -253,17 +253,21 @@ export const AntigravityBackground: React.FC<AntigravityBackgroundProps> = ({
         // 3. Trailing mouse distance vectors (screen space)
         const dx = p.x - mouse.x;
         const dy = p.y - mouse.y;
-        const distSq = dx * dx + dy * dy;
-        const dist = Math.sqrt(distSq);
 
         let targetForce = 0;
         let repelAngle = 0;
 
         // Antigravity force calculation with organic exponential falloff
-        if (mouse.active && dist < mouse.radius && dist > 0) {
-          const normDist = 1 - dist / mouse.radius;
-          targetForce = normDist * normDist * 1.35; // Power curve
-          repelAngle = Math.atan2(dy, dx);
+        // Uses squared distance for early exit to avoid expensive Math.sqrt on distant particles
+        if (mouse.active) {
+          const distSq = dx * dx + dy * dy;
+          const radiusSq = mouse.radius * mouse.radius;
+          if (distSq < radiusSq && distSq > 0) {
+            const dist = Math.sqrt(distSq);
+            const normDist = 1 - dist / mouse.radius;
+            targetForce = normDist * normDist * 1.35; // Power curve
+            repelAngle = Math.atan2(dy, dx);
+          }
         }
 
         // Gradual force accumulation for distinct trailing wave effect
