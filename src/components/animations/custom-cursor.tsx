@@ -100,8 +100,8 @@ export default function CustomCursor() {
           zIndex: 999999,
         }}
         animate={{
-          width: isPointer ? 48 : 32,
-          height: isPointer ? 48 : 32,
+          width: isPointer ? 29 : 20,
+          height: isPointer ? 29 : 20,
           borderRadius: 9999,
           borderWidth: isPointer ? 1.5 : 1,
           borderColor: isPointer
@@ -111,8 +111,8 @@ export default function CustomCursor() {
             ? 'rgba(16, 185, 129, 0.18)'
             : 'rgba(16, 185, 129, 0.04)',
           boxShadow: isPointer
-            ? '0 0 20px rgba(16, 185, 129, 0.35)'
-            : '0 0 12px rgba(16, 185, 129, 0.15)',
+            ? '0 0 12px rgba(16, 185, 129, 0.35)'
+            : '0 0 8px rgba(16, 185, 129, 0.15)',
           scale: isClicked ? 0.85 : 1,
           opacity: isVisible ? 1 : 0,
         }}
@@ -135,8 +135,8 @@ export default function CustomCursor() {
           zIndex: 999999,
         }}
         animate={{
-          width: isPointer ? 8 : 7,
-          height: isPointer ? 8 : 7,
+          width: isPointer ? 5 : 4.5,
+          height: isPointer ? 5 : 4.5,
           borderRadius: 9999,
           scale: isClicked ? 0.6 : isPointer ? 1.3 : 1,
           opacity: isVisible ? 1 : 0,
@@ -146,7 +146,7 @@ export default function CustomCursor() {
           damping: 28,
           stiffness: 480,
         }}
-        className="fixed top-0 left-0 bg-primary shadow-[0_0_10px_rgba(16,185,129,0.9)] pointer-events-none"
+        className="fixed top-0 left-0 bg-primary shadow-[0_0_6px_rgba(16,185,129,0.9)] pointer-events-none"
       />
     </div>
   );

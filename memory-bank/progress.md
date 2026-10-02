@@ -42,7 +42,7 @@
 - [x] Implement organic aurora cyber color shifting (Emerald → Cyan → Tech Blue → Cyber Indigo/Purple) with individual particle phase offsets.
 - [x] Remove vertical scroll displacement impulse wave (`p.vy -= scrollPush`), maintaining particle stability without vertical displacement on scroll while keeping subtle luminescence reaction.
 - [x] Refine and reduce the interactive antigravity field radius by an additional 50% (baseline `95px`, bounds `75px–105px`) for ultra-compact, localized cursor ripple.
-- [x] Simplify `CustomCursor` component: eliminate multi-variant morphing (text/input/drag) that caused it to stick as a vertical bar, implementing instantaneous, reliable hover expansion on interactive elements (`isPointer`) with clean return to the default dot.
+- [x] Simplify `CustomCursor` component and reduce dimensions by 40%: eliminated multi-variant morphing (text/input/drag), reduced default size to 4.5px dot and 20px halo ring (hover: 5px dot, 29px halo ring), ensuring instant reliable hover expansion on interactive elements (`isPointer`) and clean return to the compact dot everywhere else.
 - [x] Scale 20% of particles by +50% (`1.5x` multiplier, `~1.3px–2.1px` radius) to introduce layered depth-of-field hierarchy.
 - [x] Upgrade `AntigravityBackground` component with parent-container dimension tracking, relative mouse coordinates, and `ResizeObserver`.
 - [x] Add `IntersectionObserver` to automatically suspend/resume the canvas rendering loop when the Hero section scrolls out of / into the viewport.
