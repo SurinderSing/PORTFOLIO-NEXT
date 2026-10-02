@@ -1,13 +1,11 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
-
-type CursorVariant = 'default' | 'pointer' | 'text' | 'input' | 'drag';
 
 export default function CustomCursor() {
   const [isVisible, setIsVisible] = useState(false);
-  const [variant, setVariant] = useState<CursorVariant>('default');
+  const [isPointer, setIsPointer] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
   const [isTouchDevice, setIsTouchDevice] = useState(true);
 
@@ -19,8 +17,6 @@ export default function CustomCursor() {
   const springConfig = { damping: 28, stiffness: 420, mass: 0.45 };
   const smoothX = useSpring(mouseX, springConfig);
   const smoothY = useSpring(mouseY, springConfig);
-
-  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     // Check if device has touch capability (mobile/tablet)
@@ -37,71 +33,32 @@ export default function CustomCursor() {
     setIsTouchDevice(false);
     document.body.classList.add('custom-cursor-none');
 
-    let pendingTarget: HTMLElement | null = null;
-
-    const evaluateTarget = () => {
-      if (!pendingTarget) {
-        setVariant('default');
-        return;
-      }
-
-      // Check for draggable elements
-      if (
-        pendingTarget.closest(
-          '[draggable="true"], .cursor-grab, [data-cursor="drag"]'
-        )
-      ) {
-        setVariant('drag');
-        return;
-      }
-
-      // Check for inputs and textareas
-      if (pendingTarget.closest('input, textarea')) {
-        setVariant('input');
-        return;
-      }
-
-      // Check for interactive clickables (links, buttons, controls)
-      if (
-        pendingTarget.closest(
-          'a, button, [role="button"], label, select, summary, [data-cursor="pointer"]'
-        )
-      ) {
-        setVariant('pointer');
-        return;
-      }
-
-      // Check for text content (paragraphs, headings, lists, code)
-      if (
-        pendingTarget.closest(
-          'p, h1, h2, h3, h4, h5, h6, span, blockquote, code, pre, article, [data-cursor="text"]'
-        )
-      ) {
-        setVariant('text');
-        return;
-      }
-
-      setVariant('default');
-    };
-
     const handleMouseMove = (e: MouseEvent) => {
       mouseX.set(e.clientX);
       mouseY.set(e.clientY);
       if (!isVisible) setIsVisible(true);
 
-      pendingTarget = e.target as HTMLElement | null;
-
-      if (!rafRef.current) {
-        rafRef.current = requestAnimationFrame(() => {
-          evaluateTarget();
-          rafRef.current = null;
-        });
+      const target = e.target as HTMLElement | null;
+      if (!target) {
+        setIsPointer(false);
+        return;
       }
+
+      // Check exclusively for clickable interactive elements
+      const isClickable = Boolean(
+        target.closest(
+          'a, button, [role="button"], label, select, summary, [data-cursor="pointer"]'
+        )
+      );
+      setIsPointer(isClickable);
     };
 
     const handleMouseDown = () => setIsClicked(true);
     const handleMouseUp = () => setIsClicked(false);
-    const handleMouseLeave = () => setIsVisible(false);
+    const handleMouseLeave = () => {
+      setIsVisible(false);
+      setIsPointer(false);
+    };
     const handleMouseEnter = () => setIsVisible(true);
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
@@ -111,9 +68,6 @@ export default function CustomCursor() {
     document.documentElement.addEventListener('mouseenter', handleMouseEnter);
 
     return () => {
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-      }
       document.body.classList.remove('custom-cursor-none');
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mousedown', handleMouseDown);
@@ -131,110 +85,6 @@ export default function CustomCursor() {
 
   if (isTouchDevice) return null;
 
-  // Outer ring animation configurations per variant
-  const getOuterStyles = () => {
-    switch (variant) {
-      case 'pointer':
-        return {
-          width: 48,
-          height: 48,
-          borderRadius: 9999,
-          borderWidth: 1.5,
-          borderColor: 'rgba(16, 185, 129, 0.85)',
-          backgroundColor: 'rgba(16, 185, 129, 0.18)',
-          boxShadow: '0 0 20px rgba(16, 185, 129, 0.35)',
-        };
-      case 'text':
-        return {
-          width: 14,
-          height: 28,
-          borderRadius: 6,
-          borderWidth: 1,
-          borderColor: 'rgba(16, 185, 129, 0.5)',
-          backgroundColor: 'rgba(16, 185, 129, 0.05)',
-          boxShadow: '0 0 10px rgba(16, 185, 129, 0.15)',
-        };
-      case 'input':
-        return {
-          width: 22,
-          height: 32,
-          borderRadius: 8,
-          borderWidth: 1.5,
-          borderColor: 'rgba(16, 185, 129, 0.75)',
-          backgroundColor: 'rgba(16, 185, 129, 0.12)',
-          boxShadow: '0 0 14px rgba(16, 185, 129, 0.25)',
-        };
-      case 'drag':
-        return {
-          width: 44,
-          height: 44,
-          borderRadius: 9999,
-          borderWidth: 2,
-          borderColor: 'rgba(16, 185, 129, 0.9)',
-          backgroundColor: 'rgba(16, 185, 129, 0.12)',
-          boxShadow: '0 0 18px rgba(16, 185, 129, 0.3)',
-        };
-      case 'default':
-      default:
-        return {
-          width: 32,
-          height: 32,
-          borderRadius: 9999,
-          borderWidth: 1,
-          borderColor: 'rgba(16, 185, 129, 0.4)',
-          backgroundColor: 'rgba(16, 185, 129, 0.04)',
-          boxShadow: '0 0 12px rgba(16, 185, 129, 0.15)',
-        };
-    }
-  };
-
-  // Inner dot animation configurations per variant
-  const getInnerStyles = () => {
-    switch (variant) {
-      case 'pointer':
-        return {
-          width: 8,
-          height: 8,
-          borderRadius: 9999,
-          scale: isClicked ? 0.6 : 1.4,
-          opacity: isVisible ? 1 : 0,
-        };
-      case 'text':
-        return {
-          width: 2.5,
-          height: 20,
-          borderRadius: 4,
-          scale: isClicked ? 0.8 : 1,
-          opacity: isVisible ? 1 : 0,
-        };
-      case 'input':
-        return {
-          width: 2.5,
-          height: 22,
-          borderRadius: 4,
-          scale: isClicked ? 0.8 : 1,
-          opacity: isVisible ? 1 : 0,
-        };
-      case 'drag':
-        return {
-          width: 6,
-          height: 6,
-          borderRadius: 9999,
-          scale: isClicked ? 0.7 : 1.2,
-          opacity: isVisible ? 1 : 0,
-        };
-      case 'default':
-      default:
-        return {
-          width: 7,
-          height: 7,
-          borderRadius: 9999,
-          scale: isClicked ? 0.6 : 1,
-          opacity: isVisible ? 1 : 0,
-        };
-    }
-  };
-
   return (
     <div
       style={{ zIndex: 999999 }}
@@ -250,7 +100,19 @@ export default function CustomCursor() {
           zIndex: 999999,
         }}
         animate={{
-          ...getOuterStyles(),
+          width: isPointer ? 29 : 20,
+          height: isPointer ? 29 : 20,
+          borderRadius: 9999,
+          borderWidth: isPointer ? 1.5 : 1,
+          borderColor: isPointer
+            ? 'rgba(16, 185, 129, 0.85)'
+            : 'rgba(16, 185, 129, 0.4)',
+          backgroundColor: isPointer
+            ? 'rgba(16, 185, 129, 0.18)'
+            : 'rgba(16, 185, 129, 0.04)',
+          boxShadow: isPointer
+            ? '0 0 12px rgba(16, 185, 129, 0.35)'
+            : '0 0 8px rgba(16, 185, 129, 0.15)',
           scale: isClicked ? 0.85 : 1,
           opacity: isVisible ? 1 : 0,
         }}
@@ -263,7 +125,7 @@ export default function CustomCursor() {
         className="fixed top-0 left-0 border backdrop-blur-xs pointer-events-none"
       />
 
-      {/* Inner Precision Dot / Indicator */}
+      {/* Inner Precision Dot */}
       <motion.div
         style={{
           x: mouseX,
@@ -272,13 +134,19 @@ export default function CustomCursor() {
           translateY: '-50%',
           zIndex: 999999,
         }}
-        animate={getInnerStyles()}
+        animate={{
+          width: isPointer ? 5 : 4.5,
+          height: isPointer ? 5 : 4.5,
+          borderRadius: 9999,
+          scale: isClicked ? 0.6 : isPointer ? 1.3 : 1,
+          opacity: isVisible ? 1 : 0,
+        }}
         transition={{
           type: 'spring',
           damping: 28,
           stiffness: 480,
         }}
-        className="fixed top-0 left-0 bg-primary shadow-[0_0_10px_rgba(16,185,129,0.9)] pointer-events-none"
+        className="fixed top-0 left-0 bg-primary shadow-[0_0_6px_rgba(16,185,129,0.9)] pointer-events-none"
       />
     </div>
   );

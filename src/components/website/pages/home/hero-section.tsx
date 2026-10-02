@@ -5,6 +5,7 @@ import { SiteSettings, SocialLink } from '@/types/database';
 import { Download, Code2, Mail } from 'lucide-react';
 import ProfileImg from '@/assets/images/profile-photos/surinder_profile_photo.png';
 import parse from 'html-react-parser';
+import AntigravityBackground from '@/components/animations/antigravity-background';
 
 interface HeroSectionProps {
   settings: SiteSettings;
@@ -44,7 +45,11 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
     : 'Located in Delhi, India. Specializing in React, Next.js, and modern TypeScript ecosystems.';
 
   return (
-    <section className="relative w-full py-8 md:py-12 border-b border-border/50">
+    <section className="relative isolate w-full py-8 md:py-12 border-b border-border/50">
+      {/* Full-width background breakout covering full viewport width across hero section */}
+      <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-screen pointer-events-none -z-10 overflow-hidden">
+        <AntigravityBackground />
+      </div>
       <div className="flex flex-col-reverse lg:flex-row items-center justify-between gap-8 lg:gap-12">
         {/* Left text column */}
         <div className="flex-1 space-y-5 text-left">

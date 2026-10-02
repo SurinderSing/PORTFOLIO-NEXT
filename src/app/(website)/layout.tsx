@@ -10,7 +10,6 @@ import Footer from '@/features/website/footer';
 import GlobalLoader from '@/components/ui/global-loader';
 import RouteLoader from '@/components/ui/route-loader';
 import CustomCursor from '@/components/animations/custom-cursor';
-import AntigravityBackground from '@/components/animations/antigravity-background';
 import Providers from '../provider';
 import { getSiteSettings, getSocialLinks } from '@/lib/supabase-queries';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -201,7 +200,7 @@ export default async function RootLayout({
     >
       <body
         className={cn(
-          'antialiased min-h-screen bg-background text-foreground font-mono transition-colors'
+          'antialiased min-h-screen bg-background text-foreground font-mono transition-colors overflow-x-clip'
         )}
       >
         <Suspense>
@@ -222,7 +221,6 @@ export default async function RootLayout({
           >
             <GlobalLoader />
             <div className="min-h-screen flex flex-col justify-between relative">
-              <AntigravityBackground />
               <CustomCursor />
               <div>
                 <TopNavbar settings={settings} />

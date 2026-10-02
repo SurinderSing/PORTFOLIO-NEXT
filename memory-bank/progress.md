@@ -36,6 +36,19 @@
 
 ## Detailed Task Checklist
 
+### Phase 27: Hero Section Antigravity Background Scoping & Ambient Motion (100% Completed)
+- [x] Remove global `AntigravityBackground` from website layout (`src/app/(website)/layout.tsx`).
+- [x] Implement continuous ultra-slow autonomous particle velocity (`0.08–0.20px/frame`) with gentle direction drift and smooth boundary wrapping across the Hero container.
+- [x] Implement organic aurora cyber color shifting (Emerald → Cyan → Tech Blue → Cyber Indigo/Purple) with individual particle phase offsets.
+- [x] Remove vertical scroll displacement impulse wave (`p.vy -= scrollPush`), maintaining particle stability without vertical displacement on scroll while keeping subtle luminescence reaction.
+- [x] Refine and reduce the interactive antigravity field radius by an additional 50% (baseline `95px`, bounds `75px–105px`) for ultra-compact, localized cursor ripple.
+- [x] Simplify `CustomCursor` component and reduce dimensions by 40%: eliminated multi-variant morphing (text/input/drag), reduced default size to 4.5px dot and 20px halo ring (hover: 5px dot, 29px halo ring), ensuring instant reliable hover expansion on interactive elements (`isPointer`) and clean return to the compact dot everywhere else.
+- [x] Scale 20% of particles by +50% (`1.5x` multiplier, `~1.3px–2.1px` radius) to introduce layered depth-of-field hierarchy.
+- [x] Upgrade `AntigravityBackground` component with parent-container dimension tracking, relative mouse coordinates, and `ResizeObserver`.
+- [x] Add `IntersectionObserver` to automatically suspend/resume the canvas rendering loop when the Hero section scrolls out of / into the viewport.
+- [x] Mount `<AntigravityBackground />` inside a full-width edge-to-edge breakout container (`w-screen left-1/2 -translate-x-1/2`) within `HeroSection`, ensuring particles cover the full viewport width into left/right corners while keeping Hero border inside container.
+- [x] Verify `npm run lint` and `npm run build` pass with 0 errors across all 36 static pages.
+
 ### Phase 26: Blog Feed Numbered Pagination & Feed UX (100% Completed)
 - [x] Create dedicated `BlogPagination` subcomponent (`src/components/website/pages/blog/blog-pagination.tsx`) with numbered pills, ellipsis windowing, range counter, and Prev/Next buttons.
 - [x] Integrate pagination state into `BlogFeedClient` with 7 posts per page (1 Hero + 6 Grid Cards on Page 1; 7 Grid Cards on Page 2+).
